@@ -8,4 +8,4 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("Contact", chatSchema);
 
-module.exports = Cntact;
+module.exports = Contact;
