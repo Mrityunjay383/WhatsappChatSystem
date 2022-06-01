@@ -68,10 +68,19 @@ exports.login = async (req, res) => {
         }
       );
 
-      user.token = token;
       user.password = undefined;
 
-      return res.status(200).json(user);
+      // Setting Up cookies
+      const options = {
+        expires: new Date(Date.now() + 24*60*60*1000),
+        httpOnly: true
+      };
+
+      return res.status(200).cookie('token', token, options).json({
+        success: true,
+        token,
+        user
+      });
 
     }
 
