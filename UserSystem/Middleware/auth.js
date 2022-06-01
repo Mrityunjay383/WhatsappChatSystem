@@ -1,20 +1,25 @@
-function auth(req, res, next){
-  if(req.isAuthenticated()){
-    next();
-  }else{
-    res.redirect("/auth");
+const jwt = require('jsonwebtoken');
+
+const User = require("../model/user");
+
+//Checking if the token if valid or not
+const valToken = async (req, res, next) => {
+  try {
+    // looking for tacken in the header
+    const [tokenInit, token] = req.headers.authorization.split(" ");
+
+    if (tokenInit == "Bearer") {
+      const data = jwt.verify(token, process.env.SECRET_KEY);
+      req.userData = data;
+      next();
+    }
+  } catch (e) {
+    return res.status(401).json({
+      msg:"Auth failed not verified user",
+      err: e
+    });
   }
 
 }
 
-function isLogedIn(req, res, next){
-  if(req.isAuthenticated()){
-    req.isLogedIn = true;
-  }else{
-    req.isLogedIn = false;
-  }
-  next();
-}
-
-
-module.exports = {auth, isLogedIn};
+module.exports = {valToken}
