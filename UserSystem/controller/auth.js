@@ -8,9 +8,9 @@ exports.register = async (req, res) => {
 
   try {
 
-    const {firstName, lastName, email, password} = req.body;
+    const {firstName, lastName, email, password, role} = req.body;
 
-    if(!(firstName && lastName && email && password)){
+    if(!(firstName && lastName && email && password && role)){
       res.status(404).send("All fields are required");
     }
 
@@ -25,12 +25,13 @@ exports.register = async (req, res) => {
       firstName,
       lastName,
       email: email.toLowerCase(),
-      password: encPassword
+      password: encPassword,
+      role
     });
 
     //token
     const token = jwt.sign(
-      {user_id: user._id, email},
+      {user_id: user._id, email, userRole: user.role},
       process.env.SECRET_KEY,
       {
         expiresIn: "2h"
@@ -61,7 +62,7 @@ exports.login = async (req, res) => {
 
       //token
       const token = jwt.sign(
-        {user_id: user._id, email},
+        {user_id: user._id, email, user_role: user.role},
         process.env.SECRET_KEY,
         {
           expiresIn: "2h"

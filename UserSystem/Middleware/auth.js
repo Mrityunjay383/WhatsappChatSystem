@@ -27,6 +27,14 @@ const valToken = async (req, res, next) => {
 
 }
 
+const isAdmin = (req, res, next) => {
+  if(req.userData.user_role != "Admin"){
+    return res.status(403).send("Access Denied!! You are not an Admin");
+  }
+  return next();
+}
+
 module.exports = {
-  valToken
+  valToken,
+  isAdmin
 }

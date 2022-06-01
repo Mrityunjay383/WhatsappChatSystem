@@ -3,7 +3,9 @@ const router = express.Router();
 
 const controller = require('../controller/auth');//Requring Controllers
 
-router.post("/register", controller.register);
+const {valToken, isAdmin} = require("../middleware/auth");
+
+router.post("/register", valToken, isAdmin, controller.register);
 
 router.post("/login", controller.login);
 
