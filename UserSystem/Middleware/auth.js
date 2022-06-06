@@ -34,7 +34,15 @@ const isAdmin = (req, res, next) => {
   return next();
 }
 
+const isAdminOrManager = (req, res, next) => {
+  if(req.userData.user_role == "Admin" || req.userData.user_role == "Manager"){
+    return next();
+  }
+  return res.status(403).send("Access Denied!! You are not an Admin or Manager");
+}
+
 module.exports = {
   valToken,
-  isAdmin
+  isAdmin,
+  isAdminOrManager
 }

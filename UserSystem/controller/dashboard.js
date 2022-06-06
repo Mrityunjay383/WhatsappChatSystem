@@ -25,7 +25,7 @@ exports.agents = async (req, res) => {
 
 }
 
-exports.delAgent = async (req, res) => {
+exports.delUser = async (req, res) => {
 
   try {
 
@@ -36,6 +36,24 @@ exports.delAgent = async (req, res) => {
         data.password = undefined;
         res.status(201).json({DeletedAgent: data});
       }
+    }).clone();
+
+  } catch (e) {
+    console.log(e);
+  }
+
+}
+
+exports.managers = async (req, res) => {
+
+  try {
+
+    await User.find({
+      role: "Manager"
+    }, (err, foundManagers) => {
+      return res.status(200).json({
+        managers: foundManagers
+      });
     }).clone();
 
   } catch (e) {
