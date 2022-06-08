@@ -14,6 +14,11 @@ exports.agents = async (req, res) => {
     await User.find({
       role: "Agent"
     }, (err, foundAgents) => {
+
+      for(let agent of foundAgents){
+        agent.password = undefined;
+      }
+      
       return res.status(200).json({
         agents: foundAgents
       });
