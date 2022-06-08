@@ -14,35 +14,39 @@ exports.register = async (req, res) => {
       res.status(404).send("All fields are required");
     }
 
-    const existingUser = await User.findOne({ email });
-    if(existingUser){
-      res.status(401).send("User already exist");
-    }
-
-    const encPassword = await bcrypt.hash(password, 10);
-
-    const user = await User.create({
-      firstName,
-      lastName,
-      email: email.toLowerCase(),
-      password: encPassword,
-      role
-    });
-
-    //token
-    const token = jwt.sign(
-      {user_id: user._id, email, userRole: user.role},
-      process.env.SECRET_KEY,
-      {
-        expiresIn: "2h"
+    if(req.userData.user_role !== role){
+      const existingUser = await User.findOne({ email });
+      if(existingUser){
+        res.status(401).send("User already exist");
       }
-    );
 
-    user.token = token;
+      const encPassword = await bcrypt.hash(password, 10);
 
-    user.password = undefined;
+      const user = await User.create({
+        firstName,
+        lastName,
+        email: email.toLowerCase(),
+        password: encPassword,
+        role
+      });
 
-    res.status(201).json(user);
+      //token
+      const token = jwt.sign(
+        {user_id: user._id, email, userRole: user.role},
+        process.env.SECRET_KEY,
+        {
+          expiresIn: "2h"
+        }
+      );
+
+      user.token = token;
+
+      user.password = undefined;
+
+      return res.status(201).json(user);
+    }else{
+      res.status(403).send("Access Denide!! You can't add new a manager");
+    }
 
   } catch (e) {
     console.log(e);

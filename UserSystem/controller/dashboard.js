@@ -26,7 +26,7 @@ exports.agents = async (req, res) => {
 }
 
 exports.indiUser = async (req, res) => {
-  const {userId, userRole} = req.body;
+  const {userId, userRole} = req.body;//Getting Id and role from the body of the request
 
   try{
 
@@ -64,13 +64,32 @@ exports.managers = async (req, res) => {
 
 }
 
-exports.delUser = async (req, res) => {
+exports.delAgent = async (req, res) => {
 
   try {
 
     const agentID = req.body.agentID;
 
     await User.findByIdAndRemove(agentID, req.body, function(err, data) {
+      if (!err) {
+        data.password = undefined;
+        res.status(201).json({DeletedAgent: data});
+      }
+    }).clone();
+
+  } catch (e) {
+    console.log(e);
+  }
+
+}
+
+exports.delManager = async (req, res) => {
+
+  try {
+
+    const managerId = req.body.managerId;
+
+    await User.findByIdAndRemove(managerId, req.body, function(err, data) {
       if (!err) {
         data.password = undefined;
         res.status(201).json({DeletedAgent: data});
