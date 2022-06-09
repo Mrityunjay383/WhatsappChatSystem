@@ -4,7 +4,8 @@ function ManagerDb() {
     return (
         <div>
           <h1>Manager Dashboard</h1>
-          <a href="/agents">Agnets</a>
+          <a href="/agents">Agnets</a><br/>
+          <a href="/create_new_user">Create new User</a>
         </div>
     )
 }

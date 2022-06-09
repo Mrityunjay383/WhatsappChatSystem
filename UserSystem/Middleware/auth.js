@@ -15,7 +15,7 @@ const valToken = async (req, res, next) => {
     //If the token is comming from herder, it will contain a Bearer in the starting
     const token = authHeaderVal.replace("Bearer ", "");
 
-    const data = jwt.verify(token, process.env.SECRET_KEY); //verifing token with the secret key from the env file
+    const data = await jwt.verify(token, process.env.SECRET_KEY); //verifing token with the secret key from the env file
     req.userData = data;//Passing the user data of in the session
     next();//if get auth, passing to the controller
 

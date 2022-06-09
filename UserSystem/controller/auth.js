@@ -10,10 +10,9 @@ exports.register = async (req, res) => {
     const {firstName, lastName, email, password, role} = req.body;
 
     if(!(firstName && lastName && email && password && role)){
-      res.status(404).send("All fields are required");
+      res.status(422).send("All fields are required");
     }
-
-    if(req.userData.user_role !== role){
+    if(req.userData.role !== role){
       const existingUser = await User.findOne({ email });
       if(existingUser){
         res.status(401).send("User already exist");

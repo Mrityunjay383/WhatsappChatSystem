@@ -5900,6 +5900,13 @@
     "pkg-dir" "^4.2.0"
     "resolve-cwd" "^3.0.0"
 
+"import@^0.0.6":
+  "integrity" "sha512-QPhTdjy9J4wUzmWSG7APkSgMFuPGPw+iJTYUblcfc2AfpqaatbwgCldK1HoLYx+v/+lWvab63GWZtNkcnj9JcQ=="
+  "resolved" "https://registry.npmjs.org/import/-/import-0.0.6.tgz"
+  "version" "0.0.6"
+  dependencies:
+    "optimist" "0.3.x"
+
 "imurmurhash@^0.1.4":
   "integrity" "sha1-khi5srkoojixPcT7a21XbyMUU+o= sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA=="
   "resolved" "https://registry.npmjs.org/imurmurhash/-/imurmurhash-0.1.4.tgz"
@@ -7905,6 +7912,13 @@
   "version" "5.5.0"
   dependencies:
     "is-wsl" "^1.1.0"
+
+"optimist@0.3.x":
+  "integrity" "sha512-TCx0dXQzVtSCg2OgY/bO9hjM9cV4XYx09TVK+s3+FhkjT6LovsLe+pPMzpWf+6yXK/hUizs2gUoTw3jHM0VaTQ=="
+  "resolved" "https://registry.npmjs.org/optimist/-/optimist-0.3.7.tgz"
+  "version" "0.3.7"
+  dependencies:
+    "wordwrap" "~0.0.2"
 
 "optimize-css-assets-webpack-plugin@5.0.4":
   "integrity" "sha512-wqd6FdI2a5/FdoiCNNkEvLeA//lHHfG24Ln2Xm2qqdIk4aOlsR18jwpyOihqQ8849W3qu2DX8fOYxpvTMj+93A=="
@@ -11682,6 +11696,11 @@
   "integrity" "sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ=="
   "resolved" "https://registry.npmjs.org/word-wrap/-/word-wrap-1.2.3.tgz"
   "version" "1.2.3"
+
+"wordwrap@~0.0.2":
+  "integrity" "sha1-o9XabNXAvAAI03I0u68b7WMFkQc="
+  "resolved" "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
+  "version" "0.0.3"
 
 "workbox-background-sync@^5.1.4":
   "integrity" "sha512-AH6x5pYq4vwQvfRDWH+vfOePfPIYQ00nCEB7dJRU1e0n9+9HMRyvI63FlDvtFT2AvXVRsXvUt7DNMEToyJLpSA=="

@@ -6,6 +6,7 @@ import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import ChatPage from "./components/ChatPage";
 import Dashboard from "./components/Dashboard";
 import AllUsers from "./components/AllUsers";
+import CreateNewUser from "./components/CreateNewUser"
 
 import Login from "./components/Login";
 
@@ -27,7 +28,7 @@ function App() {
     });
   }
 
-  const changeLoginState = (user) => {
+  const changeLoginState = (user) => {//Function for changing the State after successFull Login
     setUserData(user);
     setIsLogedin(true);
   }
@@ -48,7 +49,7 @@ function App() {
 
             //agents Route have AllUsers with role agents
             <Route path="/agents" element={
-              userData.role === "Agent" ? (//Agents didnt have Access to allAgents page
+              userData.role === "Agent" ? ( //Agents didnt have Access to allAgents page
                 <h1>Access Denied!!</h1>
               ) : (
                 <AllUsers baseURL={baseUserSystemURL} role="agents" />
@@ -60,12 +61,25 @@ function App() {
               userData.role === "Agent" || userData.role === "Manager" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} requestedRole="managers"/>
+                <AllUsers baseURL={baseUserSystemURL} role="managers"/>
               )
+            } />
+
+            <Route path="/create_new_user" element={
+              userData.role === "Agent" ? (//Agents and Managers didnt have Access to allManagers page
+                <h1>Access Denied!!</h1>
+              ) : (
+                <CreateNewUser baseURL={baseUserSystemURL}/>
+              )
+            } />
+
+            <Route path="/chat" element={
+              <ChatPage />
             } />
 
           </Routes>
         ) : (
+          //if the token is not found, placing the Login component
           <Login baseURL={baseUserSystemURL} changeLogin={changeLoginState} />
         )}
       </div>
