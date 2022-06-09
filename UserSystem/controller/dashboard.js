@@ -18,7 +18,7 @@ exports.agents = async (req, res) => {
       for(let agent of foundAgents){
         agent.password = undefined;
       }
-      
+
       return res.status(200).json({
         agents: foundAgents
       });
@@ -73,14 +73,15 @@ exports.delAgent = async (req, res) => {
 
   try {
 
-    const agentID = req.body.agentID;
+    const agentID = req.body.userID;
 
-    await User.findByIdAndRemove(agentID, req.body, function(err, data) {
+
+    await User.findByIdAndRemove(agentID, function(err, data) {
       if (!err) {
         data.password = undefined;
-        res.status(201).json({DeletedAgent: data});
+        return res.status(200).json({DeletedAgent: data});
       }
-    }).clone();
+    });
 
   } catch (e) {
     console.log(e);
@@ -92,14 +93,14 @@ exports.delManager = async (req, res) => {
 
   try {
 
-    const managerId = req.body.managerId;
+    const managerId = req.body.userID;
 
-    await User.findByIdAndRemove(managerId, req.body, function(err, data) {
+    await User.findByIdAndRemove(managerId, function(err, data) {
       if (!err) {
         data.password = undefined;
-        res.status(201).json({DeletedAgent: data});
+        res.status(200).json({DeletedAgent: data});
       }
-    }).clone();
+    });
 
   } catch (e) {
     console.log(e);

@@ -12,6 +12,23 @@ function AllUsers({baseURL, role}) {
       });
     }
 
+    const delUser = async (userID) => {
+      let url;
+
+      if(role === "agents"){
+        url = `${baseURL}/del_agent`;
+      }else{
+        url = `${baseURL}/del_manager`;
+      }
+
+      await axios.post(url, {userID} , { validateStatus: false, withCredentials: true }).then((response) => {
+        console.log(response);
+        setusersList((list) => {
+          return list.filter((listEle) =>  listEle._id !== userID )
+        })
+      });
+    }
+
     useEffect(() => {
       getUsers();
     }, []);
@@ -21,6 +38,9 @@ function AllUsers({baseURL, role}) {
         <div className="auserCard">
           <h3>Name: {user.firstName} {user.lastName}</h3>
           <p>Username: {user.email}</p>
+          <button value={user._id} onClick={(e) => {
+            delUser(e.target.value);
+          }}>Remove</button>
           <hr/>
         </div>
       )

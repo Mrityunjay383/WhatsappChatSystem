@@ -6,6 +6,7 @@ function AdminDb({baseURL}) {
         <div>
           <h1>Admin Dashboard</h1>
           <a href="/agents">Agnets</a>
+          <a href="/managers">Managers</a>
         </div>
     )
 }
