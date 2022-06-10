@@ -4,9 +4,12 @@ import axios from "axios";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
 import ChatPage from "./components/ChatPage";
+import CustomerChat from "./components/CustomerChat";
 import Dashboard from "./components/Dashboard";
 import AllUsers from "./components/AllUsers";
-import CreateNewUser from "./components/CreateNewUser"
+import CreateNewUser from "./components/CreateNewUser";
+
+import {socket} from "./components/socket";
 
 import Login from "./components/Login";
 
@@ -69,12 +72,16 @@ function App() {
               userData.role === "Agent" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <CreateNewUser baseURL={baseUserSystemURL}/>
+                <CreateNewUser baseURL={baseUserSystemURL} userRole={userData.role}/>
               )
             } />
 
             <Route path="/chat" element={
-              <ChatPage />
+               <ChatPage socket={socket}/>
+            } />
+
+            <Route path="/customer_chat" element={
+               <CustomerChat socket={socket}/>
             } />
 
           </Routes>

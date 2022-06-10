@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
-function CreateNewUser({baseURL}) {
+function CreateNewUser({baseURL, userRole}) {
 
     const [newUserData, setNewUserData] = useState({
       firstName: "",
@@ -59,8 +59,12 @@ function CreateNewUser({baseURL}) {
               return {...currObj, role: e.target.value}
             });
           }}>
-            <option value="Agent">Agent</option>
-            <option value="Manager">Manager</option>
+            {userRole === "Admin" ? (
+              <option value="Manager">Manager</option>
+            ) : (
+              <option value="Agent">Agent</option>
+            )}
+
           </select>
 
           <button onClick={regNewUser}>Submit</button>

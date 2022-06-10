@@ -1,49 +1,74 @@
-import React, { useState } from "react";
-import io from "socket.io-client";
+import React, { useState, useEffect } from "react";
 import "./ChatPage.css";
-
+import axios from "axios";
 
 import Chat from "./Chat";
 
-const socket = io.connect("http://localhost:3001");
+const baseURL = "http://localhost:3001";
 
-function ChatPage() {
+function ChatPage({socket}) {
 
-    const [username, setUsername] = useState("");
-    const [room, setRoom] = useState("");
+    const [activeRooms, setActiveRooms] = useState([]);
+
     const [showChat, setShowChat] = useState(false);
+    const [toBeJoinedRoom, setToBeJoinedRoom] = useState("");
 
-    const joinRoom = () => {
-      if (username !== "" && room !== "") {
-        socket.emit("join_room", room);
+    const getRooms = async () => {
+      await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
+        setActiveRooms(response.data.rooms);
+        console.log(activeRooms);
+      });
+    }
+
+    const joinRoom = (room) => {
+      if (room !== "") {
+        socket.emit("join_room", `${room}`);
+        setToBeJoinedRoom(room);
         setShowChat(true);
       }
     };
 
+    const delRoom = () => {
+      console.log(toBeJoinedRoom);
+      axios.post(`${baseURL}/del_room`, {room: toBeJoinedRoom}, {validateStatus: false, withCredentials: true}).then((response) => {
+        if(response.status === 200 && response.data.success){
+          setToBeJoinedRoom("");
+          setShowChat(false);
+        }else{
+          console.log("Failed");
+        }
+      });
+    }
+
+    useEffect(() => {
+      getRooms();
+    }, [])
+
     return (
-        <div className="ChatCon">
-        {!showChat ? (
-          <div className="joinChatContainer">
-            <h3>Join A Chat</h3>
-            <input
-              type="text"
-              placeholder="John..."
-              onChange={(event) => {
-                setUsername(event.target.value);
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Room ID..."
-              onChange={(event) => {
-                setRoom(event.target.value);
-              }}
-            />
-            <button onClick={joinRoom}>Join A Room</button>
-          </div>
-        ) : (
-          <Chat socket={socket} username={username} room={room} />
-        )}
+        <div className="">
+          <h1>Customers Requests</h1>
+
+          {!showChat ? (
+            <div>
+              {activeRooms.map((room, index) => {
+                return (
+                  <div key={index}>
+                    {room}
+                    <button onClick={() => {
+                      joinRoom(room)
+                    }}>Join</button>
+                  </div>)
+              })}
+            </div>
+          ) : (
+            <div>
+              <Chat socket={socket} username="Agent" room={toBeJoinedRoom}/>
+              <button onClick={delRoom}>Disconnect</button>
+            </div>
+
+          )}
+
+
         </div>
     )
 }
