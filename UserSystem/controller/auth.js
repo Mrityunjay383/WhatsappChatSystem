@@ -30,7 +30,12 @@ exports.register = async (req, res) => {
 
       //token
       const token = jwt.sign(
-        {user_id: user._id, email, role: user.role},
+        {
+          user_id: user._id,
+          email,
+          role: user.role,
+          name: `${user.firstName} ${user.lastName}`
+        },
         process.env.SECRET_KEY,
         {
           expiresIn: "2h"
@@ -64,7 +69,12 @@ exports.login = async (req, res) => {
 
       //token
       const token = jwt.sign(
-        {user_id: user._id, email, role: user.role},
+        {
+          user_id: user._id,
+          email,
+          role: user.role,
+          name: `${user.firstName} ${user.lastName}`
+        },
         process.env.SECRET_KEY,
         {
           expiresIn: "2h"

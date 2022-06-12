@@ -4,19 +4,19 @@ import axios from "axios";
 
 import Chat from "./Chat";
 
-const baseURL = "http://localhost:3001";
+import {socket} from "../chatComponents/socket";
 
-function ChatPage({socket}) {
+
+function ChatPage({userData, baseURL}) {
 
     const [activeRooms, setActiveRooms] = useState([]);
 
-    const [showChat, setShowChat] = useState(false);
+    const [showChat, setShowChat] = useState(false);//State to show chat window when agent joins a room
     const [toBeJoinedRoom, setToBeJoinedRoom] = useState("");
 
     const getRooms = async () => {
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
         setActiveRooms(response.data.rooms);
-        console.log(activeRooms);
       });
     }
 
@@ -42,6 +42,10 @@ function ChatPage({socket}) {
 
     useEffect(() => {
       getRooms();
+    }, [])
+
+    useEffect(() => {
+      socket.emit("Agent", {email: userData.email, name: userData.name});
     }, [])
 
     return (

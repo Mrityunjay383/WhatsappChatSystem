@@ -32,8 +32,16 @@ const io = new Server(server, {
   },
 });
 
+let activeAgents = [];
+
 io.on("connection", (socket) => {
-  // console.log(`User Connected: ${socket.id}`);
+  console.log(`User Connected: ${socket.id}`);
+
+  socket.on("Agent", (data) => {
+    console.log(data.name);
+    //if the request is comming from an agent pussing it into the activeAgnets list
+    activeAgents.push({...data, id: socket.id});
+  })
 
   socket.on("join_room", (data) => {
     socket.join(data);
@@ -46,6 +54,10 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
+    //if a avtive agent got Disconnected removing it from the active agents list
+    activeAgents = activeAgents.filter((agent) => {
+      return agent.id !== socket.id
+    });
   });
 });
 
@@ -58,6 +70,10 @@ app.get("/active_rooms", async (req, res) => {
     const rooms = filtered.map(i => i[0]);
     res.json({rooms});
 })
+
+app.get("/active_agents", (req, res) => {
+  res.status(200).json({activeAgents});
+});
 
 app.post("/del_room", async (req, res) => {
 

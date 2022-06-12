@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 
 import Chat from "./Chat";
+import "./ChatPage.css";
+import {socket} from "./socket";
 
-function CustomerChat({socket}) {
+function CustomerChat() {
 
     const [username, setUsername] = useState("");
     const [showChat, setShowChat] = useState(false);
