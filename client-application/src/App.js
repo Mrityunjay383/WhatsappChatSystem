@@ -3,13 +3,13 @@ import "./App.css";
 import axios from "axios";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
-import ChatPage from "./components/ChatPage";
-import CustomerChat from "./components/CustomerChat";
+import ChatPage from "./components/chatComponents/ChatPage";
+import CustomerChat from "./components/chatComponents/CustomerChat";
 import Dashboard from "./components/Dashboard";
 import AllUsers from "./components/AllUsers";
 import CreateNewUser from "./components/CreateNewUser";
 
-import {socket} from "./components/socket";
+import {socket} from "./components/chatComponents/socket";
 
 import Login from "./components/Login";
 
