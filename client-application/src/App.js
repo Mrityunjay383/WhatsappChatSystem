@@ -11,7 +11,7 @@ import AdminDb from "./components/roleDashboards/AdminDb";
 import ManagerDb from "./components/roleDashboards/ManagerDb";
 import AgentDb from "./components/roleDashboards/AgentDb";
 
-import ManagerAsignPage from "./components/ManagerAsignPage";
+import ManagerAssignPage from "./components/ManagerAssignPage";
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
@@ -126,7 +126,7 @@ function App() {
 
             <Route path="/asign_agent" element={
               userData.role === "Manager" ? ( //Agents didnt have Access to allAgents page
-                <ManagerAsignPage baseURL={baseChatSystemURL} />
+                <ManagerAssignPage baseURL={baseChatSystemURL} userName={userData.name} />
               ) : (
                 <h1>Access Denied!!</h1>
               )

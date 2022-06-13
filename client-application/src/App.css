@@ -1,0 +1,6 @@
+.Chats{
+  margin: 10vh 0;
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
