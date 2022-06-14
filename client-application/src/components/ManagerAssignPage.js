@@ -14,7 +14,7 @@ function ManagerAsignPage({baseURL, userName}) {
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
 
-      axios.post(`${baseURL}/assign_agent`, {room, agent, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
+      await axios.post(`${baseURL}/assign_agent`, {room, agent, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
           e.target.innerText = "Assigned";
           setTimeout(() => {

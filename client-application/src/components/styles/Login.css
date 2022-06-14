@@ -1,0 +1,45 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.loginCon{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #CDF6E5;
+}
+.loginCon h1{
+  text-align: center;
+  color: #444;
+  font-size: 1.7rem;
+}
+.inpCon{
+  margin-top: 5vh;
+  height: 25vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  background: #fff;
+  padding: 20px 40px;
+  border-radius: 10px;
+  color: #444;
+  box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.2)
+
+}
+.inpCon button{
+  width: 50%;
+  background: #CDF6E5;
+  color: #444;
+  font-weight: bolder;
+  border: 0;
+  border-radius: 5px;
+  padding: 10px 10px;
+  cursor: pointer;
+}
+.inpCon button:hover{
+  box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.2)
+}

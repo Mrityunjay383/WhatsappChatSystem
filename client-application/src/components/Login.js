@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import axios from "axios";
+import "./styles/Login.css"
 
 
 function Login({baseURL, changeLogin}) {
@@ -19,15 +20,26 @@ function Login({baseURL, changeLogin}) {
     }
 
     return (
-        <div>
-          <h1>Login Page</h1>
-          <input type="email" placeholder="Enter Email" onChange={(e) => {
-            setEmail(e.target.value);
-          }}/>
-          <input type="password" placeholder="Choose Password" onChange={(e) => {
-            setPassword(e.target.value);
-          }}/>
-          <button onClick={login}>Login</button>
+        <div className= "loginCon">
+          <div>
+            <h1>Login to Dashboard</h1>
+            <div className="inpCon">
+            <div>
+              <label>Email:</label>
+              <input type="email" placeholder="Enter Email" onChange={(e) => {
+                setEmail(e.target.value);
+              }}/>
+            </div>
+            <div>
+              <label>Password:</label>
+              <input type="password" placeholder="Choose Password" onChange={(e) => {
+                setPassword(e.target.value);
+              }}/>
+            </div>
+            <button onClick={login}>Login</button>
+            </div>
+          </div>
+
         </div>
     );
 }
