@@ -25,7 +25,10 @@ function Chat({ socket, username, room }) {
 
   useEffect(() => {
     socket.on("receive_message", (data) => {
-      setMessageList((list) => [...list, data]);
+      console.log("In");
+      if(data.room === room){
+        setMessageList((list) => [...list, data]);
+      }
     });
   }, [socket]);
 

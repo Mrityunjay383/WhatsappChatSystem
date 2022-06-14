@@ -39,17 +39,18 @@ io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("Agent", (data) => {
-    //if the request is comming from an agent pussing it into the activeAgnets list
+    //if the request is comming from an agent passing it into the activeAgnets list
     activeAgents.push({...data, id: socket.id});
   })
 
   socket.on("join_room", (data) => {
+    io.sockets.emit("broadcast", data);
+
     socket.join(data);
 
     assignList = assignList.filter((i) => {
       return i.room !== data
     });
-
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
   });
 
@@ -72,6 +73,7 @@ app.get("/active_rooms", async (req, res) => {
 
     let filtered = arr.filter(room => !room[1].has(room[0]))
 
+    //checking if some agent is already in the room
     filtered = filtered.filter((i) => {
       return Array.from(i[1]).length === 1
     })

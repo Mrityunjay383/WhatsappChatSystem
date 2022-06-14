@@ -16,6 +16,8 @@ function ChatPage({userData, baseURL}) {
 
     //Getting all active rooms exist currently
     const getRooms = async () => {
+      console.log("Working");
+
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
         setActiveRooms(response.data.rooms);
       });
@@ -23,6 +25,7 @@ function ChatPage({userData, baseURL}) {
 
     //Getting all assigned rooms to this agent
     const getAssignedRooms = async () => {
+
       await axios.get(`${baseURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
         //Filtering assigned rooms for this perticular agent
         setAssignedRooms(() => {
@@ -33,9 +36,9 @@ function ChatPage({userData, baseURL}) {
       });
     }
 
-    const joinRoom = (room) => {
+    const joinRoom = async (room) => {
       if (room !== "") {
-        socket.emit("join_room", `${room}`);
+        await socket.emit("join_room", `${room}`);
         setCurrChats((curr) => {
           return [...curr, <Chat socket={socket} username="Agent" room={room}/>]
         })
@@ -58,7 +61,15 @@ function ChatPage({userData, baseURL}) {
     useEffect(() => {
       getRooms();
       getAssignedRooms();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+      socket.on("broadcast", (data) => {
+        console.log(data);
+        getRooms();
+        getAssignedRooms();
+      });
+    }, [socket])
 
     useEffect(() => {
       socket.emit("Agent", {email: userData.email, name: userData.name});
@@ -77,9 +88,8 @@ function ChatPage({userData, baseURL}) {
                   return (
                     <div key={index}>
                       {room.room}
-                      <button onClick={(e) => {
+                      <button onClick={() => {
                         joinRoom(room.room)
-                        e.target.innerText = "Joined"
                       }}>Join</button>
                       <span>Assigned by: {room.assignedBy}</span>
                     </div>
@@ -95,9 +105,8 @@ function ChatPage({userData, baseURL}) {
                   return (
                     <div key={index}>
                       {room}
-                      <button onClick={(e) => {
+                      <button onClick={() => {
                         joinRoom(room)
-                        e.target.innerText = "Joined"
                       }}>Join</button>
                     </div>)
                 })}
