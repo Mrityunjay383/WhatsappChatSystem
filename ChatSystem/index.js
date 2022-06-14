@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on("join_room", (data) => {
-    io.sockets.emit("broadcast", data);
+    io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
 
     socket.join(data);
 
@@ -57,6 +57,12 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
   });
+
+  socket.on("reassign", (data) => {
+    io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
+    socket.leave(data.room);
+    assignList.push({room: data.room, agent: data.agent, assignedBy: data.assignedBy});
+  })
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
