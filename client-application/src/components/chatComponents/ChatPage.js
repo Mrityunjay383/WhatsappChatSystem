@@ -65,6 +65,7 @@ function ChatPage({userData, baseURL}) {
 
     useEffect(() => {
       socket.on("broadcast", (data) => {
+        console.log(data);
         getRooms();
         getAssignedRooms();
       });

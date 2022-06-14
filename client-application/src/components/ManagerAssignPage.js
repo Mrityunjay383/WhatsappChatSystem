@@ -19,14 +19,15 @@ function ManagerAsignPage({baseURL, userName}) {
 
       await axios.post(`${baseURL}/assign_agent`, {room, agent, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
-          e.target.innerText = "Assigned";
-          setTimeout(() => {
-            setActiveRooms((curr) => {
-              return curr.filter((r) => {
-                return r !== room
-              })
-            })
-          }, 2000);
+          console.log("Assignment Done");
+          // e.target.innerText = "Assigned";
+          // setTimeout(() => {
+          //   setActiveRooms((curr) => {
+          //     return curr.filter((r) => {
+          //       return r !== room
+          //     })
+          //   })
+          // }, 2000);
         }else{
           console.log("Failed");
         }
