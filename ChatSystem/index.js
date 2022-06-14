@@ -103,6 +103,7 @@ app.post("/assign_agent", (req, res) => {
   const {room, agent, assignedBy} = req.body;
 
   assignList.push({room, agent, assignedBy});
+  io.sockets.emit("broadcast", {});
 
   res.status(200).send("Assigned");
 })

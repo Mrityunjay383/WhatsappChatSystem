@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import axios from "axios";
 
+import {socket} from "./chatComponents/socket";
+
+
 function ManagerAsignPage({baseURL, userName}) {
 
 
@@ -32,14 +35,12 @@ function ManagerAsignPage({baseURL, userName}) {
 
     const getRooms = async () => {
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
-        console.log(response.data.rooms);
         setActiveRooms(response.data.rooms);
       });
     }
 
     const getActiveAgents = async () => {
       await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then((response) => {
-        console.log(response.data.activeAgents);
         setActiveAgents(response.data.activeAgents);
       });
     }
@@ -47,7 +48,14 @@ function ManagerAsignPage({baseURL, userName}) {
     useEffect(() => {
       getRooms();
       getActiveAgents();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+      socket.on("broadcast", (data) => {
+        getRooms();
+        getActiveAgents();
+      });
+    }, [socket])
 
     return (
         <div>
