@@ -50,7 +50,7 @@ function ChatPage({userData, baseURL}) {
     const reassign = async (e, room) => {
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
-
+      e.target.parentElement.parentElement.remove();
       await socket.emit("reassign", {room, agent, assignedBy: userData.name});
     }
 
@@ -58,7 +58,7 @@ function ChatPage({userData, baseURL}) {
       if (room !== "") {
         await socket.emit("join_room", `${room}`);
         setCurrChats((curr) => {
-          return [...curr, <div>
+          return [...curr, <div className="chatCon">
               <Chat socket={socket} username="Agent" room={room}/>
               <div>
                 <select className="agentSelect">
