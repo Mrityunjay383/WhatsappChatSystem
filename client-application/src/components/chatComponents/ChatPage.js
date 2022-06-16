@@ -102,6 +102,7 @@ function ChatPage({userData, baseURL}) {
       socket.on("broadcast", (data) => {
         getRooms();
         getAssignedChats();
+        getActiveAgents();
       });
     }, [socket])
 
