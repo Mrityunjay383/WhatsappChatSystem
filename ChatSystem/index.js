@@ -66,6 +66,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
+    io.sockets.emit("broadcast", {});
     //if a avtive agent got Disconnected removing it from the active agents list
     activeAgents = activeAgents.filter((agent) => {
       return agent.id !== socket.id

@@ -16,8 +16,8 @@ function ChatPage({userData, baseURL}) {
     const [activeAgents, setActiveAgents] = useState([]);
 
     const getActiveAgents = async () => {
-      await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then((response) => {
-        setActiveAgents(() => {
+      await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
+        await setActiveAgents(() => {
           return response.data.activeAgents.filter((agent) => {
             return agent.email !== userData.email
           })
