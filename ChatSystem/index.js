@@ -119,26 +119,26 @@ app.get("/assigned", (req, res) => {
   res.status(200).json({assignList})
 });
 
-app.post("/del_room", async (req, res) => {
-
-  const {room} = req.body;
-
-  const arr = Array.from(io.sockets.adapter.rooms);
-
-  const filtered = arr.filter(room => !room[1].has(room[0]));
-  let clientsList = [];
-  for(i of filtered) {
-    if(i[0] === room){
-      clientsList = Array.from(i[1]);
-      break;
-    }
-  };
-
-  console.log(clientsList);
-  await clientsList.forEach(client => io.sockets.sockets[client].leave(room));
-
-  res.status(200).send("Room Deleted");
-});
+// app.post("/del_room", async (req, res) => {
+//
+//   const {room} = req.body;
+//
+//   const arr = Array.from(io.sockets.adapter.rooms);
+//
+//   const filtered = arr.filter(room => !room[1].has(room[0]));
+//   let clientsList = [];
+//   for(i of filtered) {
+//     if(i[0] === room){
+//       clientsList = Array.from(i[1]);
+//       break;
+//     }
+//   };
+//
+//   console.log(clientsList);
+//   await clientsList.forEach(client => io.sockets.sockets[client].leave(room));
+//
+//   res.status(200).send("Room Deleted");
+// });
 
 server.listen(3001, () => {
   console.log("SERVER RUNNING");

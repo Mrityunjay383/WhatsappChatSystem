@@ -7,8 +7,8 @@ function AgentDb() {
         <div className="rootCon">
           <Sidebar/>
           <div>
-          <h1>Agent Dashboard</h1>
-          <a href="/chat">Chat Requests</a>
+            <h1>Agent Dashboard</h1>
+
           </div>
         </div>
     )
