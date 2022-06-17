@@ -12,12 +12,12 @@ function ChatPage({userData, baseURL}) {
     const [activeRooms, setActiveRooms] = useState([]);//store all active romms exist
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
 
-    const [currChats, setCurrChats] = useState([]);
+    const [currJoinedChats, setCurrJoinedChats] = useState([]);
     const [activeAgents, setActiveAgents] = useState([]);
 
     const getActiveAgents = async () => {
       await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
-        await setActiveAgents(() => {
+        await setActiveAgents( () => {
           return response.data.activeAgents.filter((agent) => {
             return agent.email !== userData.email
           })
@@ -54,27 +54,27 @@ function ChatPage({userData, baseURL}) {
       await socket.emit("reassign", {room, agent, assignedBy: userData.name});
     }
 
+    const ReassignCom = ({room}) => {
+      return <div>
+        <select className="agentSelect">
+          {activeAgents.map((agent, index) => {
+              return (
+                <option value={agent.email}>{agent.name}</option>
+              )
+          })}
+        </select>
+        <button onClick={(e) => {
+          reassign(e, `${room}`);
+        }}>Reassign</button>
+      </div>
+    }
+
     const joinRoom = async (room) => {
+
       if (room !== "") {
         await socket.emit("join_room", `${room}`);
-        setCurrChats((curr) => {
-          return [...curr, <div className="chatCon">
-              <Chat socket={socket} username="Agent" room={room}/>
-              <div>
-                <select className="agentSelect">
-                  {activeAgents.map((agent, index) => {
-                      return (
-                        <option value={agent.email}>{agent.name}</option>
-                      )
-                  })}
-                </select>
-                <button onClick={(e) => {
-                  reassign(e, `${room}`);
-                }}>Reassign</button>
-              </div>
-
-
-            </div>]
+        setCurrJoinedChats((curr) => {
+          return [...curr, room]
         })
 
       }
@@ -93,6 +93,7 @@ function ChatPage({userData, baseURL}) {
     // }
 
     useEffect(() => {
+      socket.emit("Agent", {email: userData.email, name: userData.name});
       getRooms();
       getAssignedChats();
       getActiveAgents();
@@ -102,13 +103,10 @@ function ChatPage({userData, baseURL}) {
       socket.on("broadcast", (data) => {
         getRooms();
         getAssignedChats();
-        getActiveAgents();
+        // getActiveAgents();
+        setTimeout(getActiveAgents, 500);
       });
-    }, [socket])
-
-    useEffect(() => {
-      socket.emit("Agent", {email: userData.email, name: userData.name});
-    }, [])
+    }, [socket]);
 
     return (
         <div className="">
@@ -150,8 +148,11 @@ function ChatPage({userData, baseURL}) {
             </div>
 
             <div className="Chats">
-              {currChats.map((chat, index) => {
-                return chat
+              {currJoinedChats.map((room, index) => {
+                return <div>
+                  <Chat socket={socket} username="Agent" room={room}/>
+                  <ReassignCom room={room} />
+                </div>
               })}
             </div>
 

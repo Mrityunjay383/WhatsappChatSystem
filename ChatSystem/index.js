@@ -38,9 +38,9 @@ let assignList = [];//this will store if a agent gets assigned to chat with any 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  socket.on("Agent", (data) => {
+  socket.on("Agent", async (data) => {
     //if the request is comming from an agent passing it into the activeAgnets list
-    activeAgents.push({...data, id: socket.id});
+    await activeAgents.push({...data, id: socket.id});
   })
 
   socket.on("join_room", (data) => {
@@ -64,13 +64,15 @@ io.on("connection", (socket) => {
     assignList.push({room: data.room, agent: data.agent, assignedBy: data.assignedBy});
   })
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log("User Disconnected", socket.id);
     io.sockets.emit("broadcast", {});
     //if a avtive agent got Disconnected removing it from the active agents list
     activeAgents = activeAgents.filter((agent) => {
       return agent.id !== socket.id
     });
+
+    console.log("From disconnect", activeAgents);
   });
 });
 

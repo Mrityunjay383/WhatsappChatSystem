@@ -6,7 +6,7 @@ function AdminDb({baseURL}) {
 
     return (
         <div className="rootCon ">
-          <Sidebar/>
+          <Sidebar role = "Admin"/>
           <div>
             <h1>Admin Dashboard</h1>
           </div>

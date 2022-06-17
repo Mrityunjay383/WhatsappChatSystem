@@ -5,7 +5,7 @@ import Sidebar from "../uiComponent/Sidebar";
 function ManagerDb() {
     return (
         <div className="rootCon">
-          <Sidebar/>
+          <Sidebar role="Manager"/>
           <div>
             <h1>Manager Dashboard</h1>
 

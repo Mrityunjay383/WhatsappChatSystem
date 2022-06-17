@@ -54,7 +54,7 @@ function ManagerAsignPage({baseURL, userName}) {
     useEffect(() => {
       socket.on("broadcast", (data) => {
         getRooms();
-        getActiveAgents();
+        setTimeout(getActiveAgents, 500);
       });
     }, [socket])
 
