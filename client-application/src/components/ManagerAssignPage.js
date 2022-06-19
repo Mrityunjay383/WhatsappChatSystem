@@ -67,21 +67,24 @@ function ManagerAsignPage({baseURL, userName, setIsLogedin}) {
           <div className="dataCon">
             <TopCon userName={userName} page="Assign Agents"/>
 
-            {activeRooms.map((room, index) => {
-              return (
-                <div>
-                <span>{room}</span>
-                  <select className="agentSelect">
-                    {activeAgents.map((agent, index) => {
-                        return (
-                          <option value={agent.email}>{agent.name}</option>
-                        )
-                    })}
-                  </select>
-                  <button onClick={assign}>Asign</button>
-                </div>
-              )
-            })}
+            <div className="userCon">
+              {activeRooms.map((room, index) => {
+                return (
+                  <div className="userCard assignCard">
+                    <span className="roomTitle">{room}</span>
+                    <select className="agentSelect">
+                      {activeAgents.map((agent, index) => {
+                          return (
+                            <option value={agent.email}>{agent.name}</option>
+                          )
+                      })}
+                    </select>
+                    <button className="rmBtn assignBtn" onClick={assign}>Asign</button>
+                  </div>
+                )
+              })}
+            </div>
+
           </div>
 
         </div>

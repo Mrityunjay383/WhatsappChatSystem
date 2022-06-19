@@ -38,13 +38,12 @@ function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName}) {
 
     const UserCard = ({user}) => {
       return (
-        <div className="auserCard">
-          <h3>Name: {user.firstName} {user.lastName}</h3>
-          <p>Username: {user.email}</p>
-          <button value={user._id} onClick={(e) => {
+        <div className="userCard">
+          <h3>{user.firstName} {user.lastName}</h3>
+          <p>{user.email}</p>
+          <button className="rmBtn" value={user._id} onClick={(e) => {
             delUser(e.target.value);
           }}>Remove</button>
-          <hr/>
         </div>
       )
     }

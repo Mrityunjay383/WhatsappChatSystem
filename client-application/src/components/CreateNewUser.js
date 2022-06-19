@@ -37,46 +37,62 @@ function CreateNewUser({baseURL, userRole, userName, setIsLogedin}) {
           <div className="dataCon">
             <TopCon userName={userName} page="Create New User" />
 
-            <div>
+            <div className="regForm">
 
-            <input type="text" placeholder="First Name" onChange={(e) => {
-              setNewUserData((currObj) => {
-                return {...currObj, firstName: e.target.value}
-              });
-            }}/>
+              <div className="form-group">
+                <label>First Name:</label>
+                <input type="text" className="form-control" placeholder="Enter First name" onChange={(e) => {
+                  setNewUserData((currObj) => {
+                    return {...currObj, firstName: e.target.value}
+                  });
+                }}/>
+              </div>
 
-            <input type="text" placeholder="Last Name" onChange={(e) => {
-              setNewUserData((currObj) => {
-                return {...currObj, lastName: e.target.value}
-              });
-            }}/>
+              <div className="form-group">
+                <label>Last Name:</label>
+                <input type="text" className="form-control" placeholder="Enter Last name" onChange={(e) => {
+                  setNewUserData((currObj) => {
+                    return {...currObj, lastName: e.target.value}
+                  });
+                }}/>
+              </div>
 
-            <input type="email" placeholder="Email" onChange={(e) => {
-              setNewUserData((currObj) => {
-                return {...currObj, email: e.target.value}
-              });
-            }}/>
+              <div className="form-group">
+                <label>Email:</label>
+                <input type="email" className="form-control" placeholder="Enter email" onChange={(e) => {
+                  setNewUserData((currObj) => {
+                    return {...currObj, email: e.target.value}
+                  });
+                }}/>
+              </div>
 
-            <input type="password" placeholder="Password" onChange={(e) => {
-              setNewUserData((currObj) => {
-                return {...currObj, password: e.target.value}
-              });
-            }}/>
+              <div className="form-group">
+                <label>Password:</label>
+                <input type="password" className="form-control" placeholder="Enter password" onChange={(e) => {
+                  setNewUserData((currObj) => {
+                    return {...currObj, password: e.target.value}
+                  });
+                }}/>
+              </div>
 
-            <select onChange={(e) => {
-              setNewUserData((currObj) => {
-                return {...currObj, role: e.target.value}
-              });
-            }}>
-              {userRole === "Admin" ? (
-                <option value="Manager">Manager</option>
-              ) : (
-                <option value="Agent">Agent</option>
-              )}
+              <div>
+                <label>Role: </label>
+                <select class="form-select form-select-sm roleSelect" onChange={(e) => {
+                  setNewUserData((currObj) => {
+                    return {...currObj, role: e.target.value}
+                  });
+                }}>
+                  {userRole === "Admin" ? (
+                    <option value="Manager">Manager</option>
+                  ) : (
+                    <option value="Agent">Agent</option>
+                  )}
 
-            </select>
+                </select>
+              </div>
 
-            <button onClick={regNewUser}>Submit</button>
+
+              <button className="joinbtn subBtn" onClick={regNewUser}>Submit</button>
 
             </div>
           </div>

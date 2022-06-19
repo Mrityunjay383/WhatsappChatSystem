@@ -1,26 +1,147 @@
-body{
+body {
   color: #333;
 }
-.Chats{
+
+.Chats {
   margin: 10vh 0;
   display: flex;
   width: 100%;
   justify-content: space-around;
 }
-.rootCon{
+
+.rootCon {
   display: flex;
 }
-.dataCon{
+
+.dataCon {
   padding: 3vh 25px;
   width: 100vw;
 }
-.topCon{
+
+.topCon {
   display: flex;
   width: 100%;
   justify-content: space-between;
   margin-bottom: 7vh;
 }
-.pageHead{
+
+.pageHead {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.activeChatsCon{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.activeChatsCon h3{
+  text-align: center;
+  min-width: 30vw;
+  color: #555;
+  padding: 8px 0;
+  font-size: 1.6rem;
+  border-radius: 8px 8px 0 0;
+  background: #CDF6E5;
+  margin-bottom: 0;
+}
+
+.chatList{
+  border-bottom: 1px solid #777;
+  border-left: 1px solid #777;
+  border-right: 1px solid #777;
+  border-radius: 0 0 8px 8px;
+  padding: 10px 20px;
+}
+
+.chatList div{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.joinbtn{
+  background: #CDF6E5;
+  color: #777;
+  border: 0;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition-duration: 0.3s;
+}
+.joinbtn:hover{
+  box-shadow: 1px 1px 3px 3px rgba(0, 0, 0, 0.2)
+}
+
+.userCon{
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.userCard{
+  min-width: 25vw;
+  padding: 15px 0;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: space-around;
+  align-items: center;
+  margin: 2vh 0 8vh;
+  min-height: 25vh;
+  border-radius: 10px;
+  box-shadow: 3px 3px 8px 5px rgba(0, 0, 0, 0.2)
+}
+.rmBtn{
+  width: 30%;
+  background: #DB5251;
+  color: #fff;
+  font-weight: bolder;
+  border: 0;
+  border-radius: 5px;
+  padding: 3px;
+  cursor: pointer;
+  transition-duration: 0.8s;
+}
+.rmBtn:hover{
+  background: #fff;
+  border: 1px solid #DB5251;
+  color: #DB5251;
+}
+
+.assignBtn{
+  background: #CDF6E5;
+  color: #666;
+}
+.assignBtn:hover{
+  background: #fff;
+  border: 2px solid #CDF6E5;
+  color: #999;
+}
+
+.regForm{
+  width: 30vw;
+  margin: auto;
+  color: #444;
+}
+.roleSelect{
+  margin-left: 15px;
+  margin-top: 10px;
+  text-align: center;
+  padding: 3px 0;
+  width: 89%;
+}
+
+.subBtn{
+  margin-top: 30px;
+  min-width: 30vw;
+  font-weight: bolder;
+}
+.assignCard{
+  height: 30vh;
+}
+.roomTitle{
+  font-size: 1.8rem;
+  font-weight: bolder;
+  color: #555;
 }

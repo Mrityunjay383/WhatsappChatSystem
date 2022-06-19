@@ -121,39 +121,43 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
           <div className="dataCon">
             <TopCon userName={userData.name} page="Chat Requests"/>
 
-              <div>
-
+              <div className="activeChatsCon">
                 <div>
-                  <h3>Assigned Chat:</h3>
+                  <h3>Assigned Chats</h3>
 
-                  {assignedChats.map((chat, index) => {
-                    return (
-                      <div key={index}>
-                        {chat.room}
-                        <button onClick={() => {
-                          joinRoom(chat.room);
-                        }}>Join</button>
-                        <span>Assigned by: {chat.assignedBy}</span>
-                      </div>
-                    )
-                  })}
+                  <div className="chatList">
+                    {assignedChats.map((chat, index) => {
+                      return (
+                        <div key={index}>
+                          <span>{chat.room}</span>
+                          <span>{chat.assignedBy}</span>
+                          <button className="joinbtn" onClick={() => {
+                            joinRoom(chat.room);
+                          }}>Join</button>
+                        </div>
+                      )
+                    })}
+                  </div>
+
                 </div>
 
 
                 <div>
-                  <h3>Available Chat:</h3>
+                  <h3>Available Chats</h3>
 
-                  {activeRooms.map((room, index) => {
-                    return (
-                      <div key={index}>
-                        {room}
-                        <button onClick={() => {
-                          joinRoom(room)
-                        }}>Join</button>
-                      </div>)
-                  })}
+                  <div className="chatList">
+                    {activeRooms.map((room, index) => {
+                      return (
+                        <div key={index}>
+                          {room}
+                          <button className="joinbtn" onClick={() => {
+                            joinRoom(room)
+                          }}>Join</button>
+                        </div>)
+                    })}
+                  </div>
+
                 </div>
-
               </div>
 
               <div className="Chats">
