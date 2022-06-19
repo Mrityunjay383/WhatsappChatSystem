@@ -70,11 +70,11 @@ function App() {
   //Rendring dashboard based on the role of the user
   const Dashboard = ({role}) => {
     if(role === "Admin"){
-      return <AdminDb baseURL={baseUserSystemURL}/>
+      return <AdminDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} />
     }else if(role === "Manager"){
-      return <ManagerDb />
+      return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} />
     }else if(role === "Agent"){
-      return <AgentDb />
+      return <AgentDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} />
     }else{
       return <CustomerChatRender />
     }
@@ -112,7 +112,7 @@ function App() {
               userData.role === "Agent" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <CreateNewUser baseURL={baseUserSystemURL} userRole={userData.role}/>
+                <CreateNewUser baseURL={baseUserSystemURL} userRole={userData.role} setIsLogedin={setIsLogedin}/>
               )
             } />
 

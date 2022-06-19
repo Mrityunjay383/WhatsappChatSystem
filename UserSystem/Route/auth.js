@@ -9,4 +9,6 @@ router.post("/register", valToken, isAdminOrManager, controller.register);
 
 router.post("/login", controller.login);
 
+router.get("/logout", controller.logout);
+
 module.exports = router

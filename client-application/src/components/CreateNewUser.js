@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
-function CreateNewUser({baseURL, userRole}) {
+import Sidebar from "./uiComponent/Sidebar";
+
+
+function CreateNewUser({baseURL, userRole, setIsLogedin}) {
 
     const [newUserData, setNewUserData] = useState({
       firstName: "",
@@ -25,51 +28,57 @@ function CreateNewUser({baseURL, userRole}) {
 
 
     return (
-        <div>
-          <h1>Create a New User</h1>
+        <div  className="rootCon ">
+
+          <Sidebar role = "Admin" baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser"/>
 
           <div>
+            <h1>Create a New User</h1>
 
-          <input type="text" placeholder="First Name" onChange={(e) => {
-            setNewUserData((currObj) => {
-              return {...currObj, firstName: e.target.value}
-            });
-          }}/>
+            <div>
 
-          <input type="text" placeholder="Last Name" onChange={(e) => {
-            setNewUserData((currObj) => {
-              return {...currObj, lastName: e.target.value}
-            });
-          }}/>
+            <input type="text" placeholder="First Name" onChange={(e) => {
+              setNewUserData((currObj) => {
+                return {...currObj, firstName: e.target.value}
+              });
+            }}/>
 
-          <input type="email" placeholder="Email" onChange={(e) => {
-            setNewUserData((currObj) => {
-              return {...currObj, email: e.target.value}
-            });
-          }}/>
+            <input type="text" placeholder="Last Name" onChange={(e) => {
+              setNewUserData((currObj) => {
+                return {...currObj, lastName: e.target.value}
+              });
+            }}/>
 
-          <input type="password" placeholder="Password" onChange={(e) => {
-            setNewUserData((currObj) => {
-              return {...currObj, password: e.target.value}
-            });
-          }}/>
+            <input type="email" placeholder="Email" onChange={(e) => {
+              setNewUserData((currObj) => {
+                return {...currObj, email: e.target.value}
+              });
+            }}/>
 
-          <select onChange={(e) => {
-            setNewUserData((currObj) => {
-              return {...currObj, role: e.target.value}
-            });
-          }}>
-            {userRole === "Admin" ? (
-              <option value="Manager">Manager</option>
-            ) : (
-              <option value="Agent">Agent</option>
-            )}
+            <input type="password" placeholder="Password" onChange={(e) => {
+              setNewUserData((currObj) => {
+                return {...currObj, password: e.target.value}
+              });
+            }}/>
 
-          </select>
+            <select onChange={(e) => {
+              setNewUserData((currObj) => {
+                return {...currObj, role: e.target.value}
+              });
+            }}>
+              {userRole === "Admin" ? (
+                <option value="Manager">Manager</option>
+              ) : (
+                <option value="Agent">Agent</option>
+              )}
 
-          <button onClick={regNewUser}>Submit</button>
+            </select>
 
+            <button onClick={regNewUser}>Submit</button>
+
+            </div>
           </div>
+
         </div>
     )
 }

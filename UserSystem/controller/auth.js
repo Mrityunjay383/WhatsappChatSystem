@@ -104,3 +104,8 @@ exports.login = async (req, res) => {
   }
 
 }
+
+exports.logout = (req, res) => {
+  console.log("Logout");
+  res.clearCookie('token').send("Done");
+}

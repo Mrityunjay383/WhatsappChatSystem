@@ -2,10 +2,10 @@ import React from 'react'
 
 import Sidebar from "../uiComponent/Sidebar";
 
-function ManagerDb() {
+function ManagerDb({baseURL, setIsLogedin}) {
     return (
         <div className="rootCon">
-          <Sidebar role="Manager"/>
+          <Sidebar role="Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} />
           <div>
             <h1>Manager Dashboard</h1>
 

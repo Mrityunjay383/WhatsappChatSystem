@@ -20,26 +20,30 @@ function Login({baseURL, changeLogin}) {
     }
 
     return (
-        <div className= "loginCon">
-          <div>
-            <h1>Login to Dashboard</h1>
-            <div className="inpCon">
-            <div>
-              <label>Email:</label>
-              <input type="email" placeholder="Enter Email" onChange={(e) => {
+        <div className= "loginPage">
+          <div className="loginCon">
+
+            <div className="loginHead">
+              <h1>Login to Dashboard</h1>
+              <p>Enter your email and password below</p>
+            </div>
+
+
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email</label>
+              <input type="email" class="form-control" placeholder="Enter email" onChange={(e) => {
                 setEmail(e.target.value);
               }}/>
             </div>
-            <div>
-              <label>Password:</label>
-              <input type="password" placeholder="Choose Password" onChange={(e) => {
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" placeholder="Enter password" onChange={(e) => {
                 setPassword(e.target.value);
               }}/>
             </div>
-            <button onClick={login}>Login</button>
-            </div>
-          </div>
+            <button type="submit" class="colorBtn" onClick={login}>Login</button>
 
+          </div>
         </div>
     );
 }

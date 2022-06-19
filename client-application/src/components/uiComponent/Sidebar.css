@@ -1,6 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre&display=swap');
+
+
 .sidebar{
   background: #CDF6E5;
   height: 100vh;
   width: 15vw;
-  padding: 4vh 20px;
+  padding: 4vh 0;
+  font-family: 'Averia Sans Libre', cursive;
+}
+.sidebar h1{
+  font-size: 1.7rem;
+  font-weight: 700;
+  padding-left: 20px;
+}
+
+.links{
+  margin: 7vh 0 5vh;
+}
+.links a{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 5px 0;
+  padding-left: 20px;
+  text-decoration: none;
+}
+
+.links a:hover, .active{
+  background: #fff;
+}
+
+.links span{
+  margin-left: 10px;
+  color: #555;
 }
