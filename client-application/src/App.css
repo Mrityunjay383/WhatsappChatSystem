@@ -1,3 +1,6 @@
+body{
+  color: #333;
+}
 .Chats{
   margin: 10vh 0;
   display: flex;
@@ -6,4 +9,18 @@
 }
 .rootCon{
   display: flex;
+}
+.dataCon{
+  padding: 3vh 25px;
+  width: 100vw;
+}
+.topCon{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 7vh;
+}
+.pageHead{
+  font-size: 1.5rem;
+  font-weight: 700;
 }

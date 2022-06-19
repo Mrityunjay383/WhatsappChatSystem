@@ -68,7 +68,7 @@ function Sidebar({role, baseURL, setIsLogedin, page}) {
           </a>
 
           <a href="/chat" className={page === "chat" ? "active" : "nonActive"}>
-            <OverviewIcon />
+            <NewUserIcon />
             <span>Chat</span>
           </a>
         </div>;

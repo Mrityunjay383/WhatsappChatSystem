@@ -70,11 +70,11 @@ function App() {
   //Rendring dashboard based on the role of the user
   const Dashboard = ({role}) => {
     if(role === "Admin"){
-      return <AdminDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} />
+      return <AdminDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
     }else if(role === "Manager"){
-      return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} />
+      return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
     }else if(role === "Agent"){
-      return <AgentDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} />
+      return <AgentDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
     }else{
       return <CustomerChatRender />
     }
@@ -95,7 +95,7 @@ function App() {
               userData.role === "Agent" ? ( //Agents didnt have Access to allAgents page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} userRole={userData.role}  getRole="agents" setIsLogedin={setIsLogedin} />
+                <AllUsers baseURL={baseUserSystemURL} userRole={userData.role} userName={userData.name}  getRole="agents" setIsLogedin={setIsLogedin} />
               )
             } />
 
@@ -104,7 +104,7 @@ function App() {
               userData.role === "Agent" || userData.role === "Manager" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} role="managers" setIsLogedin={setIsLogedin} />
+                <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} />
               )
             } />
 
@@ -112,7 +112,7 @@ function App() {
               userData.role === "Agent" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <CreateNewUser baseURL={baseUserSystemURL} userRole={userData.role} setIsLogedin={setIsLogedin}/>
+                <CreateNewUser baseURL={baseUserSystemURL} userRole={userData.role} userName={userData.name} setIsLogedin={setIsLogedin}/>
               )
             } />
 

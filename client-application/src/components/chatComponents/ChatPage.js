@@ -4,6 +4,8 @@ import axios from "axios";
 
 import Chat from "./Chat";
 import Sidebar from "../uiComponent/Sidebar";
+import TopCon from "../uiComponent/TopCon";
+
 
 
 import {socket} from "../chatComponents/socket";
@@ -116,8 +118,8 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
         <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" />
 
 
-          <div>
-            <h1>Customers Requests</h1>
+          <div className="dataCon">
+            <TopCon userName={userData.name} page="Chat Requests"/>
 
               <div>
 

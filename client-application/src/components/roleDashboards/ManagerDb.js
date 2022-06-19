@@ -1,14 +1,15 @@
 import React from 'react'
 
 import Sidebar from "../uiComponent/Sidebar";
+import TopCon from "../uiComponent/TopCon";
 
-function ManagerDb({baseURL, setIsLogedin}) {
+
+function ManagerDb({baseURL, setIsLogedin, userName}) {
     return (
         <div className="rootCon">
           <Sidebar role="Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="overview" />
-          <div>
-            <h1>Manager Dashboard</h1>
-
+          <div className="dataCon">
+            <TopCon userName={userName} page="Overview"/>
           </div>
         </div>
     )

@@ -2,10 +2,11 @@ import React, {useState, useEffect} from 'react'
 import axios from "axios";
 
 import Sidebar from "./uiComponent/Sidebar";
+import TopCon from "./uiComponent/TopCon";
 
 
-function AllUsers({baseURL, getRole, setIsLogedin, userRole}) {
-    console.log(userRole);
+function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName}) {
+    console.log(getRole, userRole);
     const [usersList, setusersList] = useState([]);
 
     const getUsers = async () => {
@@ -51,8 +52,9 @@ function AllUsers({baseURL, getRole, setIsLogedin, userRole}) {
     return (
         <div className="rootCon">
             <Sidebar role = {userRole} baseURL={baseURL} setIsLogedin={setIsLogedin} page={getRole}/>
-            <div>
-              <h1>{getRole} Page</h1>
+            <div className="dataCon">
+              <TopCon userName={userName} page={getRole === "agents" ? "Agents" : "Managers"} />
+
               <div className="userCon">
                 {usersList.map((user, index) => {
                   return <UserCard key={index} user={user} />

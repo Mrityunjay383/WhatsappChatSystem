@@ -3,7 +3,7 @@ import axios from "axios";
 
 import {socket} from "./chatComponents/socket";
 import Sidebar from "./uiComponent/Sidebar";
-
+import TopCon from "./uiComponent/TopCon";
 
 
 function ManagerAsignPage({baseURL, userName, setIsLogedin}) {
@@ -64,8 +64,8 @@ function ManagerAsignPage({baseURL, userName, setIsLogedin}) {
         <div className="rootCon">
         <Sidebar role = "Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="assignAgents"/>
 
-          <div>
-            <h1>Assign Agents</h1>
+          <div className="dataCon">
+            <TopCon userName={userName} page="Assign Agents"/>
 
             {activeRooms.map((room, index) => {
               return (

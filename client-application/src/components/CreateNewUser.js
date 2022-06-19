@@ -2,9 +2,11 @@ import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
 import Sidebar from "./uiComponent/Sidebar";
+import TopCon from "./uiComponent/TopCon";
 
 
-function CreateNewUser({baseURL, userRole, setIsLogedin}) {
+
+function CreateNewUser({baseURL, userRole, userName, setIsLogedin}) {
 
     const [newUserData, setNewUserData] = useState({
       firstName: "",
@@ -32,8 +34,8 @@ function CreateNewUser({baseURL, userRole, setIsLogedin}) {
 
           <Sidebar role = {userRole} baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser"/>
 
-          <div>
-            <h1>Create a New User</h1>
+          <div className="dataCon">
+            <TopCon userName={userName} page="Create New User" />
 
             <div>
 
