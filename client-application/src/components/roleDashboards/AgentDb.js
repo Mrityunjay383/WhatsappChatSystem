@@ -5,7 +5,7 @@ import Sidebar from "../uiComponent/Sidebar";
 function AgentDb({baseURL, setIsLogedin}) {
     return (
         <div className="rootCon">
-          <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} />
+          <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} page="overview" />
           <div>
             <h1>Agent Dashboard</h1>
 

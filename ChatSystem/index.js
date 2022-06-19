@@ -71,8 +71,6 @@ io.on("connection", (socket) => {
     activeAgents = activeAgents.filter((agent) => {
       return agent.id !== socket.id
     });
-
-    console.log("From disconnect", activeAgents);
   });
 });
 

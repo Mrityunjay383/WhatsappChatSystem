@@ -30,7 +30,7 @@ function App() {
     return (
       <>
         <React.Suspense fallback={<></>}>
-          {(userData.role === "Agent") && <ChatPage baseURL={baseChatSystemURL} userData={userData}/>}
+          {(userData.role === "Agent") && <ChatPage baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />}
         </React.Suspense>
       </>
     )
@@ -95,7 +95,7 @@ function App() {
               userData.role === "Agent" ? ( //Agents didnt have Access to allAgents page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} role="agents" />
+                <AllUsers baseURL={baseUserSystemURL} userRole={userData.role}  getRole="agents" setIsLogedin={setIsLogedin} />
               )
             } />
 
@@ -104,7 +104,7 @@ function App() {
               userData.role === "Agent" || userData.role === "Manager" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} role="managers"/>
+                <AllUsers baseURL={baseUserSystemURL} role="managers" setIsLogedin={setIsLogedin} />
               )
             } />
 
@@ -126,7 +126,7 @@ function App() {
 
             <Route path="/asign_agent" element={
               userData.role === "Manager" ? ( //Agents didnt have Access to allAgents page
-                <ManagerAssignPage baseURL={baseChatSystemURL} userName={userData.name} />
+                <ManagerAssignPage baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin}/>
               ) : (
                 <h1>Access Denied!!</h1>
               )

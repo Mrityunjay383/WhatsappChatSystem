@@ -29,20 +29,19 @@ function Login({baseURL, changeLogin}) {
             </div>
 
 
-            <div class="form-group">
-              <label for="exampleInputEmail1">Email</label>
-              <input type="email" class="form-control" placeholder="Enter email" onChange={(e) => {
+            <div className="form-group">
+              <label htmlFor="exampleInputEmail1">Email</label>
+              <input type="email" className="form-control" placeholder="Enter email" onChange={(e) => {
                 setEmail(e.target.value);
               }}/>
             </div>
-            <div class="form-group">
-              <label for="exampleInputPassword1">Password</label>
-              <input type="password" class="form-control" placeholder="Enter password" onChange={(e) => {
+            <div className="form-group">
+              <label htmlFor="exampleInputPassword1">Password</label>
+              <input type="password" className="form-control" placeholder="Enter password" onChange={(e) => {
                 setPassword(e.target.value);
               }}/>
             </div>
-            <button type="submit" class="colorBtn" onClick={login}>Login</button>
-
+            <button type="submit" className="colorBtn" onClick={login}>Login</button>
           </div>
         </div>
     );

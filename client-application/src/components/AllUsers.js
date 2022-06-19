@@ -1,21 +1,23 @@
 import React, {useState, useEffect} from 'react'
 import axios from "axios";
 
+import Sidebar from "./uiComponent/Sidebar";
 
-function AllUsers({baseURL, role}) {
 
+function AllUsers({baseURL, getRole, setIsLogedin, userRole}) {
+    console.log(userRole);
     const [usersList, setusersList] = useState([]);
 
     const getUsers = async () => {
-      await axios.get(`${baseURL}/${role}`, { validateStatus: false, withCredentials: true }).then((response) => {
-        setusersList(response.data[`${role}`]);
+      await axios.get(`${baseURL}/${getRole}`, { validateStatus: false, withCredentials: true }).then((response) => {
+        setusersList(response.data[`${getRole}`]);
       });
     }
 
     const delUser = async (userID) => {
       let url;
 
-      if(role === "agents"){
+      if(getRole === "agents"){
         url = `${baseURL}/del_agent`;
       }else{
         url = `${baseURL}/del_manager`;
@@ -47,13 +49,17 @@ function AllUsers({baseURL, role}) {
     }
 
     return (
-        <div>
-            <h1>{role} Page</h1>
-            <div className="userCon">
-              {usersList.map((user, index) => {
-                return <UserCard key={index} user={user} />
-              })}
+        <div className="rootCon">
+            <Sidebar role = {userRole} baseURL={baseURL} setIsLogedin={setIsLogedin} page={getRole}/>
+            <div>
+              <h1>{getRole} Page</h1>
+              <div className="userCon">
+                {usersList.map((user, index) => {
+                  return <UserCard key={index} user={user} />
+                })}
+              </div>
             </div>
+
         </div>
     )
 }

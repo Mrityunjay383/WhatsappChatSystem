@@ -30,7 +30,7 @@ function CreateNewUser({baseURL, userRole, setIsLogedin}) {
     return (
         <div  className="rootCon ">
 
-          <Sidebar role = "Admin" baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser"/>
+          <Sidebar role = {userRole} baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser"/>
 
           <div>
             <h1>Create a New User</h1>

@@ -2,9 +2,11 @@ import React, {useState, useEffect} from 'react'
 import axios from "axios";
 
 import {socket} from "./chatComponents/socket";
+import Sidebar from "./uiComponent/Sidebar";
 
 
-function ManagerAsignPage({baseURL, userName}) {
+
+function ManagerAsignPage({baseURL, userName, setIsLogedin}) {
 
 
     const [activeRooms, setActiveRooms] = useState([]);
@@ -59,24 +61,29 @@ function ManagerAsignPage({baseURL, userName}) {
     }, [socket])
 
     return (
-        <div>
-          <h1>Assign Agents</h1>
+        <div className="rootCon">
+        <Sidebar role = "Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="assignAgents"/>
 
-          {activeRooms.map((room, index) => {
-            return (
-              <div>
-              <span>{room}</span>
-                <select className="agentSelect">
-                  {activeAgents.map((agent, index) => {
-                      return (
-                        <option value={agent.email}>{agent.name}</option>
-                      )
-                  })}
-                </select>
-                <button onClick={assign}>Asign</button>
-              </div>
-            )
-          })}
+          <div>
+            <h1>Assign Agents</h1>
+
+            {activeRooms.map((room, index) => {
+              return (
+                <div>
+                <span>{room}</span>
+                  <select className="agentSelect">
+                    {activeAgents.map((agent, index) => {
+                        return (
+                          <option value={agent.email}>{agent.name}</option>
+                        )
+                    })}
+                  </select>
+                  <button onClick={assign}>Asign</button>
+                </div>
+              )
+            })}
+          </div>
+
         </div>
       )
 }

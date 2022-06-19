@@ -3,11 +3,13 @@ import "./ChatPage.css";
 import axios from "axios";
 
 import Chat from "./Chat";
+import Sidebar from "../uiComponent/Sidebar";
+
 
 import {socket} from "../chatComponents/socket";
 
 
-function ChatPage({userData, baseURL}) {
+function ChatPage({userData, baseURL, setIsLogedin}) {
 
     const [activeRooms, setActiveRooms] = useState([]);//store all active romms exist
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
@@ -109,52 +111,58 @@ function ChatPage({userData, baseURL}) {
     }, [socket]);
 
     return (
-        <div className="">
-          <h1>Customers Requests</h1>
+        <div className="rootCon">
 
-            <div>
+        <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" />
 
-              <div>
-                <h3>Assigned Chat:</h3>
 
-                {assignedChats.map((chat, index) => {
-                  return (
-                    <div key={index}>
-                      {chat.room}
-                      <button onClick={() => {
-                        joinRoom(chat.room);
-                      }}>Join</button>
-                      <span>Assigned by: {chat.assignedBy}</span>
-                    </div>
-                  )
-                })}
-              </div>
-
+          <div>
+            <h1>Customers Requests</h1>
 
               <div>
-                <h3>Available Chat:</h3>
 
-                {activeRooms.map((room, index) => {
-                  return (
-                    <div key={index}>
-                      {room}
-                      <button onClick={() => {
-                        joinRoom(room)
-                      }}>Join</button>
-                    </div>)
-                })}
-              </div>
+                <div>
+                  <h3>Assigned Chat:</h3>
 
-            </div>
-
-            <div className="Chats">
-              {currJoinedChats.map((room, index) => {
-                return <div>
-                  <Chat socket={socket} username="Agent" room={room}/>
-                  <ReassignCom room={room} />
+                  {assignedChats.map((chat, index) => {
+                    return (
+                      <div key={index}>
+                        {chat.room}
+                        <button onClick={() => {
+                          joinRoom(chat.room);
+                        }}>Join</button>
+                        <span>Assigned by: {chat.assignedBy}</span>
+                      </div>
+                    )
+                  })}
                 </div>
-              })}
-            </div>
+
+
+                <div>
+                  <h3>Available Chat:</h3>
+
+                  {activeRooms.map((room, index) => {
+                    return (
+                      <div key={index}>
+                        {room}
+                        <button onClick={() => {
+                          joinRoom(room)
+                        }}>Join</button>
+                      </div>)
+                  })}
+                </div>
+
+              </div>
+
+              <div className="Chats">
+                {currJoinedChats.map((room, index) => {
+                  return <div>
+                    <Chat socket={socket} username="Agent" room={room}/>
+                    <ReassignCom room={room} />
+                  </div>
+                })}
+              </div>
+          </div>
 
         </div>
     )
