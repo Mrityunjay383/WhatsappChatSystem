@@ -15,9 +15,13 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
     const [activeRooms, setActiveRooms] = useState([]);//store all active romms exist
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
+    const [activeAgents, setActiveAgents] = useState([]);
 
     const [currJoinedChats, setCurrJoinedChats] = useState([]);
-    const [activeAgents, setActiveAgents] = useState([]);
+    const [currActiveChat, setCurrActiveChat] = useState({
+      room: "",
+      messageList: []
+    });
 
     const getActiveAgents = async () => {
       await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
@@ -78,7 +82,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       if (room !== "") {
         await socket.emit("join_room", `${room}`);
         setCurrJoinedChats((curr) => {
-          return [...curr, room]
+          return [...curr, {room, messageList: []}]
         })
 
       }
@@ -107,7 +111,6 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       socket.on("broadcast", (data) => {
         getRooms();
         getAssignedChats();
-        // getActiveAgents();
         setTimeout(getActiveAgents, 500);
       });
     }, [socket]);
@@ -161,12 +164,21 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
               </div>
 
               <div className="Chats">
-                {currJoinedChats.map((room, index) => {
-                  return <div>
-                    <Chat socket={socket} username="Agent" room={room}/>
-                    <ReassignCom room={room} />
-                  </div>
-                })}
+                <div className="chatsListCon">
+                  {currJoinedChats.map((room, index) => {
+                    return <div className="chatsList">{room}</div>
+                  })}
+                </div>
+
+                <div className="chatsCon">
+                    <div className="chatCon">
+                      <div className="chatTopCon">
+                        <span>{currActiveChat.room}</span>
+                        <ReassignCom room={currActiveChat.room} />
+                      </div>
+                      <Chat socket={socket} username="Agent" room={currActiveChat.room} messageList={currActiveChat.messageList} setCurrActiveChat={setCurrActiveChat}/>
+                    </div>
+                </div>
               </div>
           </div>
 
