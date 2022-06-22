@@ -76,24 +76,22 @@ body {
 
 .userCon{
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 .userCard{
   min-width: 25vw;
-  padding: 15px 0;
+  padding: 15px 30px;
   display: flex;
-  flex-direction: column;
   text-align: center;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  margin: 2vh 0 8vh;
-  min-height: 25vh;
+  margin: 2vh 0 5vh;
+  min-height: 15vh;
   border-radius: 10px;
   box-shadow: 3px 3px 8px 5px rgba(0, 0, 0, 0.2)
 }
 .rmBtn{
-  width: 30%;
+  width: 10%;
   background: #DB5251;
   color: #fff;
   font-weight: bolder;
