@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-import Chat from "./Chat";
+import CustomerChatCom from "./CustomerChatCom";
 import "./ChatPage.css";
 import {socket} from "./socket";
 
@@ -28,7 +28,7 @@ function CustomerChat() {
               <button onClick={joinRoom}>New Request</button>
             </div>
             ) : (
-              <Chat socket={socket} username={username} room={username}/>
+              <CustomerChatCom socket={socket} username={username} room={username}/>
             )}
         </div>
     )

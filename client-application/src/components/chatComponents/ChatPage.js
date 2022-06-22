@@ -84,8 +84,14 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
         setCurrJoinedChats((curr) => {
           return [...curr, {room, messageList: []}]
         })
-
+        if(currActiveChat.room === ""){
+          setCurrActiveChat({
+            room: room,
+            messageList: []
+          })
+        }
       }
+      console.log(currJoinedChats);
     };
 
     // const delRoom = () => {
@@ -99,6 +105,29 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     //     }
     //   });
     // }
+
+    const changeChat = async (room) => {
+
+      await currJoinedChats.forEach((chat, index) => {
+        if(chat.room = currActiveChat.room){
+          setCurrJoinedChats((curr) => {
+            curr.splice(index, 1);
+            return [...curr, currActiveChat]
+          })
+        }
+      })
+
+      console.log(currJoinedChats);
+
+      await currJoinedChats.forEach((chat) => {
+
+        console.log(chat, room);
+        if(chat.room = room){
+          setCurrActiveChat(chat);
+        }
+      });
+      console.log(currJoinedChats);
+    }
 
     useEffect(() => {
       socket.emit("Agent", {email: userData.email, name: userData.name});
@@ -165,12 +194,15 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
               <div className="Chats">
                 <div className="chatsListCon">
-                  {currJoinedChats.map((room, index) => {
-                    return <div className="chatsList">{room}</div>
+                  {currJoinedChats.map((chat, index) => {
+                    return <div onClick={() => {
+                      changeChat(chat.room);
+                    }} key={index} className="chatsList">{chat.room}</div>
                   })}
                 </div>
 
                 <div className="chatsCon">
+                  {currActiveChat.room !== "" ? (
                     <div className="chatCon">
                       <div className="chatTopCon">
                         <span>{currActiveChat.room}</span>
@@ -178,6 +210,10 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
                       </div>
                       <Chat socket={socket} username="Agent" room={currActiveChat.room} messageList={currActiveChat.messageList} setCurrActiveChat={setCurrActiveChat}/>
                     </div>
+                  ) : (
+                    <></>
+                  )}
+
                 </div>
               </div>
           </div>
