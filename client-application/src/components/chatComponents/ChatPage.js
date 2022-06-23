@@ -91,7 +91,6 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
           })
         }
       }
-      console.log(currJoinedChats);
     };
 
     // const delRoom = () => {
@@ -108,14 +107,16 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
     const changeChat = async (room) => {
 
-      await currJoinedChats.forEach((chat, index) => {
-        if(chat.room = currActiveChat.room){
+      for(let i = 0; i < currJoinedChats.length; i++){
+        if(currJoinedChats[i].room = currActiveChat.room){
+          console.log(currJoinedChats[i]);
           setCurrJoinedChats((curr) => {
-            curr.splice(index, 1);
+            curr.splice(i, 1);
             return [...curr, currActiveChat]
           })
+          break;
         }
-      })
+      }
 
       console.log(currJoinedChats);
 
@@ -137,6 +138,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     }, []);
 
     useEffect(() => {
+      //broadcast is used for dynamiclly updating if there is any change in socket
       socket.on("broadcast", (data) => {
         getRooms();
         getAssignedChats();
