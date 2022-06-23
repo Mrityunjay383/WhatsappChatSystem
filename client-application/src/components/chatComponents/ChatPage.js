@@ -58,9 +58,28 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     const reassign = async (e, room) => {
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
-      e.target.parentElement.parentElement.remove();
+      // e.target.parentElement.parentElement.parentElement.remove();
       await socket.emit("reassign", {room, agent, assignedBy: userData.name});
+
+      currJoinedChats.forEach((chat, index) => {
+        if(chat.room === room){
+          setCurrJoinedChats((curr) => {
+            console.log(curr.splice(index, 1));
+            return [...curr]
+          })
+        }
+      })
+
+      if(currJoinedChats.length > 0){
+        setCurrActiveChat(currJoinedChats[0]);
+      }else{
+        setCurrActiveChat({
+          room: "",
+          messageList: []
+        });
+      }
     }
+
 
     const ReassignCom = ({room}) => {
       return <div>
@@ -111,7 +130,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
         if(currJoinedChats[i].room = currActiveChat.room){
           console.log(currJoinedChats[i]);
           setCurrJoinedChats((curr) => {
-            curr.splice(i, 1);
+            console.log(curr.splice(i, 1));
             return [...curr, currActiveChat]
           })
           break;
