@@ -29,17 +29,18 @@ function Chat({ socket, username, currActiveChat, setCurrActiveChat }) {
   useEffect(() => {
 
     socket.once("receive_message", (data) => {
-      // console.log("In ", currActiveChat.room, data);
-      if(data.room === currActiveChat.room){
+      console.log("In ", currActiveChat.room, data);
+      if(data.room === currActiveChat.room ){
         setCurrActiveChat((chat) => {
             return {...chat, messageList: [...chat.messageList, data]}
         });
       }
     });
 
-    return socket.off('receive_message', () => {
-      console.log("Working");
-    });
+
+    return () => {
+      socket.removeListener('receive_message');
+    }
 
   }, [socket, currActiveChat.room]);
 
