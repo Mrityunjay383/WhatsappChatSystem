@@ -127,9 +127,9 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     const changeChat = async (room) => {
 
       for(let i = 0; i < currJoinedChats.length; i++){
-        if(currJoinedChats[i].room = currActiveChat.room){
-          console.log(currJoinedChats[i]);
-          setCurrJoinedChats((curr) => {
+        if(currJoinedChats[i].room === currActiveChat.room){
+
+          await setCurrJoinedChats((curr) => {
             console.log(curr.splice(i, 1));
             return [...curr, currActiveChat]
           })
@@ -137,16 +137,12 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
         }
       }
 
-      console.log(currJoinedChats);
 
       await currJoinedChats.forEach((chat) => {
-
-        console.log(chat, room);
-        if(chat.room = room){
+        if(chat.room === room){
           setCurrActiveChat(chat);
         }
       });
-      console.log(currJoinedChats);
     }
 
     useEffect(() => {
