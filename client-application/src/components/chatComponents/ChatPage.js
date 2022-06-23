@@ -85,7 +85,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
         <select className="agentSelect">
           {activeAgents.map((agent, index) => {
               return (
-                <option value={agent.email}>{agent.name}</option>
+                <option key={index} value={agent.email}>{agent.name}</option>
               )
           })}
         </select>
@@ -144,6 +144,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
           });
         }
       });
+
     }
 
     useEffect(() => {

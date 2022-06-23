@@ -18,6 +18,7 @@ function Chat({ socket, username, currActiveChat, setCurrActiveChat }) {
       };
 
       await socket.emit("send_message", messageData);
+      console.log("Out ", currActiveChat.room, messageData);
       setCurrActiveChat((chat) => {
           return {...chat, messageList: [...chat.messageList, messageData]}
       });
@@ -26,13 +27,21 @@ function Chat({ socket, username, currActiveChat, setCurrActiveChat }) {
   };
 
   useEffect(() => {
-    socket.on("receive_message", (data) => {
-      
-      setCurrActiveChat((chat) => {
-          return {...chat, messageList: [...chat.messageList, data]}
-      });
+
+    socket.once("receive_message", (data) => {
+      // console.log("In ", currActiveChat.room, data);
+      if(data.room === currActiveChat.room){
+        setCurrActiveChat((chat) => {
+            return {...chat, messageList: [...chat.messageList, data]}
+        });
+      }
     });
-  }, [socket]);
+
+    return socket.off('receive_message', () => {
+      console.log("Working");
+    });
+
+  }, [socket, currActiveChat.room]);
 
   return (
     <div className="chat-window">
