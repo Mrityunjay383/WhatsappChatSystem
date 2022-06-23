@@ -7,7 +7,6 @@ import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 
-
 import {socket} from "../chatComponents/socket";
 
 
@@ -130,8 +129,8 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
         if(currJoinedChats[i].room === currActiveChat.room){
 
           await setCurrJoinedChats((curr) => {
-            console.log(curr.splice(i, 1));
-            return [...curr, currActiveChat]
+            curr.splice(i, 1, currActiveChat);
+            return [...curr]
           })
           break;
         }
@@ -140,7 +139,9 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
       await currJoinedChats.forEach((chat) => {
         if(chat.room === room){
-          setCurrActiveChat(chat);
+          setCurrActiveChat((curr) => {
+            return {...curr, room: chat.room, messageList: chat.messageList}
+          });
         }
       });
     }
@@ -225,7 +226,13 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
                         <span>{currActiveChat.room}</span>
                         <ReassignCom room={currActiveChat.room} />
                       </div>
-                      <Chat socket={socket} username="Agent" room={currActiveChat.room} messageList={currActiveChat.messageList} setCurrActiveChat={setCurrActiveChat}/>
+                      <Chat
+                        socket={socket}
+                        username="Agent"
+                        currActiveChat={currActiveChat}
+                        setCurrActiveChat={setCurrActiveChat}
+                        setCurrJoinedChat={setCurrJoinedChats}
+                      />
                     </div>
                   ) : (
                     <></>
