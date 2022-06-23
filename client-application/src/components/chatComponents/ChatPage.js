@@ -232,6 +232,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
                         username="Agent"
                         currActiveChat={currActiveChat}
                         setCurrActiveChat={setCurrActiveChat}
+                        currJoinedChats={currJoinedChats}
                         setCurrJoinedChat={setCurrJoinedChats}
                       />
                     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
 
-function Chat({ socket, username, currActiveChat, setCurrActiveChat }) {
+function Chat({ socket, username, currActiveChat, currJoinedChats, setCurrActiveChat, setCurrJoinedChat }) {
   const [currentMessage, setCurrentMessage] = useState("");
 
   const sendMessage = async () => {
@@ -29,11 +29,21 @@ function Chat({ socket, username, currActiveChat, setCurrActiveChat }) {
   useEffect(() => {
 
     socket.once("receive_message", (data) => {
-      console.log("In ", currActiveChat.room, data);
-      if(data.room === currActiveChat.room ){
+
+
+      if(data.room === currActiveChat.room){
         setCurrActiveChat((chat) => {
             return {...chat, messageList: [...chat.messageList, data]}
         });
+      }else{
+        currJoinedChats.forEach((chat, index) => {
+          if(chat.room === data.room){
+            setCurrJoinedChat((curr) => {
+              curr[index].messageList = [...curr[index].messageList, data];
+              return [...curr];
+            })
+          }
+        })
       }
     });
 
