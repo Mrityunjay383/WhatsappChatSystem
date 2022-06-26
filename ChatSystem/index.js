@@ -11,6 +11,8 @@ const { URLSearchParams } = require('url');
 
 const PORT = process.env.PORT || 3001
 
+const activeSocketRooms = require("./helpers/activeSocketRooms");
+
 //middleware using cors with options
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -44,6 +46,11 @@ const io = new Server(server, {
   },
 });
 
+app.use(function(req, res, next) {
+  req.io = io;
+  next();
+});
+
 let activeChats = [];//store all the current active chats
 let activeAgents = [];//store all the active agents in a perticular time
 let assignList = [];//store if a agent gets assigned to chat with any specific customer
@@ -62,6 +69,21 @@ io.on("connection", (socket) => {
 
     socket.join(data);
 
+    //Getting message sent before agent joined the room
+    for(i = 0; i < activeChats.length; i++){
+      if(activeChats[i].room === data){
+        var joinedObj = {
+          messages: activeChats[i].messages,
+          room: data,
+          phoneNo: activeChats[i].phoneNo
+        };
+        activeChats.splice(i, 1);
+        break;
+      }
+    }
+    socket.emit("room_joined", joinedObj)
+
+
     //if an agent joined the room assigned room, removing it from assignList
     assignList = assignList.filter((i) => {
       return i.room !== data
@@ -72,16 +94,48 @@ io.on("connection", (socket) => {
   });
 
   //listener when a new message will be send from client side
-  socket.on("send_message", (data) => {
-    //sending the message to the perticular room
-    socket.to(data.room).emit("receive_message", data);
+  socket.on("send_message", (messageData) => {
+
+    //sending the message to the perticular destination for which it belong
+    const encodedParams = new URLSearchParams();
+    encodedParams.set('message', `{"text": "${messageData.message}","type":"text"}`);
+    encodedParams.set('channel', 'whatsapp');
+    encodedParams.set('source', '917834811114');
+    encodedParams.set('destination', messageData.phoneNo);
+    encodedParams.set('src.name', 'cberotaryuptown');
+    encodedParams.set('disablePreview', 'false');
+
+    const options = {
+      method: 'POST',
+      url: 'https://api.gupshup.io/sm/api/v1/msg',
+      headers: {
+        Accept: 'application/json',
+        apikey: process.env.GUPSHUP_API_KEY,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: encodedParams,
+    };
+
+    axios.request(options).then(function (response) {
+      console.log(response);
+    }).catch(function (error) {
+      console.error(error);
+    });
+
   });
 
   //listener for reassigning the chat to another agent
   socket.on("reassign", (data) => {
     io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
-    socket.leave(data.room);
     assignList.push({room: data.room, agent: data.agent, assignedBy: data.assignedBy});
+
+    activeChats.push({
+      room: data.room,
+      messages: [],
+      phoneNo: data.phoneNo
+    })
+
+    socket.leave(data.room);
   })
 
   socket.on("disconnect", async () => {
@@ -101,23 +155,47 @@ app.post("/hook", async (req, res) => {
   //Checking the request is an incoming message form whatsapp
   if(type === 'message'){
 
-    //Checking if this chat already in the activeChats
-    for(let i=0; i<activeChats.length; i++){
-      if(activeChats[i].room === payload.sender.name){
-        activeChats[i].messages.push(payload.payload.text);
-        io.sockets.emit("broadcast", {});
-        return res.status(200).end();
+    //Checking if an agent is alreday joined the room
+    const roomsWhichHaveAgent = await activeSocketRooms(req);
+
+    const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
+
+    //If an agent is in the room
+    if(roomIndex !== -1){
+      const messageData = {
+        room: payload.sender.name,
+        author: payload.sender.name,
+        message: payload.payload.text,
+        time:
+          new Date(Date.now()).getHours() +
+          ":" +
+          new Date(Date.now()).getMinutes(),
+      };
+
+      await io.to(payload.sender.name).emit("receive_message", messageData);
+
+    }else{
+
+      // Checking if this chat already in the activeChats
+      for(let i=0; i<activeChats.length; i++){
+        if(activeChats[i].room === payload.sender.name){
+          activeChats[i].messages.push(payload.payload.text);
+          return res.status(200).end();
+        }
       }
+
+      //if chat didn't exist then creating a new one
+      activeChats.push({
+        room: payload.sender.name,
+        messages: [payload.payload.text],
+        phoneNo: payload.sender.phone
+      })
+      io.sockets.emit("broadcast", {});
+
     }
 
-    //if chat didn't exist then creating a new one
-    activeChats.push({
-      room: payload.sender.name,
-      messages: [payload.payload.text]
-    })
-    io.sockets.emit("broadcast", {});
-    return res.status(200).end();
   }
+  return res.status(200).end();
 })
 
 app.post("/send_message", (req, res) => {
@@ -153,34 +231,22 @@ app.post("/send_message", (req, res) => {
 //route for getting all the active rooms exist
 app.get("/active_rooms", async (req, res) => {
 
-    // const arr = Array.from(io.sockets.adapter.rooms);//getting map of current active rooms from socket
-    //
-    // let filtered = arr.filter(room => !room[1].has(room[0]))
-    //
-    // //checking if some agent is already in the room
-    // filtered = filtered.filter((i) => {
-    //   return Array.from(i[1]).length === 1
-    // })
-    //
-
-
-    // storing room names in rooms array
-    const rooms = activeChats.map(i => i.room);
+    // storing active chat names in chats array
+    const chats = activeChats.map(i => i.room);
 
     //checking if the room didnt already exist in the assignList
     for(i = 0; i < assignList.length; i++){
 
-      const roomIndex = rooms.indexOf(assignList[i].room)
+      const roomIndex = chats.indexOf(assignList[i].room)
       if(roomIndex !== -1){
         //if room exist in both arrays, this will remove that room from rooms array
-        rooms.splice(roomIndex, 1);
+        chats.splice(roomIndex, 1);
       }else{
         //if room didnt exist in both arrays, this will remove that room from assignList array
         assignList.splice(i, 1);
       }
     }
-
-    res.json({rooms});
+    res.json({rooms: chats});
 })
 
 app.get("/active_agents", (req, res) => {

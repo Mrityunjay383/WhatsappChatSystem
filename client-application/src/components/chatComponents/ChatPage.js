@@ -19,6 +19,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     const [currJoinedChats, setCurrJoinedChats] = useState([]);
     const [currActiveChat, setCurrActiveChat] = useState({
       room: "",
+      phoneNo: "",
       messageList: []
     });
 
@@ -58,7 +59,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
       // e.target.parentElement.parentElement.parentElement.remove();
-      await socket.emit("reassign", {room, agent, assignedBy: userData.name});
+      await socket.emit("reassign", {room, agent, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
 
       currJoinedChats.forEach((chat, index) => {
         if(chat.room === room){
@@ -99,15 +100,6 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
       if (room !== "") {
         await socket.emit("join_room", `${room}`);
-        setCurrJoinedChats((curr) => {
-          return [...curr, {room, messageList: []}]
-        })
-        if(currActiveChat.room === ""){
-          setCurrActiveChat({
-            room: room,
-            messageList: []
-          })
-        }
       }
     };
 
@@ -140,7 +132,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       await currJoinedChats.forEach((chat) => {
         if(chat.room === room){
           setCurrActiveChat((curr) => {
-            return {...curr, room: chat.room, messageList: chat.messageList}
+            return {...curr, room: chat.room, phoneNo: chat.phoneNo, messageList: chat.messageList}
           });
         }
       });
@@ -159,8 +151,44 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       socket.on("broadcast", (data) => {
         getRooms();
         getAssignedChats();
-        setTimeout(getActiveAgents, 500);
+        setTimeout(() => {
+          getActiveAgents();
+          getAssignedChats();
+        }, 500);
       });
+
+      //Populating message sent before agent joined room
+      socket.on("room_joined", (data) => {
+
+        const messageList = [];
+        data.messages.forEach((message, index) => {
+
+          const messageData = {
+            room: data.room,
+            author: data.room,
+            message: message,
+            time:
+              new Date(Date.now()).getHours() +
+              ":" +
+              new Date(Date.now()).getMinutes(),
+          };
+
+          messageList.push(messageData);
+        })
+
+        setCurrJoinedChats((curr) => {
+          return [...curr, {room: data.room, phoneNo: data.phoneNo, messageList}]
+        })
+        if(currActiveChat.room === ""){
+          setCurrActiveChat({
+            room: data.room,
+            phoneNo: data.phoneNo,
+            messageList
+          })
+        }
+
+      })
+
     }, [socket]);
 
     return (
