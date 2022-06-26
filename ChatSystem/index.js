@@ -1,9 +1,11 @@
-const express = require("express");
+const express = require("express");//For creating server
 const app = express();
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser')//for reading json from form data
 const http = require("http");
-const cors = require("cors");
-const { Server } = require("socket.io");
+const cors = require("cors");//for enabling api requuest from external source
+const { Server } = require("socket.io");//framework to use web sockets
+
+//middleware using cors with options
 app.use(cors({
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200,
@@ -11,6 +13,7 @@ app.use(cors({
   }
 ));
 
+//Defining headers for cors
 app.use(function(req, res, next) {
   res.header('Content-Type', 'application/json;charset=UTF-8')
   res.header('Access-Control-Allow-Credentials', true)
@@ -21,10 +24,13 @@ app.use(function(req, res, next) {
   next()
 });
 
+//middleware using bodyParser
 app.use(bodyParser.json());
 
+//creating http server for uing it for socket.io
 const server = http.createServer(app);
 
+//creating a new socket server
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -32,8 +38,8 @@ const io = new Server(server, {
   },
 });
 
-let activeAgents = [];//this will store all the active agents in a perticular time
-let assignList = [];//this will store if a agent gets assigned to chat with any specific customer
+let activeAgents = [];//store all the active agents in a perticular time
+let assignList = [];//store if a agent gets assigned to chat with any specific customer
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -43,21 +49,27 @@ io.on("connection", (socket) => {
     await activeAgents.push({...data, id: socket.id});
   })
 
+  //adding the user in the Socket room
   socket.on("join_room", (data) => {
     io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
 
     socket.join(data);
 
+    //if an agent joined the room assigned room, removing it from assignList
     assignList = assignList.filter((i) => {
       return i.room !== data
     });
+
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
   });
 
+  //listener when a new message will be send from client side
   socket.on("send_message", (data) => {
+    //sending the message to the perticular room
     socket.to(data.room).emit("receive_message", data);
   });
 
+  //listener for reassigning the chat to another agent
   socket.on("reassign", (data) => {
     io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
     socket.leave(data.room);
@@ -74,9 +86,10 @@ io.on("connection", (socket) => {
   });
 });
 
+//route for getting all the active rooms exist
 app.get("/active_rooms", async (req, res) => {
 
-    const arr = Array.from(io.sockets.adapter.rooms);
+    const arr = Array.from(io.sockets.adapter.rooms);//getting map of current active rooms from socket
 
     let filtered = arr.filter(room => !room[1].has(room[0]))
 
@@ -85,8 +98,10 @@ app.get("/active_rooms", async (req, res) => {
       return Array.from(i[1]).length === 1
     })
 
+    //storing room names in rooms array
     const rooms = filtered.map(i => i[0]);
 
+    //checking if the room didnt already exist in the assignList
     for(i = 0; i < assignList.length; i++){
 
       const roomIndex = rooms.indexOf(assignList[i].room)
@@ -106,6 +121,7 @@ app.get("/active_agents", (req, res) => {
   res.status(200).json({activeAgents});
 });
 
+//assign agent route used by manager to assign chats to different agents
 app.post("/assign_agent", (req, res) => {
   const {room, agent, assignedBy} = req.body;
 
@@ -115,6 +131,7 @@ app.post("/assign_agent", (req, res) => {
   res.status(200).send("Assigned");
 })
 
+//route to get all the chats which are assigned by the manager
 app.get("/assigned", (req, res) => {
   res.status(200).json({assignList})
 });
