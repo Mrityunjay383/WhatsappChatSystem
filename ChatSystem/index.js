@@ -1,9 +1,15 @@
+require("dotenv").config();//for using environment variables
 const express = require("express");//For creating server
 const app = express();
 var bodyParser = require('body-parser')//for reading json from form data
 const http = require("http");
 const cors = require("cors");//for enabling api requuest from external source
 const { Server } = require("socket.io");//framework to use web sockets
+
+const axios = require("axios").default;
+const { URLSearchParams } = require('url');
+
+const PORT = process.env.PORT || 3001
 
 //middleware using cors with options
 app.use(cors({
@@ -60,6 +66,7 @@ io.on("connection", (socket) => {
       return i.room !== data
     });
 
+
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
   });
 
@@ -85,6 +92,42 @@ io.on("connection", (socket) => {
     });
   });
 });
+
+app.post("/hook", (req, res) => {
+  console.log(req.body);
+  joinRoom(req.body.sender.name);
+  res.status(200).end();
+})
+
+app.post("/send_message", (req, res) => {
+
+  const {destination, message} = req.body;
+
+  const encodedParams = new URLSearchParams();
+  encodedParams.set('message', `{"text": "${message}","type":"text"}`);
+  encodedParams.set('channel', 'whatsapp');
+  encodedParams.set('source', '917834811114');
+  encodedParams.set('destination', destination);
+  encodedParams.set('src.name', 'cberotaryuptown');
+  encodedParams.set('disablePreview', 'false');
+
+  const options = {
+    method: 'POST',
+    url: 'https://api.gupshup.io/sm/api/v1/msg',
+    headers: {
+      Accept: 'application/json',
+      apikey: process.env.GUPSHUP_API_KEY,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: encodedParams,
+  };
+
+  axios.request(options).then(function (response) {
+    res.status(200).json({data: response.data});
+  }).catch(function (error) {
+    console.error(error);
+  });
+})
 
 //route for getting all the active rooms exist
 app.get("/active_rooms", async (req, res) => {
@@ -157,6 +200,6 @@ app.get("/assigned", (req, res) => {
 //   res.status(200).send("Room Deleted");
 // });
 
-server.listen(3001, () => {
-  console.log("SERVER RUNNING");
+server.listen(PORT, () => {
+  console.log(`SERVER RUNNING ON PORT ${PORT}`);
 });
