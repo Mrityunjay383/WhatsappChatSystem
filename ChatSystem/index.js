@@ -47,15 +47,15 @@ const io = new Server(server, {
 });
 
 app.use(function(req, res, next) {
-  req.io = io;
-  next();
+    req.io = io;
+    next();
 });
 
 let activeChats = [];//store all the current active chats
 let activeAgents = [];//store all the active agents in a perticular time
 let assignList = [];//store if a agent gets assigned to chat with any specific customer
 
-let currJoinedChats = [];
+let currJoinedChats = [];//used for maintaining the state on page reload
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -74,20 +74,12 @@ io.on("connection", (socket) => {
     //Getting message sent before agent joined the room
     for(i = 0; i < activeChats.length; i++){
       if(activeChats[i].room === data.room){
-        var joinedObj = {
-          messages: activeChats[i].messages,
-          room: data.room,
-          phoneNo: activeChats[i].phoneNo
-        };
+        socket.emit("room_joined", activeChats[i]);
+        currJoinedChats.push({...activeChats[i], currEmail: data.email})
         activeChats.splice(i, 1);
         break;
       }
     }
-
-    currJoinedChats.push({...joinedObj, currEmail: data.email})
-
-    socket.emit("room_joined", joinedObj)
-
 
     //if an agent joined the room assigned room, removing it from assignList
     assignList = assignList.filter((i) => {
@@ -261,27 +253,6 @@ app.post("/getCurrJoinedChats", (req, res) => {
 
   res.status(200).json({chats})
 })
-
-// app.post("/del_room", async (req, res) => {
-//
-//   const {room} = req.body;
-//
-//   const arr = Array.from(io.sockets.adapter.rooms);
-//
-//   const filtered = arr.filter(room => !room[1].has(room[0]));
-//   let clientsList = [];
-//   for(i of filtered) {
-//     if(i[0] === room){
-//       clientsList = Array.from(i[1]);
-//       break;
-//     }
-//   };
-//
-//   console.log(clientsList);
-//   await clientsList.forEach(client => io.sockets.sockets[client].leave(room));
-//
-//   res.status(200).send("Room Deleted");
-// });
 
 server.listen(PORT, () => {
   console.log(`SERVER RUNNING ON PORT ${PORT}`);
