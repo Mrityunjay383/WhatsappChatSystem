@@ -55,32 +55,37 @@ let activeChats = [];//store all the current active chats
 let activeAgents = [];//store all the active agents in a perticular time
 let assignList = [];//store if a agent gets assigned to chat with any specific customer
 
+let currJoinedChats = [];
+
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("Agent", async (data) => {
     //if the request is comming from an agent passing it into the activeAgnets list
-    await activeAgents.push({...data, id: socket.id});
+    await activeAgents.push({...data});
   })
 
   //adding the user in the Socket room
   socket.on("join_room", (data) => {
     io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
 
-    socket.join(data);
+    socket.join(data.room);
 
     //Getting message sent before agent joined the room
     for(i = 0; i < activeChats.length; i++){
-      if(activeChats[i].room === data){
+      if(activeChats[i].room === data.room){
         var joinedObj = {
           messages: activeChats[i].messages,
-          room: data,
+          room: data.room,
           phoneNo: activeChats[i].phoneNo
         };
         activeChats.splice(i, 1);
         break;
       }
     }
+
+    currJoinedChats.push({...joinedObj, currEmail: data.email})
+
     socket.emit("room_joined", joinedObj)
 
 
@@ -172,6 +177,13 @@ app.post("/hook", async (req, res) => {
           new Date(Date.now()).getMinutes(),
       };
 
+      for(let chat of currJoinedChats){
+        if(chat.room === payload.sender.name){
+          chat.messages.push(payload.payload.text);
+          break;
+        }
+      }
+
       await io.to(payload.sender.name).emit("receive_message", messageData);
 
     }else{
@@ -196,36 +208,6 @@ app.post("/hook", async (req, res) => {
 
   }
   return res.status(200).end();
-})
-
-app.post("/send_message", (req, res) => {
-
-  const {destination, message} = req.body;
-
-  const encodedParams = new URLSearchParams();
-  encodedParams.set('message', `{"text": "${message}","type":"text"}`);
-  encodedParams.set('channel', 'whatsapp');
-  encodedParams.set('source', '917834811114');
-  encodedParams.set('destination', destination);
-  encodedParams.set('src.name', 'cberotaryuptown');
-  encodedParams.set('disablePreview', 'false');
-
-  const options = {
-    method: 'POST',
-    url: 'https://api.gupshup.io/sm/api/v1/msg',
-    headers: {
-      Accept: 'application/json',
-      apikey: process.env.GUPSHUP_API_KEY,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data: encodedParams,
-  };
-
-  axios.request(options).then(function (response) {
-    res.status(200).json({data: response.data});
-  }).catch(function (error) {
-    console.error(error);
-  });
 })
 
 //route for getting all the active rooms exist
@@ -267,6 +249,18 @@ app.post("/assign_agent", (req, res) => {
 app.get("/assigned", (req, res) => {
   res.status(200).json({assignList})
 });
+
+app.post("/getCurrJoinedChats", (req, res) => {
+  const {email} = req.body;
+
+  const chats = currJoinedChats;
+
+  chats.filter((chat) => {
+    return chat.currEmail === email
+  })
+
+  res.status(200).json({chats})
+})
 
 // app.post("/del_room", async (req, res) => {
 //

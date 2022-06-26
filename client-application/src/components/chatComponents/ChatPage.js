@@ -33,6 +33,12 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       });
     }
 
+    const getCurrJoinedChats = async () => {
+      axios.post(`${baseURL}/getCurrJoinedChats`, {email: userData.email}, {validateStatus: false, withCredentials: true}).then((response) => {
+        console.log(response.data.chats);
+      });
+    }
+
     //Getting all active rooms exist currently
     const getRooms = async () => {
 
@@ -99,7 +105,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     const joinRoom = async (room) => {
 
       if (room !== "") {
-        await socket.emit("join_room", `${room}`);
+        await socket.emit("join_room", {room, email: userData.email});
       }
     };
 
@@ -144,13 +150,13 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       getRooms();
       getAssignedChats();
       getActiveAgents();
+      getCurrJoinedChats();
     }, []);
 
     useEffect(() => {
       //broadcast is used for dynamiclly updating if there is any change in socket
       socket.on("broadcast", (data) => {
         getRooms();
-        getAssignedChats();
         setTimeout(() => {
           getActiveAgents();
           getAssignedChats();
