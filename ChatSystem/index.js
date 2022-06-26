@@ -44,6 +44,7 @@ const io = new Server(server, {
   },
 });
 
+let activeChats = [];//store all the current active chats
 let activeAgents = [];//store all the active agents in a perticular time
 let assignList = [];//store if a agent gets assigned to chat with any specific customer
 
@@ -93,10 +94,30 @@ io.on("connection", (socket) => {
   });
 });
 
-app.post("/hook", (req, res) => {
+app.post("/hook", async (req, res) => {
   console.log(req.body);
-  joinRoom(req.body.sender.name);
-  res.status(200).end();
+  const {type, payload} = req.body
+
+  //Checking the request is an incoming message form whatsapp
+  if(type === 'message'){
+
+    //Checking if this chat already in the activeChats
+    for(let i=0; i<activeChats.length; i++){
+      if(activeChats[i].room === payload.sender.name){
+        activeChats[i].messages.push(payload.payload.text);
+
+        return res.status(200).end();
+      }
+    }
+
+    //if chat didn't exist the creating a new one
+    activeChats.push({
+      room: payload.sender.name,
+      messages: [payload.payload.text]
+    })
+
+    return res.status(200).end();
+  }
 })
 
 app.post("/send_message", (req, res) => {
