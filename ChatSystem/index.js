@@ -105,17 +105,17 @@ app.post("/hook", async (req, res) => {
     for(let i=0; i<activeChats.length; i++){
       if(activeChats[i].room === payload.sender.name){
         activeChats[i].messages.push(payload.payload.text);
-
+        io.sockets.emit("broadcast", {});
         return res.status(200).end();
       }
     }
 
-    //if chat didn't exist the creating a new one
+    //if chat didn't exist then creating a new one
     activeChats.push({
       room: payload.sender.name,
       messages: [payload.payload.text]
     })
-
+    io.sockets.emit("broadcast", {});
     return res.status(200).end();
   }
 })
@@ -153,17 +153,19 @@ app.post("/send_message", (req, res) => {
 //route for getting all the active rooms exist
 app.get("/active_rooms", async (req, res) => {
 
-    const arr = Array.from(io.sockets.adapter.rooms);//getting map of current active rooms from socket
+    // const arr = Array.from(io.sockets.adapter.rooms);//getting map of current active rooms from socket
+    //
+    // let filtered = arr.filter(room => !room[1].has(room[0]))
+    //
+    // //checking if some agent is already in the room
+    // filtered = filtered.filter((i) => {
+    //   return Array.from(i[1]).length === 1
+    // })
+    //
 
-    let filtered = arr.filter(room => !room[1].has(room[0]))
 
-    //checking if some agent is already in the room
-    filtered = filtered.filter((i) => {
-      return Array.from(i[1]).length === 1
-    })
-
-    //storing room names in rooms array
-    const rooms = filtered.map(i => i[0]);
+    // storing room names in rooms array
+    const rooms = activeChats.map(i => i.room);
 
     //checking if the room didnt already exist in the assignList
     for(i = 0; i < assignList.length; i++){
