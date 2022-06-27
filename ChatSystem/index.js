@@ -55,7 +55,6 @@ let activeChats = [];//store all the current active chats
 let activeAgents = [];//store all the active agents in a perticular time
 let assignList = [];//store if a agent gets assigned to chat with any specific customer
 
-let currJoinedChats = [];//used for maintaining the state on page reload
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -75,7 +74,6 @@ io.on("connection", (socket) => {
     for(i = 0; i < activeChats.length; i++){
       if(activeChats[i].room === data.room){
         socket.emit("room_joined", activeChats[i]);
-        currJoinedChats.push({...activeChats[i], currEmail: data.email})
         activeChats.splice(i, 1);
         break;
       }
@@ -87,7 +85,7 @@ io.on("connection", (socket) => {
     });
 
 
-    console.log(`User with ID: ${socket.id} joined room: ${data}`);
+    console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
   });
 
   //listener when a new message will be send from client side
@@ -169,13 +167,6 @@ app.post("/hook", async (req, res) => {
           new Date(Date.now()).getMinutes(),
       };
 
-      for(let chat of currJoinedChats){
-        if(chat.room === payload.sender.name){
-          chat.messages.push(payload.payload.text);
-          break;
-        }
-      }
-
       await io.to(payload.sender.name).emit("receive_message", messageData);
 
     }else{
@@ -242,17 +233,6 @@ app.get("/assigned", (req, res) => {
   res.status(200).json({assignList})
 });
 
-app.post("/getCurrJoinedChats", (req, res) => {
-  const {email} = req.body;
-
-  const chats = currJoinedChats;
-
-  chats.filter((chat) => {
-    return chat.currEmail === email
-  })
-
-  res.status(200).json({chats})
-})
 
 server.listen(PORT, () => {
   console.log(`SERVER RUNNING ON PORT ${PORT}`);

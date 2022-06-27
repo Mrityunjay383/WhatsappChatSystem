@@ -33,12 +33,6 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       });
     }
 
-    const getCurrJoinedChats = async () => {
-      axios.post(`${baseURL}/getCurrJoinedChats`, {email: userData.email}, {validateStatus: false, withCredentials: true}).then((response) => {
-        console.log(response.data.chats);
-      });
-    }
-
     //Getting all active rooms exist currently
     const getRooms = async () => {
 
@@ -65,24 +59,29 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
       // e.target.parentElement.parentElement.parentElement.remove();
-      await socket.emit("reassign", {room, agent, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
 
-      currJoinedChats.forEach((chat, index) => {
-        if(chat.room === room){
-          setCurrJoinedChats((curr) => {
-            console.log(curr.splice(index, 1));
-            return [...curr]
-          })
+      if(agent != undefined){
+        await socket.emit("reassign", {room, agent, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
+
+        currJoinedChats.forEach((chat, index) => {
+          if(chat.room === room){
+            setCurrJoinedChats((curr) => {
+              console.log(curr.splice(index, 1));
+              return [...curr]
+            })
+          }
+        })
+
+        if(currJoinedChats.length > 0){
+          setCurrActiveChat(currJoinedChats[0]);
+        }else{
+          setCurrActiveChat({
+            room: "",
+            messageList: []
+          });
         }
-      })
-
-      if(currJoinedChats.length > 0){
-        setCurrActiveChat(currJoinedChats[0]);
       }else{
-        setCurrActiveChat({
-          room: "",
-          messageList: []
-        });
+        console.log("No agent Selected");
       }
     }
 
@@ -108,18 +107,6 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
         await socket.emit("join_room", {room, email: userData.email});
       }
     };
-
-    // const delRoom = () => {
-    //   console.log(toBeJoinedRoom);
-    //   axios.post(`${baseURL}/del_room`, {room: toBeJoinedRoom}, {validateStatus: false, withCredentials: true}).then((response) => {
-    //     if(response.status === 200 && response.data.success){
-    //       setToBeJoinedRoom("");
-    //       setShowChat(false);
-    //     }else{
-    //       console.log("Failed");
-    //     }
-    //   });
-    // }
 
     const changeChat = async (room) => {
 
@@ -150,7 +137,16 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       getRooms();
       getAssignedChats();
       getActiveAgents();
-      getCurrJoinedChats();
+
+      // sessionStorage.removeItem('currJoinedChats');
+
+      const chats = sessionStorage.getItem("currJoinedChats");
+      if(chats != null){
+        console.log(JSON.parse(chats));
+        setCurrJoinedChats(JSON.parse(chats));
+      }else{
+        console.log("Chats not exist");
+      }
     }, []);
 
     useEffect(() => {
@@ -196,6 +192,22 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       })
 
     }, [socket]);
+
+    useEffect(() => {
+      sessionStorage.setItem("currJoinedChats", JSON.stringify(currJoinedChats));
+
+      for(let chat of currJoinedChats){
+        socket.emit("join_room", {room: chat.room, email: userData.email});
+      }
+
+      if(currActiveChat.room === "" && currJoinedChats[0]){
+        setCurrActiveChat({
+          room: currJoinedChats[0].room,
+          phoneNo: currJoinedChats[0].phoneNo,
+          messageList: currJoinedChats[0].messageList
+        });
+      }
+    }, [currJoinedChats])
 
     return (
         <div className="rootCon">

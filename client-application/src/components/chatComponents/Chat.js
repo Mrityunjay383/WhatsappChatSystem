@@ -25,6 +25,16 @@ function Chat({ socket, username, currActiveChat, currJoinedChats, setCurrActive
           return {...chat, messageList: [...chat.messageList, messageData]}
       });
       setCurrentMessage("");
+
+      currJoinedChats.forEach((chat, index) => {
+        if(chat.room === currActiveChat.room){
+          setCurrJoinedChat((curr) => {
+            curr[index].messageList = [...curr[index].messageList, messageData];
+            return [...curr];
+          })
+        }
+      })
+
     }
   };
 
@@ -36,16 +46,15 @@ function Chat({ socket, username, currActiveChat, currJoinedChats, setCurrActive
         setCurrActiveChat((chat) => {
             return {...chat, messageList: [...chat.messageList, data]}
         });
-      }else{
-        currJoinedChats.forEach((chat, index) => {
-          if(chat.room === data.room){
-            setCurrJoinedChat((curr) => {
-              curr[index].messageList = [...curr[index].messageList, data];
-              return [...curr];
-            })
-          }
-        })
       }
+      currJoinedChats.forEach((chat, index) => {
+        if(chat.room === data.room){
+          setCurrJoinedChat((curr) => {
+            curr[index].messageList = [...curr[index].messageList, data];
+            return [...curr];
+          })
+        }
+      })
     });
 
 
