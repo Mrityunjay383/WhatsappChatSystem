@@ -55,6 +55,30 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       });
     }
 
+    const disconnect = async (room) => {
+
+      await socket.emit("disconnect_chat", room);
+
+      currJoinedChats.forEach((chat, index) => {
+        if(chat.room === room){
+          setCurrJoinedChats((curr) => {
+            console.log(curr.splice(index, 1));
+            return [...curr]
+          })
+        }
+      })
+
+      if(currJoinedChats.length > 0){
+        setCurrActiveChat(currJoinedChats[0]);
+      }else{
+        setCurrActiveChat({
+          room: "",
+          messageList: []
+        });
+      }
+
+    }
+
     const reassign = async (e, room) => {
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
@@ -95,7 +119,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
               )
           })}
         </select>
-        <button onClick={(e) => {
+        <button className="joinbtn" onClick={(e) => {
           reassign(e, `${room}`);
         }}>Reassign</button>
       </div>
@@ -133,17 +157,17 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     }
 
     useEffect(() => {
-      socket.emit("Agent", {email: userData.email, name: userData.name});
+      socket.emit("Agent", {email: userData.email, name: userData.name, id: socket.id});
       getRooms();
       getAssignedChats();
       getActiveAgents();
 
-      sessionStorage.removeItem('currJoinedChats');
+      // sessionStorage.removeItem('currJoinedChats');
 
       const chats = sessionStorage.getItem("currJoinedChats");
       if(chats != null){
         console.log(JSON.parse(chats));
-        // setCurrJoinedChats(JSON.parse(chats));
+        setCurrJoinedChats(JSON.parse(chats));
       }else{
         console.log("Chats not exist");
       }
@@ -272,6 +296,9 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
                       <div className="chatTopCon">
                         <span>{currActiveChat.room}</span>
                         <ReassignCom room={currActiveChat.room} />
+                        <button className="rmBtn disBtn" onClick={(e) => {
+                          disconnect(currActiveChat.room);
+                        }}>Disconnect</button>
                       </div>
                       <Chat
                         socket={socket}

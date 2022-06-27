@@ -60,6 +60,7 @@ io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("Agent", async (data) => {
+    console.log("New Agent: ", data);
     //if the request is comming from an agent passing it into the activeAgnets list
     await activeAgents.push({...data});
   })
@@ -116,8 +117,12 @@ io.on("connection", (socket) => {
     }).catch(function (error) {
       console.error(error);
     });
-
   });
+
+  socket.on("disconnect_chat", (room) => {
+    io.sockets.emit("broadcast", {});//broadcasting so the all active rooms get updated for all users
+    socket.leave(room);
+  })
 
   //listener for reassigning the chat to another agent
   socket.on("reassign", (data) => {
@@ -136,10 +141,13 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     console.log("User Disconnected", socket.id);
     io.sockets.emit("broadcast", {});
+
     //if a avtive agent got Disconnected removing it from the active agents list
-    activeAgents = activeAgents.filter((agent) => {
+    activeAgents = await activeAgents.filter((agent) => {
+      console.log(agent.id, socket.id);
       return agent.id !== socket.id
     });
+    console.log(activeAgents);
   });
 });
 
