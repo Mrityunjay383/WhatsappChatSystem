@@ -138,12 +138,12 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
       getAssignedChats();
       getActiveAgents();
 
-      // sessionStorage.removeItem('currJoinedChats');
+      sessionStorage.removeItem('currJoinedChats');
 
       const chats = sessionStorage.getItem("currJoinedChats");
       if(chats != null){
         console.log(JSON.parse(chats));
-        setCurrJoinedChats(JSON.parse(chats));
+        // setCurrJoinedChats(JSON.parse(chats));
       }else{
         console.log("Chats not exist");
       }
