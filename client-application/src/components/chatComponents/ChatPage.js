@@ -166,7 +166,6 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
       const chats = sessionStorage.getItem("currJoinedChats");
       if(chats != null){
-        console.log(JSON.parse(chats));
         setCurrJoinedChats(JSON.parse(chats));
       }else{
         console.log("Chats not exist");
@@ -218,6 +217,9 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     }, [socket]);
 
     useEffect(() => {
+
+      console.log(currJoinedChats);
+
       sessionStorage.setItem("currJoinedChats", JSON.stringify(currJoinedChats));
 
       for(let chat of currJoinedChats){

@@ -12,6 +12,7 @@ const { URLSearchParams } = require('url');
 const PORT = process.env.PORT || 3001
 
 const activeSocketRooms = require("./helpers/activeSocketRooms");
+const {otpedinUser} = require("./helpers/checkUserOptedin")
 
 //middleware using cors with options
 app.use(cors({
@@ -60,7 +61,6 @@ io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("Agent", async (data) => {
-    console.log("New Agent: ", data);
     //if the request is comming from an agent passing it into the activeAgnets list
     await activeAgents.push({...data});
   })
@@ -85,7 +85,6 @@ io.on("connection", (socket) => {
       return i.room !== data
     });
 
-
     console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
   });
 
@@ -96,9 +95,9 @@ io.on("connection", (socket) => {
     const encodedParams = new URLSearchParams();
     encodedParams.set('message', `{"text": "${messageData.message}","type":"text"}`);
     encodedParams.set('channel', 'whatsapp');
-    encodedParams.set('source', '917834811114');
+    encodedParams.set('source', '917397694169');
     encodedParams.set('destination', messageData.phoneNo);
-    encodedParams.set('src.name', 'cberotaryuptown');
+    encodedParams.set('src.name', 'shortroute');
     encodedParams.set('disablePreview', 'false');
 
     const options = {
@@ -144,7 +143,6 @@ io.on("connection", (socket) => {
 
     //if a avtive agent got Disconnected removing it from the active agents list
     activeAgents = await activeAgents.filter((agent) => {
-      console.log(agent.id, socket.id);
       return agent.id !== socket.id
     });
     console.log(activeAgents);
@@ -155,8 +153,11 @@ app.post("/hook", async (req, res) => {
   console.log(req.body);
   const {type, payload} = req.body
 
+
   //Checking the request is an incoming message form whatsapp
   if(type === 'message'){
+
+    await otpedinUser(payload.sender.dial_code, payload.sender.phone);
 
     //Checking if an agent is alreday joined the room
     const roomsWhichHaveAgent = await activeSocketRooms(req);
