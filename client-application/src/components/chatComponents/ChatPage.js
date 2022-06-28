@@ -238,7 +238,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     return (
         <div className="rootCon">
 
-        <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" />
+          <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" />
 
 
           <div className="dataCon">

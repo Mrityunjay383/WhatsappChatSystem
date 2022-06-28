@@ -90,6 +90,11 @@ function Sidebar({role, baseURL, setIsLogedin, page}) {
             <span>Assign Agnets</span>
           </a>
 
+          <a href="/broadcast" className={page === "broadcasting" ? "active" : "nonActive"}>
+            <NewUserIcon />
+            <span>Broadcast</span>
+          </a>
+
           <a href="/create_new_user" className={page === "createNewUser" ? "active" : "nonActive"}>
             <NewUserIcon />
             <span>Create new User</span>

@@ -12,6 +12,8 @@ import ManagerDb from "./components/roleDashboards/ManagerDb";
 import AgentDb from "./components/roleDashboards/AgentDb";
 
 import ManagerAssignPage from "./components/ManagerAssignPage";
+import Broadcasting from "./components/Broadcasting";
+
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
@@ -20,6 +22,7 @@ const CustomerChat = React.lazy(() => import('./components/chatComponents/Custom
 
 const baseUserSystemURL = "http://localhost:3002";
 const baseChatSystemURL = "http://localhost:3001";
+const baseBulkMessagingURL = "http://localhost:3003";
 
 function App() {
 
@@ -105,6 +108,15 @@ function App() {
                 <h1>Access Denied!!</h1>
               ) : (
                 <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} />
+              )
+            } />
+
+            //Broadcasting Rote
+            <Route path="/broadcast" element={
+              userData.role === "Manager" ? (//Only Managers have Access to Broadcasting page
+                <Broadcasting baseURL={baseBulkMessagingURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} />
+              ) : (
+                <h1>Access Denied!!</h1>
               )
             } />
 

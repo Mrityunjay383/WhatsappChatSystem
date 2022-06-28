@@ -12,7 +12,7 @@ const { URLSearchParams } = require('url');
 const PORT = process.env.PORT || 3001
 
 const activeSocketRooms = require("./helpers/activeSocketRooms");
-const {otpedinUser} = require("./helpers/checkUserOptedin")
+const {otpedinUser} = require("./helpers/checkUserOptedin");
 
 //middleware using cors with options
 app.use(cors({
