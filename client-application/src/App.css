@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap');
+
 body {
   color: #333;
   font-family: 'Source Sans Pro', sans-serif;
@@ -95,7 +96,8 @@ body {
   border-radius: 10px;
   box-shadow: 3px 3px 8px 5px rgba(0, 0, 0, 0.2)
 }
-.userCard h3{
+
+.userCard h3 {
   width: 20vw;
 }
 
@@ -117,7 +119,7 @@ body {
   color: #DB5251;
 }
 
-.disBtn{
+.disBtn {
   width: auto;
   padding: 3px 6px;
 }
@@ -196,21 +198,118 @@ body {
   display: flex;
   box-shadow: 0px 2px 8px 5px rgba(0, 0, 0, 0.2)
 }
-.chatCon{
+
+.chatCon {
   width: 100%;
 }
-.chatTopCon{
+
+.chatTopCon {
   width: 100%;
   height: 8%;
   border-bottom: 3px solid #F5F6F8;
   margin-bottom: 20px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
   box-shadow: 0 2px 6px 4px rgba(0, 0, 0, 0.2)
 }
-.chatTopCon span{
+
+.chatTopCon span {
   font-size: 1.8rem;
+}
+
+.broadcastCon {
+  /* height: 85vh; */
+}
+.selTempCon{
+  display: flex;
+  align-items: center;
+}
+.selTempCon label{
+  margin: 0;
+  font-size: 1.7rem;
+}
+.selTempCon select{
+  margin-left: 15px;
+  padding: 3px 5px;
+  border-radius: 5px;
+}
+.selectedTempCon{
+  margin: 8vh 0 14vh;
+  display: flex;
+  /* align-items: center; */
+  min-height: 20vh;
+  padding: 20px 30px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 4px 4px 6px 4px rgba(0, 0, 0, 0.2)
+}
+
+.selectedTempCon .val{
+  margin-left: 10vw;
+  flex: 1;
+}
+.selectedTempCon .val textarea{
+  width: 100%;
+  height: 100%;
+  padding: 10px 15px;
+  border-radius: 10px;
+}
+.selectedTempCon .det{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 25vw;
+}
+.tempName{
+  font-weight: bolder;
+  font-size: 1.3rem;
+}
+
+.InpNoCon {
+  display: flex;
+  justify-content: space-between;
+}
+
+.optinNoCon {
+  min-width: 38vw;
+  /* margin-right: 10vw; */
+}
+
+.numbersList{
+  height: 70vh;
+  overflow-y: scroll;
+  background: #fff;
+  border-radius: 10px;
+}
+.numbersList div{
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 30px;
+}
+.newNoCon{
+  width: 35vw;
+}
+.newNoCon textarea{
+  width: 100%;
+  height: 85%;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-top: 5px;
+}
+.newNoCon span{
+  color: #999;
+  opacity: 0.8;
+  margin-top: 20px;
+}
+/* .brdBtnCon{
+  text-align: center;
+} */
+.brdCsBtn{
+  /* width: 100%; */
+  text-align: center;
+  margin: 10vh auto 0;
+  font-weight: bolder;
+  font-size: 1.2rem;
 }

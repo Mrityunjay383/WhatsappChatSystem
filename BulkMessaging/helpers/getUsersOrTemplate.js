@@ -20,6 +20,8 @@ exports.allOtpedUsers = async () => {
     return user.optinStatus === "OPT_IN"
   });
 
+  // console.log(onlyOtpedinUsers);
+
   return onlyOtpedinUsers;
 }
 
@@ -39,9 +41,9 @@ exports.allAprovedTemplates = async () => {
     console.error(error);
   });
 
-  // const allAprovedTemplates = await allTemplates.filter((template) => {
-  //   return template.status === "APPROVED"
-  // });
+  const allAprovedTemplates = await allTemplates.filter((template) => {
+    return template.status === "APPROVED"
+  });
 
-  return allTemplates;
+  return allAprovedTemplates;
 }

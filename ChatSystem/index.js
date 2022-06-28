@@ -118,9 +118,10 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect_chat", (room) => {
+  socket.on("disconnect_chat", (data) => {
     io.sockets.emit("broadcast", {});//broadcasting so the all active rooms get updated for all users
-    socket.leave(room);
+    console.log(data.chat);
+    socket.leave(data.room);
   })
 
   //listener for reassigning the chat to another agent
@@ -145,7 +146,6 @@ io.on("connection", (socket) => {
     activeAgents = await activeAgents.filter((agent) => {
       return agent.id !== socket.id
     });
-    console.log(activeAgents);
   });
 });
 

@@ -57,7 +57,9 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
     const disconnect = async (room) => {
 
-      await socket.emit("disconnect_chat", room);
+      console.log(currActiveChat);
+
+      await socket.emit("disconnect_chat", {room, chat: currActiveChat});
 
       currJoinedChats.forEach((chat, index) => {
         if(chat.room === room){
@@ -217,8 +219,6 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
     }, [socket]);
 
     useEffect(() => {
-
-      console.log(currJoinedChats);
 
       sessionStorage.setItem("currJoinedChats", JSON.stringify(currJoinedChats));
 

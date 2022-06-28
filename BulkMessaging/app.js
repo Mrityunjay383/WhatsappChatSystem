@@ -4,10 +4,11 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require("cors");//for enabling api requuest from external source
 
+
 const port = process.env.PORT || 3003;
 
 const {allOtpedUsers, allAprovedTemplates} = require("./helpers/getUsersOrTemplate");
-
+const {sendMessage} = require("./helpers/sendMessage");
 
 const app = express();
 
@@ -48,6 +49,16 @@ app.get("/aprovedTemplates", async (req, res) => {
   const templates = await allAprovedTemplates();
 
   res.status(200).json({templates});
+});
+
+app.post("/broadcastMessage", async (req, res) => {
+
+  const {message, toBeBroadcastNo} = req.body;
+
+  for(let phoneNo of toBeBroadcastNo){
+      await sendMessage(message, phoneNo);
+  }
+  res.send("Broadcasting Done");
 })
 
 app.listen(port, () => {

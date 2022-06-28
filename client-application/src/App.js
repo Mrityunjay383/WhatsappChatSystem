@@ -11,13 +11,14 @@ import AdminDb from "./components/roleDashboards/AdminDb";
 import ManagerDb from "./components/roleDashboards/ManagerDb";
 import AgentDb from "./components/roleDashboards/AgentDb";
 
-import ManagerAssignPage from "./components/ManagerAssignPage";
+// import ManagerAssignPage from "./components/ManagerAssignPage";
 import Broadcasting from "./components/Broadcasting";
 
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
 const CustomerChat = React.lazy(() => import('./components/chatComponents/CustomerChat'));
+const ManagerAssign = React.lazy(() => import('./components/ManagerAssignPage'));
 
 
 const baseUserSystemURL = "http://localhost:3002";
@@ -44,6 +45,16 @@ function App() {
       <>
         <React.Suspense fallback={<></>}>
           {(userData.role === "Customer") && <CustomerChat />}
+        </React.Suspense>
+      </>
+    )
+  }
+
+  const ManagerAssignPage = () => {
+    return (
+      <>
+        <React.Suspense fallback={<></>}>
+          {(userData.role === "Manager") && <ManagerAssign baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin}/>}
         </React.Suspense>
       </>
     )
@@ -138,7 +149,7 @@ function App() {
 
             <Route path="/asign_agent" element={
               userData.role === "Manager" ? ( //Agents didnt have Access to allAgents page
-                <ManagerAssignPage baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin}/>
+                <ManagerAssignPage />
               ) : (
                 <h1>Access Denied!!</h1>
               )
