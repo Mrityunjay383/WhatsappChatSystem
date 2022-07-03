@@ -57,9 +57,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
     const disconnect = async (room) => {
 
-      console.log(currActiveChat);
-
-      await socket.emit("disconnect_chat", {room, chat: currActiveChat});
+      await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
 
       currJoinedChats.forEach((chat, index) => {
         if(chat.room === room){

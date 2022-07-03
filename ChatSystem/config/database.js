@@ -5,7 +5,7 @@ const { DATABASE_URL } = process.env;
 exports.connect = () => {
   mongoose
   .connect(DATABASE_URL, {
-    useNewUrlParser: true,
+    useNewUrlParser: true, 
     useUnifiedTopology: true
   })
   .then(console.log("DB Connected Sucessfully!"))

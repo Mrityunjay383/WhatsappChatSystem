@@ -1,4 +1,6 @@
 require("dotenv").config();//for using environment variables
+require("./config/database").connect();//Setting up the database connection
+
 const express = require("express");//For creating server
 const app = express();
 var bodyParser = require('body-parser')//for reading json from form data
@@ -10,6 +12,8 @@ const axios = require("axios").default;
 const { URLSearchParams } = require('url');
 
 const PORT = process.env.PORT || 3001
+
+const Chat = require("./model/chat");
 
 const activeSocketRooms = require("./helpers/activeSocketRooms");
 const {otpedinUser} = require("./helpers/checkUserOptedin");
@@ -112,15 +116,31 @@ io.on("connection", (socket) => {
     };
 
     axios.request(options).then(function (response) {
-      console.log(response);
+      console.log("Message Sent");
     }).catch(function (error) {
       console.error(error);
     });
   });
 
-  socket.on("disconnect_chat", (data) => {
+  //listener for disconnecting connection between customer and chat
+  socket.on("disconnect_chat", async (data) => {
     io.sockets.emit("broadcast", {});//broadcasting so the all active rooms get updated for all users
-    console.log(data.chat);
+
+    const {chat, agentName} = data;
+
+    const lastInteractionTime = chat.messageList[chat.messageList.length-1].time;
+
+    const lastInteraction = `${lastInteractionTime} ${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+
+    const newChat = await Chat.create({
+      customerName: chat.room,
+      userPhoneNo: chat.phoneNo,
+      messageList: chat.messageList,
+      agentName,
+      lastInteraction
+    });
+
+
     socket.leave(data.room);
   })
 
@@ -244,5 +264,5 @@ app.get("/assigned", (req, res) => {
 
 
 server.listen(PORT, () => {
-  console.log(`SERVER RUNNING ON PORT ${PORT}`);
+  console.log(`Chat Server Running on Port ${PORT}`);
 });
