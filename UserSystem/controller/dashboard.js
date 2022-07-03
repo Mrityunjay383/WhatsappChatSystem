@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const User = require("../model/user");
 
@@ -142,6 +143,26 @@ exports.changeName = async (req, res) => {
       }
     }).clone()
   }catch(e){
+    console.log(e);
+  }
+}
+
+exports.changePassword = async (req, res) => {
+  try{
+    const {password, email} = req.body;
+
+    const user = await User.findOne({ email });
+    if(user){
+      const encPassword = await bcrypt.hash(password, 10);
+      user.password = encPassword;
+
+      user.save((err) => {
+        if(!err){
+          res.status(200).send("Password Changed");
+        }
+      })
+    }
+  } catch(e) {
     console.log(e);
   }
 }

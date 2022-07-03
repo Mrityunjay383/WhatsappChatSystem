@@ -12,12 +12,25 @@ function Profile({baseURL, setIsLogedin, userData, setUserData}) {
       email: userData.email
     });
 
+    const [newPassword, setNewPassword] = useState({
+      password: "",
+      email: userData.email
+    })
+
     const changeName = async () => {
       axios.post(`${baseURL}/change_name`, newName, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
           setUserData((curr) => {
             return {...curr, name: response.data.newName}
           })
+        }
+      });
+    }
+
+    const changePassword = async () => {
+      axios.post(`${baseURL}/change_password`, newPassword, {validateStatus: false, withCredentials: true}).then((response) => {
+        if(response.status === 200){
+          console.log(response.data);
         }
       });
     }
@@ -29,10 +42,11 @@ function Profile({baseURL, setIsLogedin, userData, setUserData}) {
           <div className="dataCon">
             <TopCon userName={userData.name} page="Profile"/>
 
-            <div>
+            <div className="changeCon">
 
-              <div className="ChangeNameCon">
+              <div className="changeNameCon">
 
+                <h4>Update Name</h4>
                 <div className="form-group">
                   <label>First Name:</label>
                   <input type="text" className="form-control" defaultValue={userData.name.split(" ")[0]} placeholder="First name" onChange={(e) => {
@@ -56,6 +70,20 @@ function Profile({baseURL, setIsLogedin, userData, setUserData}) {
               </div>
 
 
+              <div className="changePasswordCon">
+                <h4>Update Password</h4>
+                <div className="form-group">
+                  <label>Password:</label>
+                  <input type="text" className="form-control" placeholder="New Password" onChange={(e) => {
+                    setNewPassword((currObj) => {
+                      return {...currObj, password: e.target.value}
+                    });
+                  }}/>
+                </div>
+
+                <button onClick={changePassword}>Update</button>
+
+              </div>
 
             </div>
           </div>

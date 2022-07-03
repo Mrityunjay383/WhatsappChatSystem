@@ -23,4 +23,6 @@ router.get("/managers", valToken, isAdmin, controller.managers);
 
 router.post("/change_name", valToken, controller.changeName);
 
+router.post("/change_password", valToken, controller.changePassword);
+
 module.exports = router

@@ -313,3 +313,17 @@ body {
   font-weight: bolder;
   font-size: 1.2rem;
 }
+
+.changeCon{
+  display: flex;
+  justify-content: space-between;
+}
+
+.changeNameCon{
+  border-right: 2px solid #555;
+  padding-right: 20px;
+}
+
+.changeNameCon, .changePasswordCon{
+  width: 40vw;
+}
