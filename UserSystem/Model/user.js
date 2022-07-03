@@ -19,6 +19,9 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
   },
+  creatorUID: {
+    type: String,
+  },
   token: {
     type: String,
   }

@@ -6,36 +6,43 @@ import TopCon from "./uiComponent/TopCon";
 
 
 
-function CreateNewUser({baseURL, userRole, userName, setIsLogedin}) {
+function CreateNewUser({baseURL, userData, setIsLogedin}) {
+
+    // console.log(userData.user_id);
 
     const [newUserData, setNewUserData] = useState({
       firstName: "",
       lastName: "",
       email: "",
       password: "",
-      role: "Agent"
+      role: ""
     });
 
     const regNewUser = () => {
 
-      axios.post(`${baseURL}/auth/register`, newUserData, {validateStatus: false, withCredentials: true}).then((response) => {
-        if(response.status === 201){
-          window.location = '/';
-        }else{
-          console.log("Registration Failed");
+      if(userData.role !== ""){
+        if(userData.role === "Manager"){
+          newUserData.creatorUID = userData.user_id;
         }
-      });
+        axios.post(`${baseURL}/auth/register`, newUserData, {validateStatus: false, withCredentials: true}).then((response) => {
+          if(response.status === 201){
+            window.location = '/';
+          }else{
+            console.log("Registration Failed");
+          }
+        });
+      }
+
 
     }
-
 
     return (
         <div  className="rootCon ">
 
-          <Sidebar role = {userRole} baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser"/>
+          <Sidebar role = {userData.role} baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser"/>
 
           <div className="dataCon">
-            <TopCon userName={userName} page="Create New User" />
+            <TopCon userName={userData.name} page="Create New User" />
 
             <div className="regForm">
 
@@ -77,12 +84,14 @@ function CreateNewUser({baseURL, userRole, userName, setIsLogedin}) {
 
               <div>
                 <label>Role: </label>
-                <select class="form-select form-select-sm roleSelect" onChange={(e) => {
+                <select className="form-select form-select-sm roleSelect" onChange={(e) => {
                   setNewUserData((currObj) => {
                     return {...currObj, role: e.target.value}
                   });
                 }}>
-                  {userRole === "Admin" ? (
+                  <option value=""></option>
+
+                  {userData.role === "Admin" ? (
                     <option value="Manager">Manager</option>
                   ) : (
                     <option value="Agent">Agent</option>

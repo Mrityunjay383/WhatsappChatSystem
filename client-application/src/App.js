@@ -66,8 +66,9 @@ function App() {
       if(response.status === 404 || response.status === 401){
         setIsLogedin(false);
       }else{
-        setIsLogedin(true);
         setUserData(response.data.user);
+        setIsLogedin(true);
+        // console.log(response.data.user);
       }
     });
   }
@@ -109,7 +110,7 @@ function App() {
               userData.role === "Agent" ? ( //Agents didnt have Access to allAgents page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} userRole={userData.role} userName={userData.name}  getRole="agents" setIsLogedin={setIsLogedin} />
+                <AllUsers baseURL={baseUserSystemURL} userRole={userData.role} userName={userData.name}  getRole="agents" userID={userData.user_id} setIsLogedin={setIsLogedin} />
               )
             } />
 
@@ -118,7 +119,7 @@ function App() {
               userData.role === "Agent" || userData.role === "Manager" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} />
+                <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} userID={userData.user_id}/>
               )
             } />
 
@@ -135,7 +136,7 @@ function App() {
               userData.role === "Agent" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <CreateNewUser baseURL={baseUserSystemURL} userRole={userData.role} userName={userData.name} setIsLogedin={setIsLogedin}/>
+                <CreateNewUser baseURL={baseUserSystemURL} userData={userData} setIsLogedin={setIsLogedin}/>
               )
             } />
 

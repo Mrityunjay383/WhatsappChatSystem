@@ -5,13 +5,20 @@ import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
 
-function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName}) {
-    console.log(getRole, userRole);
+function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID}) {
     const [usersList, setusersList] = useState([]);
 
     const getUsers = async () => {
       await axios.get(`${baseURL}/${getRole}`, { validateStatus: false, withCredentials: true }).then((response) => {
-        setusersList(response.data[`${getRole}`]);
+        let allUsers = response.data[`${getRole}`];
+
+        if(getRole === "agents"){
+          allUsers = allUsers.filter((agent) => {
+            return agent.creatorUID === userID
+          })
+        }
+
+        setusersList(allUsers);
       });
     }
 
