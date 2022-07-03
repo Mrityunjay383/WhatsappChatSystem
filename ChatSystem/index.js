@@ -17,6 +17,7 @@ const Chat = require("./model/chat");
 
 const activeSocketRooms = require("./helpers/activeSocketRooms");
 const {otpedinUser} = require("./helpers/checkUserOptedin");
+const {sendMessage} = require("./helpers/sendMessage");
 
 //middleware using cors with options
 app.use(cors({
@@ -69,7 +70,7 @@ io.on("connection", (socket) => {
     await activeAgents.push({...data});
   })
 
-  //adding the user in the Socket room
+  //adding the agent in the Socket room
   socket.on("join_room", (data) => {
     io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
 
@@ -89,37 +90,15 @@ io.on("connection", (socket) => {
       return i.room !== data
     });
 
-    console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
+    // console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
   });
 
+
   //listener when a new message will be send from client side
-  socket.on("send_message", (messageData) => {
+  socket.on("send_message", async (messageData) => {
 
-    //sending the message to the perticular destination for which it belong
-    const encodedParams = new URLSearchParams();
-    encodedParams.set('message', `{"text": "${messageData.message}","type":"text"}`);
-    encodedParams.set('channel', 'whatsapp');
-    encodedParams.set('source', '917397694169');
-    encodedParams.set('destination', messageData.phoneNo);
-    encodedParams.set('src.name', 'shortroute');
-    encodedParams.set('disablePreview', 'false');
-
-    const options = {
-      method: 'POST',
-      url: 'https://api.gupshup.io/sm/api/v1/msg',
-      headers: {
-        Accept: 'application/json',
-        apikey: process.env.GUPSHUP_API_KEY,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: encodedParams,
-    };
-
-    axios.request(options).then(function (response) {
-      console.log("Message Sent");
-    }).catch(function (error) {
-      console.error(error);
-    });
+    //Sending message
+    await sendMessage(messageData.message, messageData.phoneNo);
   });
 
   //listener for disconnecting connection between customer and chat
@@ -128,10 +107,12 @@ io.on("connection", (socket) => {
 
     const {chat, agentName} = data;
 
+    //getting the latest time for the chat
     const lastInteractionTime = chat.messageList[chat.messageList.length-1].time;
 
     const lastInteraction = `${lastInteractionTime} ${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
 
+    //Creating a new Chat Document
     const newChat = await Chat.create({
       customerName: chat.room,
       userPhoneNo: chat.phoneNo,
@@ -140,7 +121,7 @@ io.on("connection", (socket) => {
       lastInteraction
     });
 
-
+    //Removing agent from the room
     socket.leave(data.room);
   })
 
@@ -149,12 +130,14 @@ io.on("connection", (socket) => {
     io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
     assignList.push({room: data.room, agent: data.agent, assignedBy: data.assignedBy});
 
+    //When a chat is reassign creating a new element in activeChats so that chat can be restored when a new agent joins the room
     activeChats.push({
       room: data.room,
       messages: [],
       phoneNo: data.phoneNo
     })
 
+    //removing the current agent from h=the room, so that a new agent can join
     socket.leave(data.room);
   })
 

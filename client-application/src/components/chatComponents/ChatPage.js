@@ -86,6 +86,7 @@ function ChatPage({userData, baseURL, setIsLogedin}) {
 
       if(agent != undefined){
         await socket.emit("reassign", {room, agent, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
+        await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
 
         currJoinedChats.forEach((chat, index) => {
           if(chat.room === room){
