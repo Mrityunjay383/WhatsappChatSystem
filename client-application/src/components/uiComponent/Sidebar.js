@@ -43,11 +43,6 @@ function Sidebar({role, baseURL, setIsLogedin, page}) {
             <span>Overview</span>
           </a>
 
-          <a href="/agents" className={page === "agents" ? "active" : "nonActive"}>
-            <AgentIcon />
-            <span>Agnets</span>
-          </a>
-
           <a href="/managers" className={page === "managers" ? "active" : "nonActive"}>
             <AgentIcon />
             <span>Managers</span>

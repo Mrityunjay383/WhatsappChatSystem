@@ -17,7 +17,6 @@ import Broadcasting from "./components/Broadcasting";
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
-const CustomerChat = React.lazy(() => import('./components/chatComponents/CustomerChat'));
 const ManagerAssign = React.lazy(() => import('./components/ManagerAssignPage'));
 
 
@@ -40,15 +39,6 @@ function App() {
     )
   }
 
-  const CustomerChatRender = () => {
-    return (
-      <>
-        <React.Suspense fallback={<></>}>
-          {(userData.role === "Customer") && <CustomerChat />}
-        </React.Suspense>
-      </>
-    )
-  }
 
   const ManagerAssignPage = () => {
     return (
@@ -90,8 +80,6 @@ function App() {
       return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
     }else if(role === "Agent"){
       return <AgentDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
-    }else{
-      return <CustomerChatRender />
     }
   };
 
