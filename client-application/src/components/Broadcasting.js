@@ -25,10 +25,31 @@ function Broadcasting({baseURL, setIsLogedin, userName}) {
 
     const getOptedinUsers = async () => {
 
+      let optedinUsers, storedUsers, toBePopulateUsers = [];
       await axios.get(`${baseURL}/optedinUsers`, { validateStatus: false, withCredentials: true }).then((response) => {
         //setting the optedinUsers with the response from the API
-        setOptedinUsers(response.data.users);
+        optedinUsers = response.data.users;
+        // setOptedinUsers(response.data.users);
       });
+
+      await axios.get(`${baseURL}/storedCustomers`, { validateStatus: false, withCredentials: true }).then((response) => {
+        //getting the stored users from the response from the API
+        storedUsers = response.data.users;
+        // setOptedinUsers(response.data.users);
+      });
+
+      //gettig name of the customers from the stored users
+      for(let i = 0; i < optedinUsers.length; i++){
+        const optUserFullPhoneNo = optedinUsers[i].countryCode+optedinUsers[i].phoneCode;
+        for(let j = 0; j < storedUsers.length; j++){
+          if(storedUsers[j].userPhoneNo === optUserFullPhoneNo){
+            toBePopulateUsers.push({phoneNo: optUserFullPhoneNo, userName: storedUsers[j].userName});
+          }else{
+            toBePopulateUsers.push({phoneNo: optUserFullPhoneNo, userName: "{Name}"});
+          }
+        }
+      }
+      setOptedinUsers(toBePopulateUsers);
     }
 
     const broadcast = async () => {
@@ -96,10 +117,10 @@ function Broadcasting({baseURL, setIsLogedin, userName}) {
                   <div className="numbersList">
                     {optedinUsers.map((user, index) => {
                       return (
-                        <div>
-                          <input key={index+Math.random()} type="checkbox" name={user.phoneCode} value={`${user.countryCode+user.phoneCode}`} />
-                          <label key={index} htmlFor={user.phoneCode}>{`${user.countryCode+user.phoneCode}`}</label>
-                          <span>Name</span>
+                        <div key={index}>
+                          <input type="checkbox" name={user.phoneNo} value={user.phoneNo} />
+                          <label htmlFor={user.phoneNo}>{user.phoneNo}</label>
+                          <span>{user.userName}</span>
                         </div>
                       )
                     })}

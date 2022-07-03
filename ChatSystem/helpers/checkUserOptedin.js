@@ -19,7 +19,6 @@ exports.otpedinUser = async (dial_code, phone) => {
 
   for(let user of optedinUsers){
     if(user.phoneCode === dial_code && user.optinStatus === "OPT_IN"){
-      console.log(user);
       console.log("User Alread Otpedin");
       return;
     }

@@ -14,6 +14,7 @@ const { URLSearchParams } = require('url');
 const PORT = process.env.PORT || 3001
 
 const Chat = require("./model/chat");
+const Customer = require("./model/customer");
 
 const activeSocketRooms = require("./helpers/activeSocketRooms");
 const {otpedinUser} = require("./helpers/checkUserOptedin");
@@ -157,6 +158,20 @@ app.post("/hook", async (req, res) => {
 
   //Checking the request is an incoming message form whatsapp
   if(type === 'message'){
+
+    // console.log(req.body);
+
+    //storing a new user in the database if already not exist
+    const user = await Customer.findOne({userPhoneNo: payload.source});
+
+    if(!user){
+      const newCustomer = Customer.create({
+        userName: payload.sender.name,
+        userPhoneNo: payload.source
+      })
+      // console.log("User didn't exist");
+    }
+
 
     await otpedinUser(payload.sender.dial_code, payload.sender.phone);
 

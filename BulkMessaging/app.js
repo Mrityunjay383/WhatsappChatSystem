@@ -1,16 +1,18 @@
-require("dotenv").config();
+require("dotenv").config();//for using environment variables
+require("./config/database").connect();//Setting up the database connection
+
 const express = require("express");
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require("cors");//for enabling api requuest from external source
 
+const PORT = process.env.PORT || 3003;
 
-const port = process.env.PORT || 3003;
+const app = express();
 
 const {allOtpedUsers, allAprovedTemplates} = require("./helpers/getUsersOrTemplate");
 const {sendMessage} = require("./helpers/sendMessage");
-
-const app = express();
+const Customer = require("./model/customer");
 
 //middleware using cors with options
 app.use(cors({
@@ -61,6 +63,16 @@ app.post("/broadcastMessage", async (req, res) => {
   res.send("Broadcasting Done");
 })
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}...`);
+//route for getting all the stored customers
+app.get("/storedCustomers", async (req, res) => {
+  const allCustomers = await Customer.find();
+  if(allCustomers){
+    res.status(200).json({users: allCustomers});
+  }else{
+    console.log("Some Error!!!");
+  }
+})
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}...`);
 });
