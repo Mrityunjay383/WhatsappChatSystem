@@ -52,9 +52,10 @@ const io = new Server(server, {
   },
 });
 
+//passing the io to all routes
 app.use(function(req, res, next) {
-    req.io = io;
-    next();
+  req.io = io;
+  next();
 });
 
 let activeChats = [];//store all the current active chats
@@ -96,7 +97,6 @@ io.on("connection", (socket) => {
 
   //listener when a new message will be send from client side
   socket.on("send_message", async (messageData) => {
-
     //Sending message
     await sendMessage(messageData.message, messageData.phoneNo);
   });
@@ -153,9 +153,7 @@ io.on("connection", (socket) => {
 });
 
 app.post("/hook", async (req, res) => {
-  console.log(req.body);
   const {type, payload} = req.body
-
 
   //Checking the request is an incoming message form whatsapp
   if(type === 'message'){
