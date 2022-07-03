@@ -62,8 +62,6 @@ function Broadcasting({baseURL, setIsLogedin, userName}) {
 
       const toBeBroadcastNo = [...selectedPhoneNo, ...newNumbersArr];
 
-      console.log(toBeBroadcastNo);
-
       axios.post(`${baseURL}/broadcastMessage`, {message, toBeBroadcastNo}, {validateStatus: false, withCredentials: true}).then((response) => {
         console.log(response.data);
       });

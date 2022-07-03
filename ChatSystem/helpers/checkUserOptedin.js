@@ -7,7 +7,7 @@ exports.otpedinUser = async (dial_code, phone) => {
 
   const optionsForGet = {
     method: 'GET',
-    url: 'https://api.gupshup.io/sm/api/v1/users/shortroute',
+    url: `https://api.gupshup.io/sm/api/v1/users/${process.env.GUPSHUP_APP_NAME}`,
     headers: {apikey: process.env.GUPSHUP_API_KEY}
   };
 
@@ -29,7 +29,7 @@ exports.otpedinUser = async (dial_code, phone) => {
 
   const optionsForPost = {
     method: 'POST',
-    url: 'https://api.gupshup.io/sm/api/v1/app/opt/in/shortroute',
+    url: `https://api.gupshup.io/sm/api/v1/app/opt/in/${process.env.GUPSHUP_APP_NAME}`,
     headers: {
       apikey: process.env.GUPSHUP_API_KEY,
       'Content-Type': 'application/x-www-form-urlencoded'

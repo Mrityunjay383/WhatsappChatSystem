@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
     if(req.userData.role !== role){
       const existingUser = await User.findOne({ email });
       if(existingUser){
-        res.status(401).send("User already exist");
+        return res.status(401).send("User already exist");
       }
 
       const encPassword = await bcrypt.hash(password, 10);
@@ -49,7 +49,7 @@ exports.register = async (req, res) => {
 
       return res.status(201).json(user);
     }else{
-      res.status(403).send("Access Denide!! You can't add new a manager");
+      return res.status(403).send("Access Denide!! You can't add new a manager");
     }
 
   } catch (e) {

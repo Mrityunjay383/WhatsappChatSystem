@@ -8,7 +8,7 @@ exports.sendMessage = (message, destination) => {
   encodedParams.set('channel', 'whatsapp');
   encodedParams.set('source', '917397694169');
   encodedParams.set('destination', destination);
-  encodedParams.set('src.name', 'shortroute');
+  encodedParams.set('src.name', process.env.GUPSHUP_APP_NAME);
   encodedParams.set('disablePreview', 'false');
 
   const options = {
