@@ -1,5 +1,6 @@
-const User = require("../model/user");
+const jwt = require('jsonwebtoken');
 
+const User = require("../model/user");
 
 exports.home = (req, res) => {
   res.status(200).json({
@@ -106,4 +107,41 @@ exports.delManager = async (req, res) => {
     console.log(e);
   }
 
+}
+
+exports.changeName = async (req, res) => {
+  try{
+    const {firstName, lastName, email} = req.body;
+
+    await User.findOne({ email }, async (err, foundUser) => {
+      if(foundUser){
+        foundUser.firstName = firstName;
+        foundUser.lastName = lastName;
+
+        foundUser.save(async (err) => {
+          if(!err){
+            let data = await jwt.verify(req.cookies.token, process.env.SECRET_KEY);
+            data = {...data, name: firstName+" "+lastName}
+
+            const token = jwt.sign(
+              {...data},
+              process.env.SECRET_KEY
+            );
+
+            // Setting Up cookies
+            const options = {
+              expires: new Date(Date.now() + 24*60*60*1000),
+              httpOnly: true
+            };
+
+            return res.status(200).cookie('token', token, options).json({newName: firstName+" "+lastName})
+          }
+        });
+      }else{
+        return res.status(404).send("User Not Found");
+      }
+    }).clone()
+  }catch(e){
+    console.log(e);
+  }
 }

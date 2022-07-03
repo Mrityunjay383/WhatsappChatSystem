@@ -21,4 +21,6 @@ router.post("/del_manager", valToken, isAdmin, controller.delManager);
 //Getting all managers route
 router.get("/managers", valToken, isAdmin, controller.managers);
 
+router.post("/change_name", valToken, controller.changeName);
+
 module.exports = router

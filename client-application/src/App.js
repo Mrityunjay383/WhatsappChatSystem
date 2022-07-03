@@ -14,6 +14,8 @@ import AgentDb from "./components/roleDashboards/AgentDb";
 // import ManagerAssignPage from "./components/ManagerAssignPage";
 import Broadcasting from "./components/Broadcasting";
 
+import Profile from "./components/Profile";
+
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
 const ManagerAssign = React.lazy(() => import('./components/ManagerAssignPage'));
@@ -90,6 +92,10 @@ function App() {
             //Home Route have Dashboard
             <Route path="/" element={
               <Dashboard role={userData.role} />
+            } />
+
+            <Route path="/profile" element={
+              <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData}/>
             } />
 
             //agents Route have AllUsers with role agents
