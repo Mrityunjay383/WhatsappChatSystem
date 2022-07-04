@@ -3,6 +3,8 @@ import "./App.css";
 import axios from "axios";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
+import Profile from "./components/Profile";
+
 import AllUsers from "./components/AllUsers";
 import CreateNewUser from "./components/CreateNewUser";
 import Login from "./components/Login";
@@ -14,7 +16,8 @@ import AgentDb from "./components/roleDashboards/AgentDb";
 // import ManagerAssignPage from "./components/ManagerAssignPage";
 import Broadcasting from "./components/Broadcasting";
 
-import Profile from "./components/Profile";
+import NewTemplateRequest from "./components/NewTemplateRequest";
+import TemplateRequests from "./components/TemplateRequests";
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
@@ -119,9 +122,37 @@ function App() {
             //Broadcasting Rote
             <Route path="/broadcast" element={
               userData.role === "Manager" ? (//Only Managers have Access to Broadcasting page
-                <Broadcasting baseURL={baseBulkMessagingURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} />
+                <Broadcasting baseBulkMessagingURL={baseBulkMessagingURL} baseUserSystemURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} />
               ) : (
                 <h1>Access Denied!!</h1>
+              )
+            } />
+
+            //Managers route for submiting new template request to admin
+            <Route path="/new_template_request" element={
+              userData.role === "Agent" && userData.role === "Admin" ? ( //Admin & Agents didnt have Access to this page
+                <h1>Access Denied!!</h1>
+              ) : (
+                <NewTemplateRequest
+                  baseBulkMessagingURL={baseBulkMessagingURL}
+                  baseUserSystemURL={baseUserSystemURL}
+                  userName={userData.name}
+                  userID={userData.user_id}
+                  setIsLogedin={setIsLogedin} />
+              )
+            } />
+
+            //Admin route for accessing new template request from manager
+            <Route path="/template_requests" element={
+              userData.role === "Agent" && userData.role === "Manager" ? ( //Managers & Agents didnt have Access to this page
+                <h1>Access Denied!!</h1>
+              ) : (
+                <TemplateRequests
+                  baseBulkMessagingURL={baseBulkMessagingURL}
+                  baseUserSystemURL={baseUserSystemURL}
+                  userName={userData.name}
+                  userID={userData.user_id}
+                  setIsLogedin={setIsLogedin} />
               )
             } />
 

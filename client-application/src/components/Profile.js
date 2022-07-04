@@ -22,7 +22,8 @@ function Profile({baseURL, setIsLogedin, userData, setUserData}) {
         if(response.status === 200){
           setUserData((curr) => {
             return {...curr, name: response.data.newName}
-          })
+          });
+          window.location = "/";
         }
       });
     }
@@ -30,14 +31,15 @@ function Profile({baseURL, setIsLogedin, userData, setUserData}) {
     const changePassword = async () => {
       axios.post(`${baseURL}/change_password`, newPassword, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
-          console.log(response.data);
+          // console.log(response.data);
+          window.location = "/";
         }
       });
     }
 
     return (
         <div className="rootCon">
-          <Sidebar role="Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="profile" />
+          <Sidebar role={userData.role} baseURL={baseURL} setIsLogedin={setIsLogedin} page="profile" />
 
           <div className="dataCon">
             <TopCon userName={userData.name} page="Profile"/>

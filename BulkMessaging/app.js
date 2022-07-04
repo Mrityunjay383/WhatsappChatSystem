@@ -13,6 +13,7 @@ const app = express();
 const {allOtpedUsers, allAprovedTemplates} = require("./helpers/getUsersOrTemplate");
 const {sendMessage} = require("./helpers/sendMessage");
 const Customer = require("./model/customer");
+const Template = require("./model/template");
 
 //middleware using cors with options
 app.use(cors({
@@ -70,6 +71,59 @@ app.get("/storedCustomers", async (req, res) => {
     res.status(200).json({users: allCustomers});
   }else{
     console.log("Some Error!!!");
+  }
+})
+
+app.post("/get_templates", async (req, res) => {
+  const {userID} = req.body;
+
+  const userTemplates = await Template.find({requestByUID: userID});
+
+  if(userTemplates){
+    return res.status(200).json({templates: userTemplates})
+  }
+
+  return res.status(404).send("Templates not found");
+})
+
+app.get("/get_all_templates", async (req, res) => {
+  const allTemplates = await Template.find();
+
+  if(allTemplates){
+    return res.status(200).json({allTemplates});
+  }
+  return res.status(404).send("Templates not found");
+
+})
+
+app.post("/add_new_template", async (req, res) => {
+  const {name, format, sample, requestByName, requestByUID} = req.body;
+
+  await Template.create({
+    name,
+    format,
+    sample,
+    requestByName,
+    requestByUID,
+    status: "Pending"
+  });
+
+  res.status(200).send("Done");
+
+})
+
+app.post("/updateTempStatus", async (req, res) => {
+  const {tempID, status} = req.body;
+
+  const template = await Template.findOne({_id: tempID});
+
+  if(template){
+    template.status = status;
+    template.save((err) => {
+      if(!err){
+        return res.status(200).send("Status Changed");
+      }
+    })
   }
 })
 

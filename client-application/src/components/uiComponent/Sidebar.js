@@ -48,6 +48,11 @@ function Sidebar({role, baseURL, setIsLogedin, page}) {
             <span>Managers</span>
           </a>
 
+          <a href="/template_requests" className={page === "templateRequests" ? "active" : "nonActive"}>
+            <AgentIcon />
+            <span>Template Requests</span>
+          </a>
+
           <a href="/create_new_user" className={page === "createNewUser" ? "active" : "nonActive"}>
             <NewUserIcon />
             <span>Create new User</span>
@@ -88,6 +93,11 @@ function Sidebar({role, baseURL, setIsLogedin, page}) {
           <a href="/broadcast" className={page === "broadcasting" ? "active" : "nonActive"}>
             <NewUserIcon />
             <span>Broadcast</span>
+          </a>
+
+          <a href="/new_template_request" className={page === "newTemplateRequest" ? "active" : "nonActive"}>
+            <NewUserIcon />
+            <span>New Template</span>
           </a>
 
           <a href="/create_new_user" className={page === "createNewUser" ? "active" : "nonActive"}>

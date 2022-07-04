@@ -5,7 +5,7 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-function Broadcasting({baseURL, setIsLogedin, userName}) {
+function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName}) {
 
     const [templates, setTemplated] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState({});
@@ -15,7 +15,7 @@ function Broadcasting({baseURL, setIsLogedin, userName}) {
 
     const getTemplates = async () => {
 
-      await axios.get(`${baseURL}/aprovedTemplates`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseBulkMessagingURL}/aprovedTemplates`, { validateStatus: false, withCredentials: true }).then((response) => {
         //setting the templates with the response from the API
         setTemplated(response.data.templates);
         setSelectedTemplate({...response.data.templates[0], example: JSON.parse(response.data.templates[0].meta).example});
@@ -26,13 +26,13 @@ function Broadcasting({baseURL, setIsLogedin, userName}) {
     const getOptedinUsers = async () => {
 
       let optedinUsers, storedUsers, toBePopulateUsers = [];
-      await axios.get(`${baseURL}/optedinUsers`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseBulkMessagingURL}/optedinUsers`, { validateStatus: false, withCredentials: true }).then((response) => {
         //setting the optedinUsers with the response from the API
         optedinUsers = response.data.users;
         // setOptedinUsers(response.data.users);
       });
 
-      await axios.get(`${baseURL}/storedCustomers`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseBulkMessagingURL}/storedCustomers`, { validateStatus: false, withCredentials: true }).then((response) => {
         //getting the stored users from the response from the API
         storedUsers = response.data.users;
         // setOptedinUsers(response.data.users);
@@ -62,7 +62,7 @@ function Broadcasting({baseURL, setIsLogedin, userName}) {
 
       const toBeBroadcastNo = [...selectedPhoneNo, ...newNumbersArr];
 
-      axios.post(`${baseURL}/broadcastMessage`, {message, toBeBroadcastNo}, {validateStatus: false, withCredentials: true}).then((response) => {
+      axios.post(`${baseBulkMessagingURL}/broadcastMessage`, {message, toBeBroadcastNo}, {validateStatus: false, withCredentials: true}).then((response) => {
         console.log(response.data);
       });
     }
@@ -74,7 +74,7 @@ function Broadcasting({baseURL, setIsLogedin, userName}) {
 
     return (
         <div className="rootCon">
-          <Sidebar role="Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="broadcasting" />
+          <Sidebar role="Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="broadcasting" />
 
           <div className="dataCon">
             <TopCon userName={userName} page="Broadcast"/>
