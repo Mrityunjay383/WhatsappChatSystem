@@ -97,7 +97,7 @@ function Sidebar({role, baseURL, setIsLogedin, page}) {
 
           <a href="/new_template_request" className={page === "newTemplateRequest" ? "active" : "nonActive"}>
             <NewUserIcon />
-            <span>New Template</span>
+            <span>Your Template</span>
           </a>
 
           <a href="/create_new_user" className={page === "createNewUser" ? "active" : "nonActive"}>

@@ -59,7 +59,9 @@ app.post("/broadcastMessage", async (req, res) => {
   const {message, toBeBroadcastNo} = req.body;
 
   for(let phoneNo of toBeBroadcastNo){
+    if(phoneNo !== ""){
       await sendMessage(message, phoneNo);
+    }
   }
   res.send("Broadcasting Done");
 })

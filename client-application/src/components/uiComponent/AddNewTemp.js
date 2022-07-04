@@ -17,7 +17,8 @@ function AddNewTemp({baseURL, userName, userID,}) {
 
   const subTemplate = async () => {
     axios.post(`${baseURL}/add_new_template`, newTemplate, {validateStatus: false, withCredentials: true}).then((response) => {
-      console.log(response.data);
+      // console.log(response.data);
+      window.location = "/";
     });
   }
 

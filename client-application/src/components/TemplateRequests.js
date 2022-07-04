@@ -15,9 +15,28 @@ function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin
     }
 
     const updateStatus = async (tempID, status) => {
-      axios.post(`${baseBulkMessagingURL}/get_all_templates`, {tempID, status},{validateStatus: false, withCredentials: true}).then((response) => {
+      axios.post(`${baseBulkMessagingURL}/updateTempStatus`, {tempID, status},{validateStatus: false, withCredentials: true}).then((response) => {
+        getTemplates();
         console.log(response.data);
       });
+    }
+
+    const StatusBtn = ({temp}) => {
+      if(temp.status === "Pending"){
+        return (
+          <button className="joinbtn statusBtn" onClick={() => {
+            updateStatus(temp._id, "Submitted");
+          }}>Submitted</button>
+        )
+      }else if(temp.status === "Submitted"){
+        return (
+          <button className="joinbtn statusBtn" onClick={() => {
+            updateStatus(temp._id, "Approved");
+          }}>Approved</button>
+        )
+      }else{
+        return (<></>);
+      }
     }
 
     useEffect(() => {
@@ -35,12 +54,22 @@ function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin
               {allTemplates.map((temp, index) => {
                 return (
                   <div className="populateTempCon" key={index}>
-                    <span>{temp.name}</span>
-                    <span>{temp.format}</span>
-                    <span>{temp.sample}</span>
-                    <span>{temp.status}</span>
-                    <span>{temp.requestByName}</span>
 
+                    <div className="tempConDet">
+                      <div>
+                        <h4>{temp.name}</h4>
+                        <span><b>Format: </b>{temp.format}</span><br/>
+                        <span><b>Sample: </b>{temp.sample}</span>
+                      </div>
+
+                      <div className="tempRightCon">
+                        <span><b>{temp.status}</b></span>
+                        <span><b>{temp.requestByName}</b></span>
+                      </div>
+                    </div>
+
+
+                    <StatusBtn temp={temp} />
                   </div>
 
                 )

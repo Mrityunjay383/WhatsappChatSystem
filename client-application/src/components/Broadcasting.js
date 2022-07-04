@@ -9,9 +9,17 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
     const [templates, setTemplated] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState({});
+
     const [optedinUsers, setOptedinUsers] = useState([]);
+    const [searchedOptedinUsers, setSearchedOptedinUsers] = useState([]);
+
+
     const [message, setMessage] = useState("");
     const [newNumbers, setNewNumbers] = useState("");
+
+    const [selectedNos, setSelectedNos] = useState([]);
+
+    const [populateMessage, setPopulateMessage] = useState("");
 
     const getTemplates = async () => {
 
@@ -50,27 +58,80 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
         }
       }
       setOptedinUsers(toBePopulateUsers);
+      setSearchedOptedinUsers(toBePopulateUsers);
     }
 
     const broadcast = async () => {
-      const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
-
-      let selectedPhoneNo = Array.from(checkboxes).map(i => i.value);
+      // const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+      //
+      // let selectedPhoneNo = Array.from(checkboxes).map(i => i.value);
 
       let newNumbersArr = newNumbers.split(",");
       newNumbersArr = await newNumbersArr.map((i) => i.replace(" ", ""))
 
-      const toBeBroadcastNo = [...selectedPhoneNo, ...newNumbersArr];
+      const toBeBroadcastNo = [...selectedNos, ...newNumbersArr];
 
-      axios.post(`${baseBulkMessagingURL}/broadcastMessage`, {message, toBeBroadcastNo}, {validateStatus: false, withCredentials: true}).then((response) => {
-        console.log(response.data);
-      });
+      if(toBeBroadcastNo.length > 1){
+        axios.post(`${baseBulkMessagingURL}/broadcastMessage`, {message, toBeBroadcastNo}, {validateStatus: false, withCredentials: true}).then((response) => {
+          console.log(response.data);
+          setPopulateMessage("Broadcasting Successfull");
+        });
+      }else{
+        console.log("No Number Selected");
+        setPopulateMessage("No Number Selected");
+      }
+
+    }
+
+    //searching functionality
+    const sortOptedinNumbers = (e) => {
+      const inp = e.target.value;
+
+      setSearchedOptedinUsers(() => {
+        return optedinUsers.filter((user) => {
+          return user.phoneNo.includes(inp);
+        })
+      })
+    }
+
+    const listSelectedNos = async () => {
+      const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+      let selectedPhoneNo = Array.from(checkboxes).map(i => i.value);
+
+      setSelectedNos(selectedPhoneNo);
+    }
+
+    const rmSelectedNo = (number) => {
+
+      const checkboxes = Array.from(document.querySelectorAll('input[type=checkbox]:checked'));
+
+      //Unchecking the checkboxes in the optedin list
+      for(let checkbox of checkboxes){
+        if(checkbox.value === number){
+          checkbox.checked = false;
+          break;
+        }
+      }
+
+      //Removing number for selectedNos
+      setSelectedNos((curr) => {
+        curr = curr.filter((num) => {
+          return num !== number
+        });
+        return curr;
+      })
     }
 
     useEffect(() => {
       getTemplates();
       getOptedinUsers();
     }, []);
+
+    useEffect(() => {
+      setTimeout(() => {
+        setPopulateMessage("");
+      }, 1000)
+    }, [populateMessage])
 
     return (
         <div className="rootCon">
@@ -112,11 +173,17 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
                 <div className="optinNoCon">
                   <h3>Otped In Numbers: </h3>
+                  <div>
+                    <input type="number" onChange={sortOptedinNumbers}/>
+                  </div>
                   <div className="numbersList">
-                    {optedinUsers.map((user, index) => {
+                    {searchedOptedinUsers.map((user, index) => {
                       return (
                         <div key={index}>
-                          <input type="checkbox" name={user.phoneNo} value={user.phoneNo} />
+                          <label onClick={listSelectedNos} className="checkboxCon">
+                            <input type="checkbox" name={user.phoneNo} value={user.phoneNo} />
+                            <span className="checkmark"></span>
+                          </label>
                           <label htmlFor={user.phoneNo}>{user.phoneNo}</label>
                           <span>{user.userName}</span>
                         </div>
@@ -135,8 +202,30 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
               </div>
 
+              <div className="selectedNoCon">
+                <h3>Selected Numbers: </h3>
+                <div className="selectedNumbersList">
+                  {selectedNos.length>0 ?
+                    selectedNos.map((number, index) => {
+                    return (
+                      <div key={index}>
+                        <span>{number}</span>
+                        <button className="rmSelectedNoBtn" onClick={(() => {
+                          rmSelectedNo(number);
+                        })}>&#9587;</button>
+                      </div>
+                    )
+                  }) :
+                  <span>No Number Selected...</span>
+
+                }
+                </div>
+              </div>
+
+
               <div className="brdBtnCon">
                 <button className="joinbtn brdCsBtn" onClick={broadcast}>Broadcast</button>
+                <span>{populateMessage}</span>
               </div>
 
             </div>
