@@ -84,12 +84,17 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
     }
 
     //searching functionality
-    const sortOptedinNumbers = (e) => {
+    const sortOptedinNumbers = (e, inpType) => {
       const inp = e.target.value;
 
       setSearchedOptedinUsers(() => {
         return optedinUsers.filter((user) => {
-          return user.phoneNo.includes(inp);
+          if(inpType === "Number"){
+            return user.phoneNo.includes(inp);
+          }else{
+            return user.userName.toLowerCase().includes(inp.toLowerCase());
+          }
+
         })
       })
     }
@@ -174,7 +179,12 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
                 <div className="optinNoCon">
                   <h3>Otped In Numbers: </h3>
                   <div>
-                    <input type="number" onChange={sortOptedinNumbers}/>
+                    <input type="number" onChange={(e) => {
+                      sortOptedinNumbers(e, "Number")
+                    }}/>
+                    <input type="text" onChange={(e) => {
+                      sortOptedinNumbers(e, "Name")
+                    }}/>
                   </div>
                   <div className="numbersList">
                     {searchedOptedinUsers.map((user, index) => {
