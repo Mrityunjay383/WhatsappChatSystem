@@ -1,6 +1,7 @@
 require("dotenv").config();//for using environment variables
 require("./config/database").connect();//Setting up the database connection
 
+
 const express = require("express");//For creating server
 const app = express();
 var bodyParser = require('body-parser')//for reading json from form data
