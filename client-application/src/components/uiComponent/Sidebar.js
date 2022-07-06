@@ -27,7 +27,7 @@ const AgentIcon = () => {
   </svg>
 }
 
-function Sidebar({role, baseURL, setIsLogedin, page}) {
+function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0}) {
     const logOut = async () => {
       await axios.get(`${baseURL}/auth/logout`, { validateStatus: false, withCredentials: true }).then((response) => {
         setIsLogedin(false);
@@ -50,7 +50,7 @@ function Sidebar({role, baseURL, setIsLogedin, page}) {
 
           <a href="/template_requests" className={page === "templateRequests" ? "active" : "nonActive"}>
             <AgentIcon />
-            <span>Template Requests</span>
+            <span>Template Requests <b className="floatNumber">{noOfPendingTemplates}</b></span>
           </a>
 
           <a href="/create_new_user" className={page === "createNewUser" ? "active" : "nonActive"}>

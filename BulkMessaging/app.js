@@ -91,8 +91,22 @@ app.get("/get_all_templates", async (req, res) => {
   const allTemplates = await Template.find();
 
   if(allTemplates){
-    allTemplates.reverse();
-    return res.status(200).json({allTemplates});
+
+    let pendingAtTop = [];
+    let pendingIndex = 0, submittedIndex = 0;
+    for(let template of allTemplates){
+      if(template.status === "Pending"){
+        pendingAtTop.unshift(template);
+        pendingIndex++;
+      }else if(template.status === "Submitted"){
+        pendingAtTop.splice(pendingIndex, 0, template);
+        submittedIndex++;
+      }else{
+        pendingAtTop.splice(pendingIndex+submittedIndex, 0, template);
+      }
+    }
+
+    return res.status(200).json({allTemplates: pendingAtTop});
   }
   return res.status(404).send("Templates not found");
 

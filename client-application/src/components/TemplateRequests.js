@@ -4,7 +4,7 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName}) {
+function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, noOfPendingTemplates}) {
 
     const [allTemplates, setAllTemplates] = useState([]);
 
@@ -45,7 +45,7 @@ function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin
 
     return (
         <div className="rootCon">
-          <Sidebar role="Admin" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="templateRequests" />
+          <Sidebar role="Admin" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="templateRequests" noOfPendingTemplates={noOfPendingTemplates} />
 
           <div className="dataCon">
             <TopCon userName={userName} page="Template Requests"/>

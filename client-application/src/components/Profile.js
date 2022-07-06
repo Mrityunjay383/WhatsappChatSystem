@@ -4,7 +4,7 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-function Profile({baseURL, setIsLogedin, userData, setUserData}) {
+function Profile({baseURL, setIsLogedin, userData, setUserData, noOfPendingTemplates}) {
 
     const [newName, setNewName] = useState({
       firstName: userData.name.split(" ")[0],
@@ -39,7 +39,7 @@ function Profile({baseURL, setIsLogedin, userData, setUserData}) {
 
     return (
         <div className="rootCon">
-          <Sidebar role={userData.role} baseURL={baseURL} setIsLogedin={setIsLogedin} page="profile" />
+          <Sidebar role={userData.role} baseURL={baseURL} setIsLogedin={setIsLogedin} page="profile" noOfPendingTemplates={noOfPendingTemplates}/>
 
           <div className="dataCon">
             <TopCon userName={userData.name} page="Profile"/>

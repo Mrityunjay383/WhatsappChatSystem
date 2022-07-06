@@ -39,6 +39,7 @@ function App() {
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertData, setAlertData] = useState({});
+  const [noOfPendingTemplates, setNoOfPendingTemplates] = useState(0);
 
   const ChatPageRender = () => {
     return (
@@ -74,6 +75,12 @@ function App() {
     });
   }
 
+  const getNoOfPendingTemplates = async () => {
+    await axios.get(`${baseChatSystemURL}/noOfPendingTemplates `, { validateStatus: false, withCredentials: true }).then((response) => {
+      setNoOfPendingTemplates(response.data.noOfPendingTemplates);
+    });
+  }
+
   const changeLoginState = (user) => {//Function for changing the State after successFull Login
     setUserData(user);
     setIsLogedin(true);
@@ -81,20 +88,21 @@ function App() {
 
   useEffect(() => {
     socket.on("new_temp", (data) => {
-      console.log(data);
+      setNoOfPendingTemplates(data.noOfPendingTemplates)
       setShowAlert(true);
       setAlertData(data);
     })
   }, [socket]);
 
   useEffect(() => {//validating JWT on every time the component mount
+    getNoOfPendingTemplates();
     valToken();
   }, []);
 
   //Rendring dashboard based on the role of the user
   const Dashboard = ({role}) => {
     if(role === "Admin"){
-      return <AdminDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
+      return <AdminDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} noOfPendingTemplates={noOfPendingTemplates}/>
     }else if(role === "Manager"){
       return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
     }else if(role === "Agent"){
@@ -119,7 +127,7 @@ function App() {
             <Route path="/profile" element={
               <div>
                 {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData}/>
+                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData} noOfPendingTemplates={noOfPendingTemplates}/>
               </div>
             } />
 
@@ -139,7 +147,7 @@ function App() {
               ) : (
                 <div>
                   {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                  <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} userID={userData.user_id}/>
+                  <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} userID={userData.user_id} noOfPendingTemplates={noOfPendingTemplates}/>
                 </div>
               )
             } />
@@ -180,7 +188,8 @@ function App() {
                     baseBulkMessagingURL={baseBulkMessagingURL}
                     baseUserSystemURL={baseUserSystemURL}
                     userName={userData.name}
-                    setIsLogedin={setIsLogedin} />
+                    setIsLogedin={setIsLogedin}
+                    noOfPendingTemplates={noOfPendingTemplates}/>
                 </div>
 
               )
@@ -193,7 +202,7 @@ function App() {
 
                 <div>
                   {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                  <CreateNewUser baseURL={baseUserSystemURL} userData={userData} setIsLogedin={setIsLogedin}/>
+                  <CreateNewUser baseURL={baseUserSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfPendingTemplates={noOfPendingTemplates}/>
                 </div>
               )
             } />

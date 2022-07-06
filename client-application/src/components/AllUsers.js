@@ -5,7 +5,7 @@ import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
 
-function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID}) {
+function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, noOfPendingTemplates}) {
     const [usersList, setusersList] = useState([]);
 
     const getUsers = async () => {
@@ -57,7 +57,7 @@ function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID}) 
 
     return (
         <div className="rootCon">
-            <Sidebar role = {userRole} baseURL={baseURL} setIsLogedin={setIsLogedin} page={getRole}/>
+            <Sidebar role = {userRole} baseURL={baseURL} setIsLogedin={setIsLogedin} page={getRole} noOfPendingTemplates={noOfPendingTemplates}/>
             <div className="dataCon">
               <TopCon userName={userName} page={getRole === "agents" ? "Agents" : "Managers"} />
 

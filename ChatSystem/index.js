@@ -261,6 +261,13 @@ app.get("/assigned", (req, res) => {
   res.status(200).json({assignList})
 });
 
+app.get("/noOfPendingTemplates", async (req, res) => {
+  const pendingTemplates = await Template.find({status: "Pending"});
+  const noOfPendingTemplates = pendingTemplates.length;
+
+  res.status(200).json({noOfPendingTemplates});
+})
+
 app.post("/add_new_template", async (req, res) => {
   const {name, format, sample, requestByName, requestByUID} = req.body;
 
@@ -275,7 +282,10 @@ app.post("/add_new_template", async (req, res) => {
     status: "Pending"
   });
 
-  await io.emit("new_temp", {name, requestByName});
+  const pendingTemplates = await Template.find({status: "Pending"});
+  const noOfPendingTemplates = pendingTemplates.length;
+
+  await io.emit("new_temp", {name, requestByName, noOfPendingTemplates});
 
   res.status(200).send("Done");
 
