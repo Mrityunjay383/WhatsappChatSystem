@@ -264,16 +264,16 @@ app.get("/assigned", (req, res) => {
 app.post("/add_new_template", async (req, res) => {
   const {name, format, sample, requestByName, requestByUID} = req.body;
 
-  // sendMessage(`A new template (${name}) is requested by ${requestByName}.`, process.env.ADMIN_NUMBER);
+  sendMessage(`A new template (${name}) is requested by ${requestByName}.`, process.env.ADMIN_NUMBER);
 
-  // await Template.create({
-  //   name,
-  //   format,
-  //   sample,
-  //   requestByName,
-  //   requestByUID,
-  //   status: "Pending"
-  // });
+  await Template.create({
+    name,
+    format,
+    sample,
+    requestByName,
+    requestByUID,
+    status: "Pending"
+  });
 
   await io.emit("new_temp", {name, requestByName});
 
