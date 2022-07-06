@@ -470,5 +470,6 @@ body {
   justify-content: space-between;
 }
 .statusBtn{
-  width: 10vw;
+  max-width: 6vw;
+  padding: 3px 5px;
 }

@@ -5,12 +5,14 @@ function AlertBox({setShowAlert, alertData}) {
     return (
         <div className="popUpCon">
           <div className="popUp">
-            <h3>Alert: New Template Request</h3>
+            <h3>New Template Request</h3>
             <div>
-              <span>Template Name: {alertData.name}</span>
-              <span>Requested by: {alertData.requestByName}</span>
+              <span>Template Name: <b>{alertData.name}</b></span>
+              <span>Requested by: <b>{alertData.requestByName}</b></span>
             </div>
-            <button onClick={() => {
+            <a className="alertBtn" href="/template_requests">Go to Request</a>
+
+            <button className="alertBtn" onClick={() => {
               setShowAlert(false);
             }}>Okay</button>
           </div>

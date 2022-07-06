@@ -63,8 +63,8 @@ function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin
                       </div>
 
                       <div className="tempRightCon">
-                        <span><b>{temp.status}</b></span>
-                        <span><b>{temp.requestByName}</b></span>
+                        <span>{temp.status}</span>
+                        <span>{temp.requestByName}</span>
                       </div>
                     </div>
 
