@@ -19,6 +19,9 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
     const [selectedNos, setSelectedNos] = useState([]);
 
+    const [selNosByCheck, setSelNosByCheck] = useState([]);
+    const [selNosByText, setSelNosByText] = useState([]);
+
     const [populateMessage, setPopulateMessage] = useState("");
 
     const getTemplates = async () => {
@@ -101,12 +104,27 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
     const listSelectedNos = async () => {
       const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
-      let selectedPhoneNo = Array.from(checkboxes).map(i => i.value);
+      let selectedPhoneNo = await Array.from(checkboxes).map(i => i.value);
 
-      setSelectedNos(selectedPhoneNo);
+
+      setSelNosByCheck(selectedPhoneNo);
     }
 
     const rmSelectedNo = (number) => {
+
+      if(newNumbers.includes(number)){
+        let filteredNumbers = newNumbers.replace(number+",", "");
+        filteredNumbers = filteredNumbers.replace(number, "");
+        setNewNumbers(filteredNumbers);
+
+        setSelNosByText((curr) => {
+          curr = curr.filter((num, index) => {
+            return num != number
+          });
+          return curr;
+        })
+      }
+
 
       const checkboxes = Array.from(document.querySelectorAll('input[type=checkbox]:checked'));
 
@@ -118,7 +136,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
         }
       }
 
-      //Removing number for selectedNos
+      //Removing number for SelNosByCheck
       setSelectedNos((curr) => {
         curr = curr.filter((num) => {
           return num !== number
@@ -131,6 +149,11 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
       getTemplates();
       getOptedinUsers();
     }, []);
+
+    useEffect(() => {
+      // console.log(selNosByText);
+      setSelectedNos([...selNosByCheck, ...selNosByText])
+    }, [selNosByCheck, selNosByText])
 
     useEffect(() => {
       setTimeout(() => {
@@ -207,29 +230,37 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
                   <span>Enter comma(,) seperated numbers</span><br/>
                   <textarea onChange={(e) => {
                     setNewNumbers(e.target.value);
+                    let newNumbersArr = e.target.value.split(",");
+                    newNumbersArr = newNumbersArr.map((i) => i.replace(" ", ""))
+                    newNumbersArr = newNumbersArr.filter((number) => {
+                      return number.length == 12
+                    });
+
+                    setSelNosByText(newNumbersArr);
+
                   }} value={newNumbers}></textarea><br/>
                 </div>
 
-              </div>
+                <div className="selectedNoCon">
+                  <h3>Selected Numbers: </h3>
+                  <div className="selectedNumbersList">
+                    {selectedNos.length>0 ?
+                      selectedNos.map((number, index) => {
+                      return (
+                        <div key={index}>
+                          <span>{number}</span>
+                          <button className="rmSelectedNoBtn" onClick={(() => {
+                            rmSelectedNo(number);
+                          })}>&#9587;</button>
+                        </div>
+                      )
+                    }) :
+                    <span>No Number Selected...</span>
 
-              <div className="selectedNoCon">
-                <h3>Selected Numbers: </h3>
-                <div className="selectedNumbersList">
-                  {selectedNos.length>0 ?
-                    selectedNos.map((number, index) => {
-                    return (
-                      <div key={index}>
-                        <span>{number}</span>
-                        <button className="rmSelectedNoBtn" onClick={(() => {
-                          rmSelectedNo(number);
-                        })}>&#9587;</button>
-                      </div>
-                    )
-                  }) :
-                  <span>No Number Selected...</span>
-
-                }
+                  }
+                  </div>
                 </div>
+
               </div>
 
 
