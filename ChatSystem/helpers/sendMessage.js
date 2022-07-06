@@ -24,7 +24,7 @@ exports.sendMessage = (message, destination) => {
   };
 
   axios.request(options).then(function (response) {
-
+    console.log("Message Sent");
   }).catch(function (error) {
     console.error(error);
   });

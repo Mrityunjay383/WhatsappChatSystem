@@ -6,7 +6,7 @@ import TopCon from "./uiComponent/TopCon";
 
 import AddNewTemp from "./uiComponent/AddNewTemp";
 
-function NewTemplateRequest({baseBulkMessagingURL, baseUserSystemURL, userName, userID, setIsLogedin}) {
+function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSystemURL, userName, userID, setIsLogedin}) {
 
     const [showAddCom, setShowAddComp] = useState(false);
 
@@ -42,7 +42,7 @@ function NewTemplateRequest({baseBulkMessagingURL, baseUserSystemURL, userName, 
               }}>Add More</button>
 
               {showAddCom ? (
-                <AddNewTemp baseURL={baseBulkMessagingURL} userName={userName} userID={userID}/>
+                <AddNewTemp baseURL={baseChatSystemURL} userName={userName} userID={userID}/>
               ) : (
                 <></>
               )}
@@ -56,7 +56,6 @@ function NewTemplateRequest({baseBulkMessagingURL, baseUserSystemURL, userName, 
                       <span>{temp.sample}</span>
                       <span>{temp.status}</span>
                     </div>
-
                   )
                 })}
               </div>

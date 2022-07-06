@@ -3,6 +3,8 @@ import "./App.css";
 import axios from "axios";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
+import {socket} from "./components/chatComponents/socket";
+
 import Profile from "./components/Profile";
 
 import AllUsers from "./components/AllUsers";
@@ -18,6 +20,8 @@ import Broadcasting from "./components/Broadcasting";
 
 import NewTemplateRequest from "./components/NewTemplateRequest";
 import TemplateRequests from "./components/TemplateRequests";
+import AlertBox from "./components/uiComponent/AlertBox";
+
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
@@ -33,11 +37,14 @@ function App() {
   const [isLogedin, setIsLogedin] = useState(false);
   const [userData, setUserData] = useState({});
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertData, setAlertData] = useState({});
+
   const ChatPageRender = () => {
     return (
       <>
         <React.Suspense fallback={<></>}>
-          {(userData.role === "Agent") && <ChatPage baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />}
+          {(userData.role === "Agent") && <ChatPage socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />}
         </React.Suspense>
       </>
     )
@@ -48,7 +55,7 @@ function App() {
     return (
       <>
         <React.Suspense fallback={<></>}>
-          {(userData.role === "Manager") && <ManagerAssign baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin}/>}
+          {(userData.role === "Manager") && <ManagerAssign socket={socket} baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin}/>}
         </React.Suspense>
       </>
     )
@@ -72,6 +79,14 @@ function App() {
     setIsLogedin(true);
   }
 
+  useEffect(() => {
+    socket.on("new_temp", (data) => {
+      console.log(data);
+      setShowAlert(true);
+      setAlertData(data);
+    })
+  }, [socket]);
+
   useEffect(() => {//validating JWT on every time the component mount
     valToken();
   }, []);
@@ -92,13 +107,20 @@ function App() {
       <div className="App">
         {isLogedin ? (
           <Routes>
+
             //Home Route have Dashboard
             <Route path="/" element={
-              <Dashboard role={userData.role} />
+              <div>
+                {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
+                <Dashboard role={userData.role} />
+              </div>
             } />
 
             <Route path="/profile" element={
-              <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData}/>
+              <div>
+                {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
+                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData}/>
+              </div>
             } />
 
             //agents Route have AllUsers with role agents
@@ -115,7 +137,10 @@ function App() {
               userData.role === "Agent" || userData.role === "Manager" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} userID={userData.user_id}/>
+                <div>
+                  {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
+                  <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} userID={userData.user_id}/>
+                </div>
               )
             } />
 
@@ -135,6 +160,7 @@ function App() {
               ) : (
                 <NewTemplateRequest
                   baseBulkMessagingURL={baseBulkMessagingURL}
+                  baseChatSystemURL={baseChatSystemURL}
                   baseUserSystemURL={baseUserSystemURL}
                   userName={userData.name}
                   userID={userData.user_id}
@@ -147,12 +173,16 @@ function App() {
               userData.role === "Agent" && userData.role === "Manager" ? ( //Managers & Agents didnt have Access to this page
                 <h1>Access Denied!!</h1>
               ) : (
-                <TemplateRequests
-                  baseBulkMessagingURL={baseBulkMessagingURL}
-                  baseUserSystemURL={baseUserSystemURL}
-                  userName={userData.name}
-                  userID={userData.user_id}
-                  setIsLogedin={setIsLogedin} />
+
+                <div>
+                  {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
+                  <TemplateRequests
+                    baseBulkMessagingURL={baseBulkMessagingURL}
+                    baseUserSystemURL={baseUserSystemURL}
+                    userName={userData.name}
+                    setIsLogedin={setIsLogedin} />
+                </div>
+
               )
             } />
 
@@ -160,7 +190,11 @@ function App() {
               userData.role === "Agent" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
               ) : (
-                <CreateNewUser baseURL={baseUserSystemURL} userData={userData} setIsLogedin={setIsLogedin}/>
+
+                <div>
+                  {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
+                  <CreateNewUser baseURL={baseUserSystemURL} userData={userData} setIsLogedin={setIsLogedin}/>
+                </div>
               )
             } />
 

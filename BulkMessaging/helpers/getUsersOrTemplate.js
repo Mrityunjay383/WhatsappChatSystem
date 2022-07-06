@@ -42,7 +42,7 @@ exports.allAprovedTemplates = async () => {
   });
 
   const allAprovedTemplates = await allTemplates.filter((template) => {
-    return template.status === "APPROVED"
+    return template.status === "APPROVED" && template.elementName !== "app_template_notification"
   });
 
   return allAprovedTemplates;

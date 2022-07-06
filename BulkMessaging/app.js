@@ -50,7 +50,6 @@ app.get("/optedinUsers", async (req, res) => {
 
 app.get("/aprovedTemplates", async (req, res) => {
   const templates = await allAprovedTemplates();
-
   res.status(200).json({templates});
 });
 
@@ -82,7 +81,7 @@ app.post("/get_templates", async (req, res) => {
   const userTemplates = await Template.find({requestByUID: userID});
 
   if(userTemplates){
-    return res.status(200).json({templates: userTemplates})
+    return res.status(200).json({templates: userTemplates.reverse()})
   }
 
   return res.status(404).send("Templates not found");
@@ -92,27 +91,12 @@ app.get("/get_all_templates", async (req, res) => {
   const allTemplates = await Template.find();
 
   if(allTemplates){
+    allTemplates.reverse();
     return res.status(200).json({allTemplates});
   }
   return res.status(404).send("Templates not found");
 
-})
-
-app.post("/add_new_template", async (req, res) => {
-  const {name, format, sample, requestByName, requestByUID} = req.body;
-
-  await Template.create({
-    name,
-    format,
-    sample,
-    requestByName,
-    requestByUID,
-    status: "Pending"
-  });
-
-  res.status(200).send("Done");
-
-})
+});
 
 app.post("/updateTempStatus", async (req, res) => {
   const {tempID, status} = req.body;

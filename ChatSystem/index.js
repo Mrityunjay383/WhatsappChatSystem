@@ -16,6 +16,8 @@ const PORT = process.env.PORT || 3001
 
 const Chat = require("./model/chat");
 const Customer = require("./model/customer");
+const Template = require("./model/template");
+
 
 const activeSocketRooms = require("./helpers/activeSocketRooms");
 const {otpedinUser} = require("./helpers/checkUserOptedin");
@@ -257,6 +259,26 @@ app.post("/assign_agent", (req, res) => {
 //route to get all the chats which are assigned by the manager
 app.get("/assigned", (req, res) => {
   res.status(200).json({assignList})
+});
+
+app.post("/add_new_template", async (req, res) => {
+  const {name, format, sample, requestByName, requestByUID} = req.body;
+
+  // sendMessage(`A new template (${name}) is requested by ${requestByName}.`, process.env.ADMIN_NUMBER);
+
+  // await Template.create({
+  //   name,
+  //   format,
+  //   sample,
+  //   requestByName,
+  //   requestByUID,
+  //   status: "Pending"
+  // });
+
+  await io.emit("new_temp", {name, requestByName});
+
+  res.status(200).send("Done");
+
 });
 
 

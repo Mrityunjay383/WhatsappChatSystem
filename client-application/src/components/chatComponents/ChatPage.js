@@ -7,10 +7,7 @@ import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 
-import {socket} from "../chatComponents/socket";
-
-
-function ChatPage({userData, baseURL, setIsLogedin}) {
+function ChatPage({socket, userData, baseURL, setIsLogedin}) {
 
     const [activeRooms, setActiveRooms] = useState([]);//store all active romms exist
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents

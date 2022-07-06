@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import axios from "axios";
 
-import {socket} from "./chatComponents/socket";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
 
-function ManagerAsignPage({baseURL, userName, setIsLogedin}) {
+function ManagerAsignPage({socket, baseURL, userName, setIsLogedin}) {
 
 
     const [activeRooms, setActiveRooms] = useState([]);
