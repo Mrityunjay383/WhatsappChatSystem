@@ -22,6 +22,15 @@ const userSchema = new mongoose.Schema({
   creatorUID: {
     type: String,
   },
+  assignedNumber: {
+    type: Number,
+  },
+  appName: {
+    type: String,
+  },
+  apiKey: {
+    type: String,
+  },
   token: {
     type: String,
   }

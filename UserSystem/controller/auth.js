@@ -7,38 +7,64 @@ exports.register = async (req, res) => {
 
   try {
 
-    const {firstName, lastName, email, password, role, creatorUID} = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+      creatorUID,
+      assignedNumber,
+      appName,
+      apiKey
+    } = req.body;
 
-    if(!(firstName && lastName && email && password && role)){
+    if (!(firstName && lastName && email && password && role)) {
       res.status(422).send("All fields are required");
     }
-    if(req.userData.role !== role){
-      const existingUser = await User.findOne({ email });
-      if(existingUser){
+    if (req.userData.role !== role) {
+      const existingUser = await User.findOne({
+        email
+      });
+      if (existingUser) {
         return res.status(401).send("User already exist");
       }
 
       const encPassword = await bcrypt.hash(password, 10);
 
-      const user = await User.create({
-        firstName,
-        lastName,
-        email: email.toLowerCase(),
-        password: encPassword,
-        creatorUID,
-        role
-      });
+      let user;
+      console.log(role);
+
+      if(role === "Manager"){
+        user = await User.create({
+          firstName,
+          lastName,
+          email: email.toLowerCase(),
+          password: encPassword,
+          role,
+          assignedNumber,
+          appName,
+          apiKey
+        });
+      }else{
+        user = await User.create({
+          firstName,
+          lastName,
+          email: email.toLowerCase(),
+          password: encPassword,
+          creatorUID,
+          role
+        });
+      }
 
       //token
-      const token = jwt.sign(
-        {
+      const token = jwt.sign({
           user_id: user._id,
           email,
           role: user.role,
           name: `${user.firstName} ${user.lastName}`
         },
-        process.env.SECRET_KEY,
-        {
+        process.env.SECRET_KEY, {
           expiresIn: "2h"
         }
       );
@@ -48,7 +74,7 @@ exports.register = async (req, res) => {
       user.password = undefined;
 
       return res.status(201).json(user);
-    }else{
+    } else {
       return res.status(403).send("Access Denide!! You can't add new a manager");
     }
 
@@ -62,22 +88,25 @@ exports.login = async (req, res) => {
 
   try {
 
-    const {email, password} = req.body;
+    const {
+      email,
+      password
+    } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      email
+    });
 
-    if(user && (await bcrypt.compare(password, user.password))){
+    if (user && (await bcrypt.compare(password, user.password))) {
 
       //token
-      const token = jwt.sign(
-        {
+      const token = jwt.sign({
           user_id: user._id,
           email,
           role: user.role,
           name: `${user.firstName} ${user.lastName}`
         },
-        process.env.SECRET_KEY,
-        {
+        process.env.SECRET_KEY, {
           expiresIn: "2h"
         }
       );
@@ -86,7 +115,7 @@ exports.login = async (req, res) => {
 
       // Setting Up cookies
       const options = {
-        expires: new Date(Date.now() + 24*60*60*1000),
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         httpOnly: true
       };
 

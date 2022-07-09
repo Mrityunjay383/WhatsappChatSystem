@@ -15,7 +15,10 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates}) 
       lastName: "",
       email: "",
       password: "",
-      role: ""
+      role: "",
+      assignedNumber: "",
+      appName: "",
+      apiKey: ""
     });
 
     const regNewUser = () => {
@@ -99,6 +102,38 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates}) 
 
                 </select>
               </div>
+              <br />
+
+              {userData.role === "Admin" ? (
+                <div>
+                  <div className="form-group">
+                    <label>Assign Number:</label>
+                    <input type="number" className="form-control" placeholder="Enter Number" onChange={(e) => {
+                      setNewUserData((currObj) => {
+                        return {...currObj, assignedNumber: e.target.value}
+                      });
+                    }}/>
+                  </div>
+                  <div className="form-group">
+                    <label>App Name:</label>
+                    <input type="text" className="form-control" placeholder="Enter App Name" onChange={(e) => {
+                      setNewUserData((currObj) => {
+                        return {...currObj, appName: e.target.value}
+                      });
+                    }}/>
+                  </div>
+                  <div className="form-group">
+                    <label>API Key:</label>
+                    <input type="text" className="form-control" placeholder="Enter API Key" onChange={(e) => {
+                      setNewUserData((currObj) => {
+                        return {...currObj, apiKey: e.target.value}
+                      });
+                    }}/>
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
 
 
               <button className="joinbtn subBtn" onClick={regNewUser}>Submit</button>
