@@ -24,7 +24,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
       await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
         await setActiveAgents( () => {
           return response.data.activeAgents.filter((agent) => {
-            return agent.email !== userData.email
+            return agent.email !== userData.email && agent.creatorUID === userData.creatorUID
           })
         });
       });
@@ -34,7 +34,14 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     const getRooms = async () => {
 
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
-        setActiveRooms(response.data.rooms);
+        const rooms = response.data.chats;
+
+        for(let i=0; i < rooms.length; i++){
+          if(rooms[i].managerID !== userData.creatorUID){
+            rooms.splice(i, 1);
+          }
+        }
+        setActiveRooms(rooms);
       });
     }
 
@@ -155,7 +162,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     }
 
     useEffect(() => {
-      socket.emit("Agent", {email: userData.email, name: userData.name, id: socket.id});
+      socket.emit("Agent", {email: userData.email, name: userData.name, id: socket.id, creatorUID: userData.creatorUID});
       getRooms();
       getAssignedChats();
       getActiveAgents();
@@ -268,11 +275,12 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
                     {activeRooms.map((room, index) => {
                       return (
                         <div key={index}>
-                          {room}
+                          {room.room}
                           <button className="joinbtn" onClick={() => {
-                            joinRoom(room)
+                            joinRoom(room.room)
                           }}>Join</button>
-                        </div>)
+                        </div>
+                      )
                     })}
                   </div>
 
@@ -301,6 +309,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
                       <Chat
                         socket={socket}
                         username="Agent"
+                        creatorUID={userData.creatorUID}
                         currActiveChat={currActiveChat}
                         setCurrActiveChat={setCurrActiveChat}
                         currJoinedChats={currJoinedChats}

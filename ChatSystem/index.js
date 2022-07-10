@@ -13,6 +13,7 @@ const axios = require("axios").default;
 const { URLSearchParams } = require('url');
 
 const PORT = process.env.PORT || 3001
+const baseUserSystemURL = "http://localhost:3002";
 
 const Chat = require("./model/chat");
 const Customer = require("./model/customer");
@@ -101,8 +102,16 @@ io.on("connection", (socket) => {
 
   //listener when a new message will be send from client side
   socket.on("send_message", async (messageData) => {
+
+    let managerDel;
+    await axios.post(`${baseUserSystemURL}/indi_user`, {userId: messageData.creatorUID}, {validateStatus: false, withCredentials: true}).then((response) => {
+      if(response.status === 200){
+        managerDel = response.data.foundUser;
+      }
+    });
+
     //Sending message
-    await sendMessage(messageData.message, messageData.phoneNo);
+    await sendMessage(messageData.message, messageData.phoneNo, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
   });
 
   //listener for disconnecting connection between customer and chat
@@ -159,11 +168,15 @@ io.on("connection", (socket) => {
 app.post("/hook", async (req, res) => {
   const {type, payload} = req.body
 
+  let managerDel;
   //Checking the request is an incoming message form whatsapp
   if(type === 'message'){
 
-    // console.log(req.body);
-
+    await axios.post(`${baseUserSystemURL}/indi_user`, {appName: req.body.app}, {validateStatus: false, withCredentials: true}).then((response) => {
+      if(response.status === 200){
+        managerDel = response.data.foundUser;
+      }
+    });
     //storing a new user in the database if already not exist
     const user = await Customer.findOne({userPhoneNo: payload.source});
 
@@ -176,7 +189,7 @@ app.post("/hook", async (req, res) => {
     }
 
 
-    await otpedinUser(payload.sender.dial_code, payload.sender.phone);
+    await otpedinUser(payload.sender.dial_code, payload.sender.phone, managerDel);
 
     //Checking if an agent is alreday joined the room
     const roomsWhichHaveAgent = await activeSocketRooms(req);
@@ -211,7 +224,8 @@ app.post("/hook", async (req, res) => {
       activeChats.push({
         room: payload.sender.name,
         messages: [payload.payload.text],
-        phoneNo: payload.sender.phone
+        phoneNo: payload.sender.phone,
+        managerID: managerDel._id
       })
       io.sockets.emit("broadcast", {});
 
@@ -225,21 +239,37 @@ app.post("/hook", async (req, res) => {
 app.get("/active_rooms", async (req, res) => {
 
     // storing active chat names in chats array
-    const chats = activeChats.map(i => i.room);
+    const chats = activeChats
+
+    // console.log("From Get Rooms:", activeChats);
 
     //checking if the room didnt already exist in the assignList
     for(i = 0; i < assignList.length; i++){
+      let isExist = false;
+      for(j = 0; i < chats.length; j++){
+        if(chats[j].room === assignList[i].room){
+          chats.splice(j, 1);
+          isExist = true;
+          break;
+        }
+      }
 
-      const roomIndex = chats.indexOf(assignList[i].room)
-      if(roomIndex !== -1){
-        //if room exist in both arrays, this will remove that room from rooms array
-        chats.splice(roomIndex, 1);
-      }else{
-        //if room didnt exist in both arrays, this will remove that room from assignList array
+      if(!isExist){
         assignList.splice(i, 1);
       }
+
+
+      // const roomIndex = chats.indexOf(assignList[i].room)
+      // if(roomIndex !== -1){
+      //   //if room exist in both arrays, this will remove that room from rooms array
+      //   chats.splice(roomIndex, 1);
+      // }else{
+      //   //if room didnt exist in both arrays, this will remove that room from assignList array
+      //   assignList.splice(i, 1);
+      // }
     }
-    res.json({rooms: chats});
+
+    res.json({chats});
 })
 
 app.get("/active_agents", (req, res) => {

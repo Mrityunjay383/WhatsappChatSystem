@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
 
-function Chat({ socket, username, currActiveChat, currJoinedChats, setCurrActiveChat, setCurrJoinedChat }) {
+function Chat({ socket, username, creatorUID, currActiveChat, currJoinedChats, setCurrActiveChat, setCurrJoinedChat }) {
   const [currentMessage, setCurrentMessage] = useState("");
 
 
@@ -14,6 +14,7 @@ function Chat({ socket, username, currActiveChat, currJoinedChats, setCurrActive
         author: username,
         phoneNo: currActiveChat.phoneNo,
         message: currentMessage,
+        creatorUID: creatorUID,
         time:
           new Date(Date.now()).getHours() +
           ":" +

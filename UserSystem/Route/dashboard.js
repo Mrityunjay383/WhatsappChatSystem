@@ -11,7 +11,7 @@ router.get("/", valToken, controller.home);
 router.get("/agents", valToken, isAdminOrManager, controller.agents);
 
 //Getting specific user route
-router.get("/indi_user", valToken, controller.indiUser);
+router.post("/indi_user", controller.indiUser);
 
 //Deleteing user for database
 router.post("/del_agent", valToken, isAdminOrManager, controller.delAgent);

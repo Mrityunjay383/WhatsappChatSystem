@@ -104,6 +104,7 @@ exports.login = async (req, res) => {
           user_id: user._id,
           email,
           role: user.role,
+          creatorUID: user.creatorUID,
           name: `${user.firstName} ${user.lastName}`
         },
         process.env.SECRET_KEY, {

@@ -1,14 +1,14 @@
 const axios = require("axios").default;
 const { URLSearchParams } = require('url');
 
-exports.otpedinUser = async (dial_code, phone) => {
+exports.otpedinUser = async (dial_code, phone, managerDel) => {
 
   let optedinUsers = [];
 
   const optionsForGet = {
     method: 'GET',
-    url: `https://api.gupshup.io/sm/api/v1/users/${process.env.GUPSHUP_APP_NAME}`,
-    headers: {apikey: process.env.GUPSHUP_API_KEY}
+    url: `https://api.gupshup.io/sm/api/v1/users/${managerDel.appName}`,
+    headers: {apikey: managerDel.apiKey}
   };
 
   await axios.request(optionsForGet).then(function (response) {
@@ -29,9 +29,9 @@ exports.otpedinUser = async (dial_code, phone) => {
 
   const optionsForPost = {
     method: 'POST',
-    url: `https://api.gupshup.io/sm/api/v1/app/opt/in/${process.env.GUPSHUP_APP_NAME}`,
+    url: `https://api.gupshup.io/sm/api/v1/app/opt/in/${managerDel.appName}`,
     headers: {
-      apikey: process.env.GUPSHUP_API_KEY,
+      apikey: managerDel.apiKey,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     data: encodedParams,

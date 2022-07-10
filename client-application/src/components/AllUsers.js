@@ -48,6 +48,17 @@ function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, n
         <div className="userCard">
           <h3>{user.firstName} {user.lastName}</h3>
           <p>{user.email}</p>
+
+          {getRole === "managers" ? (
+            <div>
+              <p>{user.assignedNumber}</p>
+              <p>{user.appName}</p>
+              <p>{user.apiKey}</p>
+            </div>
+          ): (
+            <></>
+          )}
+
           <button className="rmBtn" value={user._id} onClick={(e) => {
             delUser(e.target.value);
           }}>Remove</button>

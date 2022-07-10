@@ -17,7 +17,7 @@ exports.agents = async (req, res) => {
       role: "Agent"
     }, (err, foundAgents) => {
 
-      for(let agent of foundAgents){
+      for (let agent of foundAgents) {
         agent.password = undefined;
       }
 
@@ -33,22 +33,42 @@ exports.agents = async (req, res) => {
 }
 
 exports.indiUser = async (req, res) => {
-  const {userId, userRole} = req.body;//Getting Id and role from the body of the request
+  const {
+    userId, appName
+  } = req.body; //Getting Id and role from the body of the request
 
-  try{
+  try {
 
-    await User.findOne({_id: userId, role: userRole}, (err, foundUser) => {
-      if(!foundUser){
-        return res.status(404).send("User not found");
-      }else{
-        foundUser.password = undefined;
-        return res.status(200).json({
-          foundUser
-        });
-      }
-    }).clone();
+    if(userId){
+      await User.findOne({
+        _id: userId
+      }, (err, foundUser) => {
+        if (!foundUser) {
+          return res.status(404).send("User not found");
+        } else {
+          foundUser.password = undefined;
+          return res.status(200).json({
+            foundUser
+          });
+        }
+      }).clone();
+    }else{
+      await User.findOne({
+        appName
+      }, (err, foundUser) => {
+        if (!foundUser) {
+          return res.status(404).send("User not found");
+        } else {
+          foundUser.password = undefined;
+          return res.status(200).json({
+            foundUser
+          });
+        }
+      }).clone();
+    }
 
-  }catch(e){
+
+  } catch (e) {
     console.log(e);
   }
 }
@@ -81,7 +101,9 @@ exports.delAgent = async (req, res) => {
     await User.findByIdAndRemove(agentID, function(err, data) {
       if (!err) {
         data.password = undefined;
-        return res.status(200).json({DeletedAgent: data});
+        return res.status(200).json({
+          DeletedAgent: data
+        });
       }
     });
 
@@ -100,7 +122,9 @@ exports.delManager = async (req, res) => {
     await User.findByIdAndRemove(managerId, function(err, data) {
       if (!err) {
         data.password = undefined;
-        res.status(200).json({DeletedAgent: data});
+        res.status(200).json({
+          DeletedAgent: data
+        });
       }
     });
 
@@ -111,58 +135,83 @@ exports.delManager = async (req, res) => {
 }
 
 exports.changeName = async (req, res) => {
-  try{
-    const {firstName, lastName, email} = req.body;
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      assignedNumber,
+      appName,
+      apiKey
+    } = req.body;
 
-    await User.findOne({ email }, async (err, foundUser) => {
-      if(foundUser){
+    await User.findOne({
+      email
+    }, async (err, foundUser) => {
+      if (foundUser) {
         foundUser.firstName = firstName;
         foundUser.lastName = lastName;
+        if(foundUser.role === "Manager"){
+          foundUser.assignedNumber = assignedNumber;
+          foundUser.appName = appName;
+          foundUser.apiKey = apiKey;
+        }
 
         foundUser.save(async (err) => {
-          if(!err){
+          if (!err) {
             let data = await jwt.verify(req.cookies.token, process.env.SECRET_KEY);
-            data = {...data, name: firstName+" "+lastName}
+            data = {
+              ...data,
+              name: firstName + " " + lastName
+            }
 
-            const token = jwt.sign(
-              {...data},
+            const token = jwt.sign({
+                ...data
+              },
               process.env.SECRET_KEY
             );
 
             // Setting Up cookies
             const options = {
-              expires: new Date(Date.now() + 24*60*60*1000),
+              expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
               httpOnly: true
             };
 
-            return res.status(200).cookie('token', token, options).json({newName: firstName+" "+lastName})
+            return res.status(200).cookie('token', token, options).json({
+              newName: firstName + " " + lastName
+            })
           }
         });
-      }else{
+      } else {
         return res.status(404).send("User Not Found");
       }
     }).clone()
-  }catch(e){
+  } catch (e) {
     console.log(e);
   }
 }
 
 exports.changePassword = async (req, res) => {
-  try{
-    const {password, email} = req.body;
+  try {
+    const {
+      password,
+      email
+    } = req.body;
 
-    const user = await User.findOne({ email });
-    if(user){
+    const user = await User.findOne({
+      email
+    });
+    if (user) {
       const encPassword = await bcrypt.hash(password, 10);
       user.password = encPassword;
 
       user.save((err) => {
-        if(!err){
+        if (!err) {
           res.status(200).send("Password Changed");
         }
       })
     }
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 }

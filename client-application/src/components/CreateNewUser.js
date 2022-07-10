@@ -24,7 +24,7 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates}) 
     const regNewUser = () => {
 
       if(userData.role !== ""){
-        if(userData.role === "Manager"){
+        if(userData.role === "Manager"){//is user is Manager then he/she should be creating a new agent user.
           newUserData.creatorUID = userData.user_id;
         }
         axios.post(`${baseURL}/auth/register`, newUserData, {validateStatus: false, withCredentials: true}).then((response) => {
