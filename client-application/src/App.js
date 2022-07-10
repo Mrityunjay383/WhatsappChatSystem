@@ -155,7 +155,7 @@ function App() {
             //Broadcasting Rote
             <Route path="/broadcast" element={
               userData.role === "Manager" ? (//Only Managers have Access to Broadcasting page
-                <Broadcasting baseBulkMessagingURL={baseBulkMessagingURL} baseUserSystemURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} />
+                <Broadcasting baseBulkMessagingURL={baseBulkMessagingURL} baseUserSystemURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userId={userData.user_id} userName={userData.name} />
               ) : (
                 <h1>Access Denied!!</h1>
               )

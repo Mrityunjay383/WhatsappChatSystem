@@ -5,7 +5,7 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName}) {
+function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, userId}) {
 
     const [templates, setTemplated] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState({});
@@ -26,18 +26,20 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
     const getTemplates = async () => {
 
-      await axios.get(`${baseBulkMessagingURL}/aprovedTemplates`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.post(`${baseBulkMessagingURL}/aprovedTemplates`, {userId}, { validateStatus: false, withCredentials: true }).then((response) => {
         //setting the templates with the response from the API
         setTemplated(response.data.templates);
-        setSelectedTemplate({...response.data.templates[0], example: JSON.parse(response.data.templates[0].meta).example});
-        setMessage(response.data.templates[0].data);
+        if(response.data.templates.length > 0){
+          setSelectedTemplate({...response.data.templates[0], example: JSON.parse(response.data.templates[0].meta).example});
+          setMessage(response.data.templates[0].data);
+        }
       });
     }
 
     const getOptedinUsers = async () => {
 
       let optedinUsers, storedUsers, toBePopulateUsers = [];
-      await axios.get(`${baseBulkMessagingURL}/optedinUsers`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.post(`${baseBulkMessagingURL}/optedinUsers`, {userId}, { validateStatus: false, withCredentials: true }).then((response) => {
         //setting the optedinUsers with the response from the API
         optedinUsers = response.data.users;
         // setOptedinUsers(response.data.users);
@@ -75,7 +77,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
       const toBeBroadcastNo = [...selectedNos, ...newNumbersArr];
 
       if(toBeBroadcastNo.length > 1){
-        axios.post(`${baseBulkMessagingURL}/broadcastMessage`, {message, toBeBroadcastNo}, {validateStatus: false, withCredentials: true}).then((response) => {
+        axios.post(`${baseBulkMessagingURL}/broadcastMessage`, {message, toBeBroadcastNo, userId}, {validateStatus: false, withCredentials: true}).then((response) => {
           console.log(response.data);
           setPopulateMessage("Broadcasting Successfull");
         });

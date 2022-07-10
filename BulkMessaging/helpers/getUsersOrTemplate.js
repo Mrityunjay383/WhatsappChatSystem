@@ -1,13 +1,13 @@
 const axios = require("axios").default;
 
-exports.allOtpedUsers = async () => {
+exports.allOtpedUsers = async (appName, apikey) => {
 
   let allUsers = [];
 
   const optionsForGet = {
     method: 'GET',
-    url: `https://api.gupshup.io/sm/api/v1/users/${process.env.GUPSHUP_APP_NAME}`,
-    headers: {apikey: process.env.GUPSHUP_API_KEY}
+    url: `https://api.gupshup.io/sm/api/v1/users/${appName}`,
+    headers: {apikey: apikey}
   };
 
   await axios.request(optionsForGet).then(function (response) {
@@ -25,14 +25,14 @@ exports.allOtpedUsers = async () => {
   return onlyOtpedinUsers;
 }
 
-exports.allAprovedTemplates = async () => {
+exports.allAprovedTemplates = async (appName, apikey) => {
 
   let allTemplates = [];
 
   const options = {
     method: 'GET',
-    url: `https://api.gupshup.io/sm/api/v1/template/list/${process.env.GUPSHUP_APP_NAME}`,
-    headers: {apikey: process.env.GUPSHUP_API_KEY}
+    url: `https://api.gupshup.io/sm/api/v1/template/list/${appName}`,
+    headers: {apikey: apikey}
   };
 
   await axios.request(options).then(function (response) {

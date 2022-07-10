@@ -3,8 +3,6 @@ const { URLSearchParams } = require('url');
 
 exports.sendMessage = (message, destination, appNumber, appName, apiKey) => {
 
-  console.log(message, destination, appNumber, appName, apiKey);
-
   //sending the message to the perticular destination for which it belong
   const encodedParams = new URLSearchParams();
   encodedParams.set('message', `{"text": "${message}","type":"text"}`);

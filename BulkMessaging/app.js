@@ -6,7 +6,11 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require("cors");//for enabling api requuest from external source
 
+const axios = require("axios").default;
+const { URLSearchParams } = require('url');
+
 const PORT = process.env.PORT || 3003;
+const baseUserSystemURL = "http://localhost:3002";
 
 const app = express();
 
@@ -42,24 +46,49 @@ app.get("/", (req, res) => {
   res.send("Bulk Messaging MicroService");
 })
 
-app.get("/optedinUsers", async (req, res) => {
-  const users = await allOtpedUsers();
+app.post("/optedinUsers", async (req, res) => {
+  const {userId} = req.body;
+
+  let managerDel;
+  await axios.post(`${baseUserSystemURL}/indi_user`, {userId}, {validateStatus: false, withCredentials: true}).then((response) => {
+    if(response.status === 200){
+      managerDel = response.data.foundUser;
+    }
+  });
+
+  const users = await allOtpedUsers(managerDel.appName, managerDel.apiKey);
 
   res.status(200).json({users});
 })
 
-app.get("/aprovedTemplates", async (req, res) => {
-  const templates = await allAprovedTemplates();
+app.post("/aprovedTemplates", async (req, res) => {
+  const {userId} = req.body;
+
+  let managerDel;
+  await axios.post(`${baseUserSystemURL}/indi_user`, {userId}, {validateStatus: false, withCredentials: true}).then((response) => {
+    if(response.status === 200){
+      managerDel = response.data.foundUser;
+    }
+  });
+
+  const templates = await allAprovedTemplates(managerDel.appName, managerDel.apiKey);
   res.status(200).json({templates});
 });
 
 app.post("/broadcastMessage", async (req, res) => {
 
-  const {message, toBeBroadcastNo} = req.body;
+  const {message, toBeBroadcastNo, userId} = req.body;
+
+  let managerDel;
+  await axios.post(`${baseUserSystemURL}/indi_user`, {userId}, {validateStatus: false, withCredentials: true}).then((response) => {
+    if(response.status === 200){
+      managerDel = response.data.foundUser;
+    }
+  });
 
   for(let phoneNo of toBeBroadcastNo){
     if(phoneNo !== ""){
-      await sendMessage(message, phoneNo);
+      await sendMessage(message, phoneNo, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
     }
   }
   res.send("Broadcasting Done");
