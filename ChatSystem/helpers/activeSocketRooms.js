@@ -1,5 +1,5 @@
-module.exports = async (req) => {
-  const arr = Array.from(req.io.sockets.adapter.rooms);//getting map of current active rooms from socket
+module.exports = async (io) => {
+  const arr = Array.from(io.sockets.adapter.rooms);//getting map of current active rooms from socket
 
   let filtered = arr.filter(room => !room[1].has(room[0]))
 

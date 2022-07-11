@@ -55,7 +55,7 @@ function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0}) {
 
           <a href="/create_new_user" className={page === "createNewUser" ? "active" : "nonActive"}>
             <NewUserIcon />
-            <span>Create new User</span>
+            <span>Add new Manager</span>
           </a>
 
         </div>;
@@ -102,7 +102,7 @@ function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0}) {
 
           <a href="/create_new_user" className={page === "createNewUser" ? "active" : "nonActive"}>
             <NewUserIcon />
-            <span>Create new User</span>
+            <span>Add new Agent</span>
           </a>
 
 

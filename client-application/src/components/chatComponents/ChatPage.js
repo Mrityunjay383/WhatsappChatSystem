@@ -50,6 +50,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
 
       await axios.get(`${baseURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
         //Filtering assigned rooms for this perticular agent
+        // console.log(response.data.assignList);
         setAssignedChats(() => {
           return response.data.assignList.filter((assined) => {
             return assined.agent.email === userData.email
@@ -77,7 +78,8 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
       }else{
         setCurrActiveChat({
           room: "",
-          messageList: []
+          messageList: [],
+          phoneNo: "",
         });
       }
 
@@ -89,8 +91,8 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
       // e.target.parentElement.parentElement.parentElement.remove();
 
       if(agent != undefined){
-        await socket.emit("reassign", {room, agent, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
-        await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
+        await socket.emit("reassign", {room, agent, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name, creatorUID: userData.creatorUID});
+        // await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
 
         currJoinedChats.forEach((chat, index) => {
           if(chat.room === room){
@@ -106,7 +108,8 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
         }else{
           setCurrActiveChat({
             room: "",
-            messageList: []
+            messageList: [],
+            phoneNo: "",
           });
         }
       }else{
@@ -131,8 +134,9 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     }
 
     const joinRoom = async (room) => {
-
       if (room !== "") {
+        console.log(currJoinedChats);
+
         await socket.emit("join_room", {room, email: userData.email});
       }
     };

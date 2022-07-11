@@ -77,25 +77,42 @@ io.on("connection", (socket) => {
   })
 
   //adding the agent in the Socket room
-  socket.on("join_room", (data) => {
+  socket.on("join_room", async (data) => {
     io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
 
-    socket.join(data.room);
+    const roomsWhichHaveAgent = await activeSocketRooms(io);
 
-    //Getting message sent before agent joined the room
-    for(i = 0; i < activeChats.length; i++){
-      if(activeChats[i].room === data.room){
-        socket.emit("room_joined", activeChats[i]);
-        activeChats.splice(i, 1);
-        break;
+    const roomIndex = roomsWhichHaveAgent.indexOf(data.room);
+    console.log(roomIndex);
+
+    if(roomIndex === -1){
+
+      // if(activeChats.length === 0){
+      //   activeChats.push({
+      //     room: data.room,
+      //     messages: [],
+      //     phoneNo: "918949190774"
+      //   })
+      // }
+      socket.join(data.room);
+
+      console.log("From Join: ", activeChats, activeAgents);
+      //Getting message sent before agent joined the room
+      for(i = 0; i < activeChats.length; i++){
+        console.log(activeChats[i].room, data.room);
+        if(activeChats[i].room === data.room){
+          socket.emit("room_joined", activeChats[i]);
+          activeChats.splice(i, 1);
+          break;
+        }
       }
+
+      //if an agent joined the assigned room, removing it from assignList
+      assignList = assignList.filter((i) => {
+        return i.room !== data.room
+      });
+
     }
-
-    //if an agent joined the room assigned room, removing it from assignList
-    assignList = assignList.filter((i) => {
-      return i.room !== data
-    });
-
     // console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
   });
 
@@ -116,14 +133,19 @@ io.on("connection", (socket) => {
 
   //listener for disconnecting connection between customer and chat
   socket.on("disconnect_chat", async (data) => {
-    io.sockets.emit("broadcast", {});//broadcasting so the all active rooms get updated for all users
 
+    io.sockets.emit("broadcast", {});//broadcasting so the all active rooms get updated for all users
     const {chat, agentName} = data;
 
-    //getting the latest time for the chat
-    const lastInteractionTime = chat.messageList[chat.messageList.length-1].time;
+    let lastInteraction;
+    if(chat.messageList.length > 0){
+      //getting the latest time for the chat
+      const lastInteractionTime = chat.messageList[chat.messageList.length-1].time;
 
-    const lastInteraction = `${lastInteractionTime} ${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+      lastInteraction = `${lastInteractionTime} ${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+    }else{
+      lastInteraction = "";
+    }
 
     //Creating a new Chat Document
     const newChat = await Chat.create({
@@ -136,6 +158,9 @@ io.on("connection", (socket) => {
 
     //Removing agent from the room
     socket.leave(data.room);
+
+    console.log("From disconnect_chat", activeChats);
+
   })
 
   //listener for reassigning the chat to another agent
@@ -147,11 +172,16 @@ io.on("connection", (socket) => {
     activeChats.push({
       room: data.room,
       messages: [],
-      phoneNo: data.phoneNo
+      phoneNo: data.phoneNo,
+      managerID: data.creatorUID
     })
 
-    //removing the current agent from h=the room, so that a new agent can join
+
+    //removing the current agent from the room, so that a new agent can join
     socket.leave(data.room);
+
+    console.log("From reassign", activeChats);
+
   })
 
   socket.on("disconnect", async () => {
@@ -168,10 +198,10 @@ io.on("connection", (socket) => {
 app.post("/hook", async (req, res) => {
   const {type, payload} = req.body
 
-  let managerDel;
+
   //Checking the request is an incoming message form whatsapp
   if(type === 'message'){
-
+    let managerDel;
     await axios.post(`${baseUserSystemURL}/indi_user`, {appName: req.body.app}, {validateStatus: false, withCredentials: true}).then((response) => {
       if(response.status === 200){
         managerDel = response.data.foundUser;
@@ -192,7 +222,7 @@ app.post("/hook", async (req, res) => {
     await otpedinUser(payload.sender.dial_code, payload.sender.phone, managerDel);
 
     //Checking if an agent is alreday joined the room
-    const roomsWhichHaveAgent = await activeSocketRooms(req);
+    const roomsWhichHaveAgent = await activeSocketRooms(io);
 
     const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
 
@@ -211,6 +241,7 @@ app.post("/hook", async (req, res) => {
       await io.to(payload.sender.name).emit("receive_message", messageData);
 
     }else{
+      io.sockets.emit("broadcast", {});
 
       // Checking if this chat already in the activeChats
       for(let i=0; i<activeChats.length; i++){
@@ -219,7 +250,6 @@ app.post("/hook", async (req, res) => {
           return res.status(200).end();
         }
       }
-
       //if chat didn't exist then creating a new one
       activeChats.push({
         room: payload.sender.name,
@@ -227,11 +257,11 @@ app.post("/hook", async (req, res) => {
         phoneNo: payload.sender.phone,
         managerID: managerDel._id
       })
-      io.sockets.emit("broadcast", {});
-
     }
 
   }
+  console.log("Active Chat from /hook List: ", activeChats);
+
   return res.status(200).end();
 })
 
@@ -253,10 +283,10 @@ app.get("/active_rooms", async (req, res) => {
           break;
         }
       }
-
-      if(!isExist){
-        assignList.splice(i, 1);
-      }
+      //
+      // if(!isExist){
+      //   assignList.splice(i, 1);
+      // }
 
 
       // const roomIndex = chats.indexOf(assignList[i].room)
@@ -268,6 +298,7 @@ app.get("/active_rooms", async (req, res) => {
       //   assignList.splice(i, 1);
       // }
     }
+    console.log("Active Chat from /active_rooms List: ", activeChats);
 
     res.json({chats});
 })
@@ -278,18 +309,27 @@ app.get("/active_agents", (req, res) => {
 
 //assign agent route used by manager to assign chats to different agents
 app.post("/assign_agent", (req, res) => {
+  io.sockets.emit("broadcast", {});
+
   const {room, agent, assignedBy} = req.body;
 
   assignList.push({room, agent, assignedBy});
-  io.sockets.emit("broadcast", {});
-
   res.status(200).send("Assigned");
+  console.log("Active Chat from /assign_agent List: ", activeChats);
+
 })
 
 //route to get all the chats which are assigned by the manager
 app.get("/assigned", (req, res) => {
-  res.status(200).json({assignList})
+  // io.sockets.emit("broadcast", {});
+  res.status(200).json({assignList});
+
+  console.log("Active Chat from /assined List: ", activeChats);
+
 });
+
+
+// Template functionalities
 
 app.get("/noOfPendingTemplates", async (req, res) => {
   const pendingTemplates = await Template.find({status: "Pending"});

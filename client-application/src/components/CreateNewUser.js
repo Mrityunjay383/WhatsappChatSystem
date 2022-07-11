@@ -45,7 +45,7 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates}) 
           <Sidebar role = {userData.role} baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser" noOfPendingTemplates={noOfPendingTemplates}/>
 
           <div className="dataCon">
-            <TopCon userName={userData.name} page="Create New User" />
+            <TopCon userName={userData.name} page={userData.role === "Admin" ? "Add New Manager" : "Add New Agent"} />
 
             <div className="regForm">
 
