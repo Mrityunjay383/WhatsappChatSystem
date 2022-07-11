@@ -74,7 +74,6 @@ let activeChats = []; //store all the current active chats
 let activeAgents = []; //store all the active agents in a perticular time
 let assignList = []; //store if a agent gets assigned to chat with any specific customer
 
-let tempActiveChats = [];
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -93,15 +92,11 @@ io.on("connection", (socket) => {
     const roomsWhichHaveAgent = await activeSocketRooms(io);
 
     const roomIndex = roomsWhichHaveAgent.indexOf(data.room);
-    console.log(roomIndex);
 
     if (roomIndex === -1) {
 
-      console.log("From Join: ", assignList);
-
       if (assignList.length > 0) {
         for (i = 0; i < assignList.length; i++) {
-          console.log(assignList[i].room);
           if (assignList[i].room === data.room) {
             socket.emit("room_joined", assignList[i]);
             assignList.splice(i, 1);
@@ -112,7 +107,6 @@ io.on("connection", (socket) => {
 
       // Getting message sent before agent joined the room
       for (i = 0; i < activeChats.length; i++) {
-        console.log(activeChats[i].room, data.room);
         if (activeChats[i].room === data.room) {
           socket.emit("room_joined", activeChats[i]);
           activeChats.splice(i, 1);
@@ -174,9 +168,7 @@ io.on("connection", (socket) => {
     });
 
     //Removing agent from the room
-    socket.leave(data.room);
-
-
+    socket.leave(chat.room);
   })
 
   //listener for reassigning the chat to another agent
@@ -191,10 +183,9 @@ io.on("connection", (socket) => {
       phoneNo: data.phoneNo
     });
 
+
     //removing the current agent from the room, so that a new agent can join
     socket.leave(data.room);
-
-
   })
 
   socket.on("disconnect", async () => {
@@ -237,7 +228,6 @@ app.post("/hook", async (req, res) => {
         userName: payload.sender.name,
         userPhoneNo: payload.source
       })
-      // console.log("User didn't exist");
     }
 
 
@@ -247,7 +237,7 @@ app.post("/hook", async (req, res) => {
     const roomsWhichHaveAgent = await activeSocketRooms(io);
 
     const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
-
+    console.log("Room Exist: ", roomIndex, roomsWhichHaveAgent);
     //If an agent is in the room
     if (roomIndex !== -1) {
       const messageData = {
@@ -263,14 +253,25 @@ app.post("/hook", async (req, res) => {
 
     } else {
       io.sockets.emit("broadcast", {});
-      console.log("from /hook", tempActiveChats);
       // Checking if this chat already in the activeChats
+
+      console.log(activeChats);
       for (let i = 0; i < activeChats.length; i++) {
         if (activeChats[i].room === payload.sender.name) {
           activeChats[i].messages.push(payload.payload.text);
           return res.status(200).end();
         }
       }
+
+      console.log(assignList);
+      for (let i = 0; i < assignList.length; i++) {
+        if (assignList[i].room === payload.sender.name) {
+          assignList[i].messages.push(payload.payload.text);
+          return res.status(200).end();
+        }
+      }
+
+      console.log("No Chat");
       //if chat didn't exist then creating a new one
       activeChats.push({
         room: payload.sender.name,
@@ -278,7 +279,6 @@ app.post("/hook", async (req, res) => {
         phoneNo: payload.sender.phone,
         managerID: managerDel._id
       });
-      tempActiveChats = activeChats;
     }
 
   }
@@ -291,8 +291,6 @@ app.get("/active_rooms", async (req, res) => {
 
   // storing active chat names in chats array
   const chats = activeChats;
-
-  // console.log("From Get Rooms:", activeChats);
 
   //checking if the room didnt already exist in the assignList
   for (i = 0; i < assignList.length; i++) {
@@ -331,12 +329,20 @@ app.post("/assign_agent", (req, res) => {
     agent,
     assignedBy
   } = req.body;
+
+  let phoMessObj = {};
+  for(let chat of activeChats){
+    if(chat.room === room){
+      phoMessObj.messages = chat.messages;
+      phoMessObj.phoneNo = chat.phoneNo
+    }
+  }
+
   assignList.push({
     room,
     agent,
     assignedBy,
-    messages: activeChats[0].messages,
-    phoneNo: activeChats[0].phoneNo
+    ...phoMessObj
   });
 
   res.status(200).send("Assigned");
