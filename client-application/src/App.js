@@ -22,6 +22,8 @@ import NewTemplateRequest from "./components/NewTemplateRequest";
 import TemplateRequests from "./components/TemplateRequests";
 import AlertBox from "./components/uiComponent/AlertBox";
 
+import ManagerChat from "./components/chatComponents/ManagerChat";
+
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
@@ -192,6 +194,14 @@ function App() {
                     noOfPendingTemplates={noOfPendingTemplates}/>
                 </div>
 
+              )
+            } />
+
+            <Route path="/chat_requests" element={
+              userData.role === "Manager" ? (
+                <ManagerChat socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />
+              ) : (
+                <h1>Access Denied!!</h1>
               )
             } />
 

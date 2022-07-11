@@ -7,11 +7,9 @@ import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 
-function ChatPage({socket, userData, baseURL, setIsLogedin}) {
+function ManagerChat({socket, userData, baseURL, setIsLogedin}) {
 
-    const [activeRooms, setActiveRooms] = useState([]);//store all active romms exist
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
-    const [activeAgents, setActiveAgents] = useState([]);
 
     const [currJoinedChats, setCurrJoinedChats] = useState([]);
     const [currActiveChat, setCurrActiveChat] = useState({
@@ -20,30 +18,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
       messageList: []
     });
 
-    const getActiveAgents = async () => {
-      await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
-        await setActiveAgents( () => {
-          return response.data.activeAgents.filter((agent) => {
-            return agent.email !== userData.email && agent.creatorUID === userData.creatorUID
-          })
-        });
-      });
-    }
 
-    //Getting all active rooms exist currently
-    const getRooms = async () => {
-
-      await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
-        const rooms = response.data.chats;
-        // console.log(rooms);
-        for(let i=0; i < rooms.length; i++){
-          if(rooms[i].managerID !== userData.creatorUID){
-            rooms.splice(i, 1);
-          }
-        }
-        setActiveRooms(rooms);
-      });
-    }
 
     //Getting all assigned rooms to this agent
     const getAssignedChats = async () => {
@@ -53,7 +28,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
         // console.log(response.data.assignList);
         setAssignedChats(() => {
           return response.data.assignList.filter((assined) => {
-            return assined.agentEmail === userData.email
+            return assined.managerID === userData.user_id
           });
         });
 
@@ -83,63 +58,6 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
         });
       }
 
-    }
-
-    const reassign = async (e, action, room) => {
-
-      let agent, managerID;
-      if(action === "reassign"){
-        const agentSelect = e.target.parentElement.querySelector(".agentSelect");
-
-        agent = activeAgents[agentSelect.selectedIndex];
-        await socket.emit("reassign", {room, agentEmail: agent.email, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
-
-      }else{
-        managerID = userData.creatorUID;
-
-        await socket.emit("reassign", {room, managerID, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
-      }
-
-      if(agent != undefined || managerID != undefined){
-        await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
-
-        currJoinedChats.forEach((chat, index) => {
-          if(chat.room === room){
-            setCurrJoinedChats((curr) => {
-              console.log(curr.splice(index, 1));
-              return [...curr]
-            })
-          }
-        })
-
-        if(currJoinedChats.length > 0){
-          setCurrActiveChat(currJoinedChats[0]);
-        }else{
-          setCurrActiveChat({
-            room: "",
-            messageList: [],
-            phoneNo: "",
-          });
-        }
-      }else{
-        console.log("No agent Selected");
-      }
-    }
-
-
-    const ReassignCom = ({room}) => {
-      return <div>
-        <select className="agentSelect">
-          {activeAgents.map((agent, index) => {
-              return (
-                <option key={index} value={agent.email}>{agent.name}</option>
-              )
-          })}
-        </select>
-        <button className="joinbtn" onClick={(e) => {
-          reassign(e, "reassign", `${room}`);
-        }}>Reassign</button>
-      </div>
     }
 
     const joinRoom = async (room) => {
@@ -176,9 +94,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
 
     useEffect(() => {
       socket.emit("Agent", {email: userData.email, name: userData.name, socket_id: socket.id, creatorUID: userData.creatorUID});
-      getRooms();
       getAssignedChats();
-      getActiveAgents();
 
       // sessionStorage.removeItem('currJoinedChats');
 
@@ -193,9 +109,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     useEffect(() => {
       //broadcast is used for dynamiclly updating if there is any change in socket
       socket.on("broadcast", (data) => {
-        getRooms();
         setTimeout(() => {
-          getActiveAgents();
           getAssignedChats();
         }, 500);
       });
@@ -262,7 +176,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
 
               <div className="activeChatsCon">
                 <div>
-                  <h3>Assigned Chats</h3>
+                  <h3>Requested Chats</h3>
 
                   <div className="chatList">
                     {assignedChats.map((chat, index) => {
@@ -281,23 +195,6 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
                 </div>
 
 
-                <div>
-                  <h3>Available Chats</h3>
-
-                  <div className="chatList">
-                    {activeRooms.map((room, index) => {
-                      return (
-                        <div key={index}>
-                          {room.room}
-                          <button className="joinbtn" onClick={() => {
-                            joinRoom(room.room)
-                          }}>Join</button>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                </div>
               </div>
 
               <div className="Chats">
@@ -314,11 +211,6 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
                     <div className="chatCon">
                       <div className="chatTopCon">
                         <span>{currActiveChat.room}</span>
-                        <ReassignCom room={currActiveChat.room} />
-
-                        <button className="joinbtn" onClick={(e) => {
-                          reassign(e, "subToManager", `${currActiveChat.room}`);
-                        }}>Sub to Manager</button>
 
                         <button className="rmBtn disBtn" onClick={(e) => {
                           disconnect(currActiveChat.room);
@@ -327,7 +219,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
                       <Chat
                         socket={socket}
                         username="Agent"
-                        creatorUID={userData.creatorUID}
+                        uID={userData.user_id}
                         currActiveChat={currActiveChat}
                         setCurrActiveChat={setCurrActiveChat}
                         currJoinedChats={currJoinedChats}
@@ -346,4 +238,4 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     )
 }
 
-export default ChatPage;
+export default ManagerChat;

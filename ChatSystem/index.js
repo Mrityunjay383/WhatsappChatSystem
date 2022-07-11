@@ -122,10 +122,18 @@ io.on("connection", (socket) => {
 
   //listener when a new message will be send from client side
   socket.on("send_message", async (messageData) => {
+    console.log(messageData);
 
-    let managerDel;
+    let userId, managerDel;
+
+    if(messageData.creatorUID){
+      userId = messageData.creatorUID
+    }else{
+      userId = messageData.uID;
+    }
+
     await axios.post(`${baseUserSystemURL}/indi_user`, {
-      userId: messageData.creatorUID
+      userId
     }, {
       validateStatus: false,
       withCredentials: true
@@ -177,12 +185,12 @@ io.on("connection", (socket) => {
 
     assignList.push({
       room: data.room,
-      agent: data.agent,
+      agentEmail: data.agentEmail,
+      managerID: data.managerID,
       assignedBy: data.assignedBy,
       messages: [],
       phoneNo: data.phoneNo
     });
-
 
     //removing the current agent from the room, so that a new agent can join
     socket.leave(data.room);
@@ -237,7 +245,6 @@ app.post("/hook", async (req, res) => {
     const roomsWhichHaveAgent = await activeSocketRooms(io);
 
     const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
-    console.log("Room Exist: ", roomIndex, roomsWhichHaveAgent);
     //If an agent is in the room
     if (roomIndex !== -1) {
       const messageData = {
@@ -255,7 +262,6 @@ app.post("/hook", async (req, res) => {
       io.sockets.emit("broadcast", {});
       // Checking if this chat already in the activeChats
 
-      console.log(activeChats);
       for (let i = 0; i < activeChats.length; i++) {
         if (activeChats[i].room === payload.sender.name) {
           activeChats[i].messages.push(payload.payload.text);
@@ -263,7 +269,6 @@ app.post("/hook", async (req, res) => {
         }
       }
 
-      console.log(assignList);
       for (let i = 0; i < assignList.length; i++) {
         if (assignList[i].room === payload.sender.name) {
           assignList[i].messages.push(payload.payload.text);
@@ -271,7 +276,6 @@ app.post("/hook", async (req, res) => {
         }
       }
 
-      console.log("No Chat");
       //if chat didn't exist then creating a new one
       activeChats.push({
         room: payload.sender.name,
@@ -331,8 +335,8 @@ app.post("/assign_agent", (req, res) => {
   } = req.body;
 
   let phoMessObj = {};
-  for(let chat of activeChats){
-    if(chat.room === room){
+  for (let chat of activeChats) {
+    if (chat.room === room) {
       phoMessObj.messages = chat.messages;
       phoMessObj.phoneNo = chat.phoneNo
     }

@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
 
-function Chat({ socket, username, creatorUID, currActiveChat, currJoinedChats, setCurrActiveChat, setCurrJoinedChat }) {
+function Chat({ socket, username, creatorUID, uID, currActiveChat, currJoinedChats, setCurrActiveChat, setCurrJoinedChat }) {
   const [currentMessage, setCurrentMessage] = useState("");
 
 
   const sendMessage = async () => {
 
-
+    console.log(uID);
+    
     if (currentMessage !== "") {
       const messageData = {
         room: currActiveChat.room,
         author: username,
         phoneNo: currActiveChat.phoneNo,
         message: currentMessage,
-        creatorUID: creatorUID,
+        creatorUID,
+        uID,
         time:
           new Date(Date.now()).getHours() +
           ":" +

@@ -90,6 +90,11 @@ function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0}) {
             <span>Assign Agnets</span>
           </a>
 
+          <a href="/chat_requests" className={page === "chat" ? "active" : "nonActive"}>
+            <AgentIcon />
+            <span>Chat Requests</span>
+          </a>
+
           <a href="/broadcast" className={page === "broadcasting" ? "active" : "nonActive"}>
             <NewUserIcon />
             <span>Broadcast</span>
