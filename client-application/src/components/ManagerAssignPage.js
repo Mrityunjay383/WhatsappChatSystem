@@ -37,7 +37,8 @@ function ManagerAsignPage({socket, baseURL, userName, setIsLogedin}) {
 
     const getRooms = async () => {
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
-        setActiveRooms(response.data.rooms);
+        console.log(response.data.chats);
+        setActiveRooms(response.data.chats);
       });
     }
 
@@ -70,7 +71,7 @@ function ManagerAsignPage({socket, baseURL, userName, setIsLogedin}) {
               {activeRooms.map((room, index) => {
                 return (
                   <div className="userCard assignCard">
-                    <span className="roomTitle">{room}</span>
+                    <span className="roomTitle">{room.room}</span>
                     <select className="agentSelect">
                       {activeAgents.map((agent, index) => {
                           return (
@@ -78,7 +79,7 @@ function ManagerAsignPage({socket, baseURL, userName, setIsLogedin}) {
                           )
                       })}
                     </select>
-                    <button className="rmBtn assignBtn" onClick={assign}>Asign</button>
+                    <button className="rmBtn assignBtn" onClick={assign}>Assign</button>
                   </div>
                 )
               })}
