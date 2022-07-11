@@ -35,7 +35,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
 
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
         const rooms = response.data.chats;
-
+        // console.log(rooms);
         for(let i=0; i < rooms.length; i++){
           if(rooms[i].managerID !== userData.creatorUID){
             rooms.splice(i, 1);
@@ -166,7 +166,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     }
 
     useEffect(() => {
-      socket.emit("Agent", {email: userData.email, name: userData.name, id: socket.id, creatorUID: userData.creatorUID});
+      socket.emit("Agent", {email: userData.email, name: userData.name, socket_id: socket.id, creatorUID: userData.creatorUID});
       getRooms();
       getAssignedChats();
       getActiveAgents();

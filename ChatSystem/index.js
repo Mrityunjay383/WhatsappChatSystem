@@ -1,16 +1,20 @@
-require("dotenv").config();//for using environment variables
-require("./config/database").connect();//Setting up the database connection
+require("dotenv").config(); //for using environment variables
+require("./config/database").connect(); //Setting up the database connection
 
 
-const express = require("express");//For creating server
+const express = require("express"); //For creating server
 const app = express();
-var bodyParser = require('body-parser')//for reading json from form data
+var bodyParser = require('body-parser') //for reading json from form data
 const http = require("http");
-const cors = require("cors");//for enabling api requuest from external source
-const { Server } = require("socket.io");//framework to use web sockets
+const cors = require("cors"); //for enabling api requuest from external source
+const {
+  Server
+} = require("socket.io"); //framework to use web sockets
 
 const axios = require("axios").default;
-const { URLSearchParams } = require('url');
+const {
+  URLSearchParams
+} = require('url');
 
 const PORT = process.env.PORT || 3001
 const baseUserSystemURL = "http://localhost:3002";
@@ -21,16 +25,19 @@ const Template = require("./model/template");
 
 
 const activeSocketRooms = require("./helpers/activeSocketRooms");
-const {otpedinUser} = require("./helpers/checkUserOptedin");
-const {sendMessage} = require("./helpers/sendMessage");
+const {
+  otpedinUser
+} = require("./helpers/checkUserOptedin");
+const {
+  sendMessage
+} = require("./helpers/sendMessage");
 
 //middleware using cors with options
 app.use(cors({
-    origin: 'http://localhost:3000',
-    optionsSuccessStatus: 200,
-    credentials: true
-  }
-));
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200,
+  credentials: true
+}));
 
 //Defining headers for cors
 app.use(function(req, res, next) {
@@ -63,55 +70,57 @@ app.use(function(req, res, next) {
   next();
 });
 
-let activeChats = [];//store all the current active chats
-let activeAgents = [];//store all the active agents in a perticular time
-let assignList = [];//store if a agent gets assigned to chat with any specific customer
+let activeChats = []; //store all the current active chats
+let activeAgents = []; //store all the active agents in a perticular time
+let assignList = []; //store if a agent gets assigned to chat with any specific customer
 
+let tempActiveChats = [];
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("Agent", async (data) => {
     //if the request is comming from an agent passing it into the activeAgnets list
-    await activeAgents.push({...data});
+    await activeAgents.push({
+      ...data
+    });
   })
 
   //adding the agent in the Socket room
   socket.on("join_room", async (data) => {
-    io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
+    io.sockets.emit("broadcast", data); //broadcasting so the all active rooms get updated for all users
 
     const roomsWhichHaveAgent = await activeSocketRooms(io);
 
     const roomIndex = roomsWhichHaveAgent.indexOf(data.room);
     console.log(roomIndex);
 
-    if(roomIndex === -1){
+    if (roomIndex === -1) {
 
-      // if(activeChats.length === 0){
-      //   activeChats.push({
-      //     room: data.room,
-      //     messages: [],
-      //     phoneNo: "918949190774"
-      //   })
-      // }
-      socket.join(data.room);
+      console.log("From Join: ", assignList);
 
-      console.log("From Join: ", activeChats, activeAgents);
-      //Getting message sent before agent joined the room
-      for(i = 0; i < activeChats.length; i++){
+      if (assignList.length > 0) {
+        for (i = 0; i < assignList.length; i++) {
+          console.log(assignList[i].room);
+          if (assignList[i].room === data.room) {
+            socket.emit("room_joined", assignList[i]);
+            assignList.splice(i, 1);
+            break;
+          }
+        }
+      }
+
+      // Getting message sent before agent joined the room
+      for (i = 0; i < activeChats.length; i++) {
         console.log(activeChats[i].room, data.room);
-        if(activeChats[i].room === data.room){
+        if (activeChats[i].room === data.room) {
           socket.emit("room_joined", activeChats[i]);
           activeChats.splice(i, 1);
           break;
         }
       }
 
-      //if an agent joined the assigned room, removing it from assignList
-      assignList = assignList.filter((i) => {
-        return i.room !== data.room
-      });
-
+      socket.join(data.room);
     }
     // console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
   });
@@ -121,8 +130,13 @@ io.on("connection", (socket) => {
   socket.on("send_message", async (messageData) => {
 
     let managerDel;
-    await axios.post(`${baseUserSystemURL}/indi_user`, {userId: messageData.creatorUID}, {validateStatus: false, withCredentials: true}).then((response) => {
-      if(response.status === 200){
+    await axios.post(`${baseUserSystemURL}/indi_user`, {
+      userId: messageData.creatorUID
+    }, {
+      validateStatus: false,
+      withCredentials: true
+    }).then((response) => {
+      if (response.status === 200) {
         managerDel = response.data.foundUser;
       }
     });
@@ -134,16 +148,19 @@ io.on("connection", (socket) => {
   //listener for disconnecting connection between customer and chat
   socket.on("disconnect_chat", async (data) => {
 
-    io.sockets.emit("broadcast", {});//broadcasting so the all active rooms get updated for all users
-    const {chat, agentName} = data;
+    io.sockets.emit("broadcast", {}); //broadcasting so the all active rooms get updated for all users
+    const {
+      chat,
+      agentName
+    } = data;
 
     let lastInteraction;
-    if(chat.messageList.length > 0){
+    if (chat.messageList.length > 0) {
       //getting the latest time for the chat
-      const lastInteractionTime = chat.messageList[chat.messageList.length-1].time;
+      const lastInteractionTime = chat.messageList[chat.messageList.length - 1].time;
 
       lastInteraction = `${lastInteractionTime} ${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
-    }else{
+    } else {
       lastInteraction = "";
     }
 
@@ -159,28 +176,24 @@ io.on("connection", (socket) => {
     //Removing agent from the room
     socket.leave(data.room);
 
-    console.log("From disconnect_chat", activeChats);
 
   })
 
   //listener for reassigning the chat to another agent
   socket.on("reassign", (data) => {
-    io.sockets.emit("broadcast", data);//broadcasting so the all active rooms get updated for all users
-    assignList.push({room: data.room, agent: data.agent, assignedBy: data.assignedBy});
+    io.sockets.emit("broadcast", data); //broadcasting so the all active rooms get updated for all users
 
-    //When a chat is reassign creating a new element in activeChats so that chat can be restored when a new agent joins the room
-    activeChats.push({
+    assignList.push({
       room: data.room,
+      agent: data.agent,
+      assignedBy: data.assignedBy,
       messages: [],
-      phoneNo: data.phoneNo,
-      managerID: data.creatorUID
-    })
-
+      phoneNo: data.phoneNo
+    });
 
     //removing the current agent from the room, so that a new agent can join
     socket.leave(data.room);
 
-    console.log("From reassign", activeChats);
 
   })
 
@@ -190,27 +203,36 @@ io.on("connection", (socket) => {
 
     //if a avtive agent got Disconnected removing it from the active agents list
     activeAgents = await activeAgents.filter((agent) => {
-      return agent.id !== socket.id
+      return agent.socket_id !== socket.id
     });
   });
 });
 
 app.post("/hook", async (req, res) => {
-  const {type, payload} = req.body
-
+  const {
+    type,
+    payload
+  } = req.body
 
   //Checking the request is an incoming message form whatsapp
-  if(type === 'message'){
+  if (type === 'message') {
     let managerDel;
-    await axios.post(`${baseUserSystemURL}/indi_user`, {appName: req.body.app}, {validateStatus: false, withCredentials: true}).then((response) => {
-      if(response.status === 200){
+    await axios.post(`${baseUserSystemURL}/indi_user`, {
+      appName: req.body.app
+    }, {
+      validateStatus: false,
+      withCredentials: true
+    }).then((response) => {
+      if (response.status === 200) {
         managerDel = response.data.foundUser;
       }
     });
     //storing a new user in the database if already not exist
-    const user = await Customer.findOne({userPhoneNo: payload.source});
+    const user = await Customer.findOne({
+      userPhoneNo: payload.source
+    });
 
-    if(!user){
+    if (!user) {
       const newCustomer = Customer.create({
         userName: payload.sender.name,
         userPhoneNo: payload.source
@@ -227,25 +249,24 @@ app.post("/hook", async (req, res) => {
     const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
 
     //If an agent is in the room
-    if(roomIndex !== -1){
+    if (roomIndex !== -1) {
       const messageData = {
         room: payload.sender.name,
         author: payload.sender.name,
         message: payload.payload.text,
-        time:
-          new Date(Date.now()).getHours() +
+        time: new Date(Date.now()).getHours() +
           ":" +
           new Date(Date.now()).getMinutes(),
       };
 
       await io.to(payload.sender.name).emit("receive_message", messageData);
 
-    }else{
+    } else {
       io.sockets.emit("broadcast", {});
-
+      console.log("from /hook", tempActiveChats);
       // Checking if this chat already in the activeChats
-      for(let i=0; i<activeChats.length; i++){
-        if(activeChats[i].room === payload.sender.name){
+      for (let i = 0; i < activeChats.length; i++) {
+        if (activeChats[i].room === payload.sender.name) {
           activeChats[i].messages.push(payload.payload.text);
           return res.status(200).end();
         }
@@ -256,11 +277,11 @@ app.post("/hook", async (req, res) => {
         messages: [payload.payload.text],
         phoneNo: payload.sender.phone,
         managerID: managerDel._id
-      })
+      });
+      tempActiveChats = activeChats;
     }
 
   }
-  console.log("Active Chat from /hook List: ", activeChats);
 
   return res.status(200).end();
 })
@@ -268,63 +289,66 @@ app.post("/hook", async (req, res) => {
 //route for getting all the active rooms exist
 app.get("/active_rooms", async (req, res) => {
 
-    // storing active chat names in chats array
-    const chats = activeChats
+  // storing active chat names in chats array
+  const chats = activeChats;
 
-    // console.log("From Get Rooms:", activeChats);
+  // console.log("From Get Rooms:", activeChats);
 
-    //checking if the room didnt already exist in the assignList
-    for(i = 0; i < assignList.length; i++){
-      let isExist = false;
-      for(j = 0; i < chats.length; j++){
-        if(chats[j].room === assignList[i].room){
-          chats.splice(j, 1);
-          isExist = true;
-          break;
-        }
+  //checking if the room didnt already exist in the assignList
+  for (i = 0; i < assignList.length; i++) {
+    let isExist = false;
+    for (j = 0; i < chats.length; j++) {
+      if (chats[j].room === assignList[i].room) {
+        chats.splice(j, 1);
+        isExist = true;
+        break;
       }
-      //
-      // if(!isExist){
-      //   assignList.splice(i, 1);
-      // }
-
-
-      // const roomIndex = chats.indexOf(assignList[i].room)
-      // if(roomIndex !== -1){
-      //   //if room exist in both arrays, this will remove that room from rooms array
-      //   chats.splice(roomIndex, 1);
-      // }else{
-      //   //if room didnt exist in both arrays, this will remove that room from assignList array
-      //   assignList.splice(i, 1);
-      // }
     }
-    console.log("Active Chat from /active_rooms List: ", activeChats);
+    //
+    // if(!isExist){
+    //   assignList.splice(i, 1);
+    // }
 
-    res.json({chats});
+  }
+
+  res.json({
+    chats
+  });
 })
 
 app.get("/active_agents", (req, res) => {
-  res.status(200).json({activeAgents});
+  res.status(200).json({
+    activeAgents
+  });
 });
 
 //assign agent route used by manager to assign chats to different agents
 app.post("/assign_agent", (req, res) => {
   io.sockets.emit("broadcast", {});
 
-  const {room, agent, assignedBy} = req.body;
+  const {
+    room,
+    agent,
+    assignedBy
+  } = req.body;
+  assignList.push({
+    room,
+    agent,
+    assignedBy,
+    messages: activeChats[0].messages,
+    phoneNo: activeChats[0].phoneNo
+  });
 
-  assignList.push({room, agent, assignedBy});
   res.status(200).send("Assigned");
-  console.log("Active Chat from /assign_agent List: ", activeChats);
 
 })
 
 //route to get all the chats which are assigned by the manager
 app.get("/assigned", (req, res) => {
   // io.sockets.emit("broadcast", {});
-  res.status(200).json({assignList});
-
-  console.log("Active Chat from /assined List: ", activeChats);
+  res.status(200).json({
+    assignList
+  });
 
 });
 
@@ -332,14 +356,24 @@ app.get("/assigned", (req, res) => {
 // Template functionalities
 
 app.get("/noOfPendingTemplates", async (req, res) => {
-  const pendingTemplates = await Template.find({status: "Pending"});
+  const pendingTemplates = await Template.find({
+    status: "Pending"
+  });
   const noOfPendingTemplates = pendingTemplates.length;
 
-  res.status(200).json({noOfPendingTemplates});
+  res.status(200).json({
+    noOfPendingTemplates
+  });
 })
 
 app.post("/add_new_template", async (req, res) => {
-  const {name, format, sample, requestByName, requestByUID} = req.body;
+  const {
+    name,
+    format,
+    sample,
+    requestByName,
+    requestByUID
+  } = req.body;
 
   sendMessage(`A new template (${name}) is requested by ${requestByName}.`, process.env.ADMIN_NUMBER);
 
@@ -352,10 +386,16 @@ app.post("/add_new_template", async (req, res) => {
     status: "Pending"
   });
 
-  const pendingTemplates = await Template.find({status: "Pending"});
+  const pendingTemplates = await Template.find({
+    status: "Pending"
+  });
   const noOfPendingTemplates = pendingTemplates.length;
 
-  await io.emit("new_temp", {name, requestByName, noOfPendingTemplates});
+  await io.emit("new_temp", {
+    name,
+    requestByName,
+    noOfPendingTemplates
+  });
 
   res.status(200).send("Done");
 
