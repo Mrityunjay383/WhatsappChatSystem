@@ -122,7 +122,6 @@ io.on("connection", (socket) => {
 
   //listener when a new message will be send from client side
   socket.on("send_message", async (messageData) => {
-    console.log(messageData);
 
     let userId, managerDel;
 

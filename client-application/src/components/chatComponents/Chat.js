@@ -6,8 +6,6 @@ function Chat({ socket, username, creatorUID, uID, currActiveChat, currJoinedCha
 
 
   const sendMessage = async () => {
-
-    console.log(uID);
     
     if (currentMessage !== "") {
       const messageData = {

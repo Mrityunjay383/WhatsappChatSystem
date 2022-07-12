@@ -34,6 +34,8 @@ const baseUserSystemURL = "http://localhost:3002";
 const baseChatSystemURL = "http://localhost:3001";
 const baseBulkMessagingURL = "http://localhost:3003";
 
+
+let userId;
 function App() {
 
   const [isLogedin, setIsLogedin] = useState(false);
@@ -61,7 +63,7 @@ function App() {
     return (
       <>
         <React.Suspense fallback={<></>}>
-          {(userData.role === "Manager") && <ManagerAssign socket={socket} baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>}
+          {(userData.role === "Manager") && <ManagerAssign socket={socket} baseURL={baseChatSystemURL} userName={userData.name} userId={userData.user_id} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>}
         </React.Suspense>
       </>
     )
@@ -75,20 +77,21 @@ function App() {
       }else{
         setUserData(response.data.user);
         setIsLogedin(true);
+        getAssignedChats(response.data.user.user_id);
+        userId = response.data.user.user_id
         // console.log(response.data.user);
       }
     });
   }
 
   //Getting all assigned rooms to this agent
-  const getAssignedChats = async () => {
+  const getAssignedChats = async (user_id) => {
 
     await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
       //Filtering assigned rooms for this perticular agent
       const filteredChats = response.data.assignList.filter((assined) => {
-        return assined.managerID === userData.user_id
+        return assined.managerID === user_id
       });
-      console.log(filteredChats.length);
       setNoOfRequestedChats(filteredChats.length);
     });
   }
@@ -110,17 +113,17 @@ function App() {
       setShowAlert(true);
       setAlertData(data);
     })
+
     socket.on("broadcast", (data) => {
       setTimeout(() => {
-        getAssignedChats();
+        getAssignedChats(userId);
       }, 500);
     });
   }, [socket]);
 
   useEffect(() => {//validating JWT on every time the component mount
-    getAssignedChats();
-    getNoOfPendingTemplates();
     valToken();
+    getNoOfPendingTemplates();
   }, []);
 
   //Rendring dashboard based on the role of the user
@@ -128,7 +131,7 @@ function App() {
     if(role === "Admin"){
       return <AdminDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} noOfPendingTemplates={noOfPendingTemplates}/>
     }else if(role === "Manager"){
-      return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
+      return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name}  noOfRequestedChats={noOfRequestedChats}/>
     }else if(role === "Agent"){
       return <AgentDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
     }
@@ -151,7 +154,7 @@ function App() {
             <Route path="/profile" element={
               <div>
                 {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData} noOfPendingTemplates={noOfPendingTemplates} noOfRequestedChats={noOfRequestedChats}/>
+                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData} noOfPendingTemplates={noOfPendingTemplates}/>
               </div>
             } />
 

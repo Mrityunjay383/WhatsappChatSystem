@@ -5,7 +5,7 @@ import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
 
-function ManagerAsignPage({socket, baseURL, userName, setIsLogedin, noOfRequestedChats}) {
+function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOfRequestedChats}) {
 
 
     const [activeRooms, setActiveRooms] = useState([]);
@@ -37,7 +37,11 @@ function ManagerAsignPage({socket, baseURL, userName, setIsLogedin, noOfRequeste
 
     const getActiveAgents = async () => {
       await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then((response) => {
-        setActiveAgents(response.data.activeAgents);
+        setActiveAgents(() => {
+          return response.data.activeAgents.filter((agent) => {
+            return agent.creatorUID === userId
+          })
+        });
       });
     }
 

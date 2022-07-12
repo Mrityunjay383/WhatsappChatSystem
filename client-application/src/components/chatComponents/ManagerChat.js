@@ -42,7 +42,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
       currJoinedChats.forEach((chat, index) => {
         if(chat.room === room){
           setCurrJoinedChats((curr) => {
-            console.log(curr.splice(index, 1));
+            curr.splice(index, 1);
             return [...curr]
           })
         }
@@ -62,7 +62,6 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
 
     const joinRoom = async (room) => {
       if (room !== "") {
-        console.log(currJoinedChats);
 
         await socket.emit("join_room", {room, email: userData.email});
       }

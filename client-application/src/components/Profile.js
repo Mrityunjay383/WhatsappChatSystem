@@ -76,7 +76,7 @@ function Profile({baseURL, setIsLogedin, userData, setUserData, noOfPendingTempl
 
               <div className="changeNameCon">
 
-                <h4>Update Name:</h4>
+                <h4>Update Profile</h4>
                 <div className="form-group">
                   <label>First Name:</label>
                   <input type="text" className="form-control" defaultValue={userDelByPost.firstName} placeholder="First name" onChange={(e) => {

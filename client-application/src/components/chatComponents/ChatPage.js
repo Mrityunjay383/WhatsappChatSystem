@@ -144,7 +144,6 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
 
     const joinRoom = async (room) => {
       if (room !== "") {
-        console.log(currJoinedChats);
 
         await socket.emit("join_room", {room, email: userData.email});
       }
