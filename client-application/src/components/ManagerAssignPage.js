@@ -5,7 +5,7 @@ import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
 
-function ManagerAsignPage({socket, baseURL, userName, setIsLogedin}) {
+function ManagerAsignPage({socket, baseURL, userName, setIsLogedin, noOfRequestedChats}) {
 
 
     const [activeRooms, setActiveRooms] = useState([]);
@@ -21,14 +21,7 @@ function ManagerAsignPage({socket, baseURL, userName, setIsLogedin}) {
       await axios.post(`${baseURL}/assign_agent`, {room, agent, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
           console.log("Assignment Done");
-          // e.target.innerText = "Assigned";
-          // setTimeout(() => {
-          //   setActiveRooms((curr) => {
-          //     return curr.filter((r) => {
-          //       return r !== room
-          //     })
-          //   })
-          // }, 2000);
+
         }else{
           console.log("Failed");
         }
@@ -62,7 +55,7 @@ function ManagerAsignPage({socket, baseURL, userName, setIsLogedin}) {
 
     return (
         <div className="rootCon">
-        <Sidebar role = "Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="assignAgents"/>
+        <Sidebar role = "Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="assignAgents" noOfRequestedChats={noOfRequestedChats}/>
 
           <div className="dataCon">
             <TopCon userName={userName} page="Assign Agents"/>

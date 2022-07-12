@@ -6,7 +6,7 @@ import TopCon from "./uiComponent/TopCon";
 
 
 
-function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates}) {
+function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates, noOfRequestedChats}) {
 
     // console.log(userData.user_id);
 
@@ -42,7 +42,7 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates}) 
     return (
         <div  className="rootCon ">
 
-          <Sidebar role = {userData.role} baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser" noOfPendingTemplates={noOfPendingTemplates}/>
+          <Sidebar role = {userData.role} baseURL={baseURL} setIsLogedin={setIsLogedin} page="createNewUser" noOfPendingTemplates={noOfPendingTemplates} noOfRequestedChats={noOfRequestedChats}/>
 
           <div className="dataCon">
             <TopCon userName={userData.name} page={userData.role === "Admin" ? "Add New Manager" : "Add New Agent"} />

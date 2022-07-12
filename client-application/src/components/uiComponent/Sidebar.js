@@ -27,7 +27,7 @@ const AgentIcon = () => {
   </svg>
 }
 
-function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0}) {
+function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0, noOfRequestedChats=0}) {
     const logOut = async () => {
       await axios.get(`${baseURL}/auth/logout`, { validateStatus: false, withCredentials: true }).then((response) => {
         setIsLogedin(false);
@@ -92,7 +92,7 @@ function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0}) {
 
           <a href="/chat_requests" className={page === "chat" ? "active" : "nonActive"}>
             <AgentIcon />
-            <span>Chat Requests</span>
+            <span>Chat Requests <b className="floatNumber">{noOfRequestedChats}</b></span>
           </a>
 
           <a href="/broadcast" className={page === "broadcasting" ? "active" : "nonActive"}>

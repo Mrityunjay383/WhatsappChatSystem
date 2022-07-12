@@ -5,7 +5,7 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, userId}) {
+function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, userId, noOfRequestedChats}) {
 
     const [templates, setTemplated] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState({});
@@ -165,7 +165,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
     return (
         <div className="rootCon">
-          <Sidebar role="Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="broadcasting" />
+          <Sidebar role="Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="broadcasting" noOfRequestedChats={noOfRequestedChats}/>
 
           <div className="dataCon">
             <TopCon userName={userName} page="Broadcast"/>

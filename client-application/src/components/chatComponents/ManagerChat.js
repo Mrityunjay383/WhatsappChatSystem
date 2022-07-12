@@ -7,7 +7,7 @@ import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 
-function ManagerChat({socket, userData, baseURL, setIsLogedin}) {
+function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChats}) {
 
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
 
@@ -93,7 +93,6 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin}) {
     }
 
     useEffect(() => {
-      socket.emit("Agent", {email: userData.email, name: userData.name, socket_id: socket.id, creatorUID: userData.creatorUID});
       getAssignedChats();
 
       // sessionStorage.removeItem('currJoinedChats');
@@ -168,7 +167,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin}) {
     return (
         <div className="rootCon">
 
-          <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" />
+          <Sidebar role="Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" noOfRequestedChats={noOfRequestedChats}/>
 
 
           <div className="dataCon">

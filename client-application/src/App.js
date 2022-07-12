@@ -43,6 +43,9 @@ function App() {
   const [alertData, setAlertData] = useState({});
   const [noOfPendingTemplates, setNoOfPendingTemplates] = useState(0);
 
+  const [noOfRequestedChats, setNoOfRequestedChats] = useState(0);
+
+
   const ChatPageRender = () => {
     return (
       <>
@@ -58,7 +61,7 @@ function App() {
     return (
       <>
         <React.Suspense fallback={<></>}>
-          {(userData.role === "Manager") && <ManagerAssign socket={socket} baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin}/>}
+          {(userData.role === "Manager") && <ManagerAssign socket={socket} baseURL={baseChatSystemURL} userName={userData.name} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>}
         </React.Suspense>
       </>
     )
@@ -74,6 +77,19 @@ function App() {
         setIsLogedin(true);
         // console.log(response.data.user);
       }
+    });
+  }
+
+  //Getting all assigned rooms to this agent
+  const getAssignedChats = async () => {
+
+    await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
+      //Filtering assigned rooms for this perticular agent
+      const filteredChats = response.data.assignList.filter((assined) => {
+        return assined.managerID === userData.user_id
+      });
+      console.log(filteredChats.length);
+      setNoOfRequestedChats(filteredChats.length);
     });
   }
 
@@ -94,9 +110,15 @@ function App() {
       setShowAlert(true);
       setAlertData(data);
     })
+    socket.on("broadcast", (data) => {
+      setTimeout(() => {
+        getAssignedChats();
+      }, 500);
+    });
   }, [socket]);
 
   useEffect(() => {//validating JWT on every time the component mount
+    getAssignedChats();
     getNoOfPendingTemplates();
     valToken();
   }, []);
@@ -129,7 +151,7 @@ function App() {
             <Route path="/profile" element={
               <div>
                 {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData} noOfPendingTemplates={noOfPendingTemplates}/>
+                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData} noOfPendingTemplates={noOfPendingTemplates} noOfRequestedChats={noOfRequestedChats}/>
               </div>
             } />
 
@@ -138,7 +160,15 @@ function App() {
               userData.role === "Agent" ? ( //Agents didnt have Access to allAgents page
                 <h1>Access Denied!!</h1>
               ) : (
-                <AllUsers baseURL={baseUserSystemURL} userRole={userData.role} userName={userData.name}  getRole="agents" userID={userData.user_id} setIsLogedin={setIsLogedin} />
+                <AllUsers
+                  baseURL={baseUserSystemURL}
+                  userRole={userData.role}
+                  userName={userData.name}
+                  getRole="agents"
+                  userID={userData.user_id}
+                  setIsLogedin={setIsLogedin}
+                  noOfRequestedChats={noOfRequestedChats}
+                />
               )
             } />
 
@@ -149,7 +179,15 @@ function App() {
               ) : (
                 <div>
                   {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                  <AllUsers baseURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userRole={userData.role} userName={userData.name} userID={userData.user_id} noOfPendingTemplates={noOfPendingTemplates}/>
+                  <AllUsers
+                    baseURL={baseUserSystemURL}
+                    getRole="managers"
+                    setIsLogedin={setIsLogedin}
+                    userRole={userData.role}
+                    userName={userData.name}
+                    userID={userData.user_id}
+                    noOfPendingTemplates={noOfPendingTemplates}
+                  />
                 </div>
               )
             } />
@@ -157,7 +195,15 @@ function App() {
             //Broadcasting Rote
             <Route path="/broadcast" element={
               userData.role === "Manager" ? (//Only Managers have Access to Broadcasting page
-                <Broadcasting baseBulkMessagingURL={baseBulkMessagingURL} baseUserSystemURL={baseUserSystemURL} getRole="managers" setIsLogedin={setIsLogedin} userId={userData.user_id} userName={userData.name} />
+                <Broadcasting
+                  baseBulkMessagingURL={baseBulkMessagingURL}
+                  baseUserSystemURL={baseUserSystemURL}
+                  getRole="managers"
+                  setIsLogedin={setIsLogedin}
+                  userId={userData.user_id}
+                  userName={userData.name}
+                  noOfRequestedChats={noOfRequestedChats}
+                />
               ) : (
                 <h1>Access Denied!!</h1>
               )
@@ -174,7 +220,9 @@ function App() {
                   baseUserSystemURL={baseUserSystemURL}
                   userName={userData.name}
                   userID={userData.user_id}
-                  setIsLogedin={setIsLogedin} />
+                  setIsLogedin={setIsLogedin}
+                  noOfRequestedChats={noOfRequestedChats}
+                />
               )
             } />
 
@@ -199,7 +247,7 @@ function App() {
 
             <Route path="/chat_requests" element={
               userData.role === "Manager" ? (
-                <ManagerChat socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />
+                <ManagerChat socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>
               ) : (
                 <h1>Access Denied!!</h1>
               )
@@ -212,7 +260,7 @@ function App() {
 
                 <div>
                   {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                  <CreateNewUser baseURL={baseUserSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfPendingTemplates={noOfPendingTemplates}/>
+                  <CreateNewUser baseURL={baseUserSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfPendingTemplates={noOfPendingTemplates} noOfRequestedChats={noOfRequestedChats}/>
                 </div>
               )
             } />

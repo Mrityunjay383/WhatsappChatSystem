@@ -6,7 +6,7 @@ import TopCon from "./uiComponent/TopCon";
 
 import AddNewTemp from "./uiComponent/AddNewTemp";
 
-function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSystemURL, userName, userID, setIsLogedin}) {
+function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSystemURL, userName, userID, setIsLogedin, noOfRequestedChats}) {
 
     const [showAddCom, setShowAddComp] = useState(false);
 
@@ -24,7 +24,7 @@ function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSy
 
     return (
         <div className="rootCon">
-          <Sidebar role="Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="newTemplateRequest" />
+          <Sidebar role="Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="newTemplateRequest" noOfRequestedChats={noOfRequestedChats}/>
 
           <div className="dataCon">
             <TopCon userName={userName} page="Your Templates"/>
