@@ -17,6 +17,9 @@ const chatSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  managerID: {
+    type: String
+  },
   lastInteraction: {
     type: String,
     default: Date.now(),

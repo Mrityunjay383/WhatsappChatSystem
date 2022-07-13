@@ -30,8 +30,14 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
 
     const getRooms = async () => {
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
-        console.log(response.data.chats);
-        setActiveRooms(response.data.chats);
+        let rooms = response.data.chats;
+        // console.log(rooms);
+        for(let i=0; i < rooms.length; i++){
+          if(rooms[i].managerID !== userId){
+            rooms.splice(i, 1);
+          }
+        }
+        setActiveRooms(rooms);
       });
     }
 

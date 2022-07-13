@@ -25,4 +25,9 @@ router.post("/change_name", valToken, controller.changeName);
 
 router.post("/change_password", valToken, controller.changePassword);
 
+router.post("/new_escalation", valToken, controller.newEscatation);
+
+router.post("/get_escalations", valToken, controller.getEscatations);
+
+
 module.exports = router

@@ -80,9 +80,14 @@ io.on("connection", (socket) => {
 
   socket.on("Agent", async (data) => {
     //if the request is comming from an agent passing it into the activeAgnets list
-    await activeAgents.push({
-      ...data
-    });
+    if(activeAgents.some(agent => agent.email === data.email)){
+      console.log("Agent Already In");
+    }else{
+      await activeAgents.push({
+        ...data
+      });
+    }
+
   })
 
   //adding the agent in the Socket room
@@ -152,7 +157,8 @@ io.on("connection", (socket) => {
     io.sockets.emit("broadcast", {}); //broadcasting so the all active rooms get updated for all users
     const {
       chat,
-      agentName
+      agentName,
+      managerID
     } = data;
 
     let lastInteraction;
@@ -171,6 +177,7 @@ io.on("connection", (socket) => {
       userPhoneNo: chat.phoneNo,
       messageList: chat.messageList,
       agentName,
+      managerID,
       lastInteraction
     });
 
@@ -355,12 +362,25 @@ app.post("/assign_agent", (req, res) => {
 //route to get all the chats which are assigned by the manager
 app.get("/assigned", (req, res) => {
   // io.sockets.emit("broadcast", {});
+  // console.log(assignList);
   res.status(200).json({
     assignList
   });
 
 });
 
+app.post("/completedChats", async (req, res) => {
+  const {managerID} = req.body;
+
+  let foundChats;
+  if(managerID){
+    foundChats = await Chat.find({managerID});
+  }else{
+    foundChats = await Chat.find({});
+  }
+
+  res.status(200).json({chats: foundChats});
+})
 
 // Template functionalities
 
@@ -374,6 +394,14 @@ app.get("/noOfPendingTemplates", async (req, res) => {
     noOfPendingTemplates
   });
 })
+
+app.post("/allTemplatesByManager", async (req, res) => {
+  const {managerID} = req.body;
+
+  const foundTemplates = await Template.find({requestByUID: managerID});
+
+  res.status(200).json({templates: foundTemplates});
+});
 
 app.post("/add_new_template", async (req, res) => {
   const {
@@ -409,6 +437,12 @@ app.post("/add_new_template", async (req, res) => {
   res.status(200).send("Done");
 
 });
+
+app.get("/delAllChats", (req, res) => {
+  Chat.remove({}, () => {
+    res.send("Done");
+  })
+})
 
 
 server.listen(PORT, () => {

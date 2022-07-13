@@ -37,7 +37,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
 
     const disconnect = async (room) => {
 
-      await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
+      await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name, managerID: userData.user_id});
 
       currJoinedChats.forEach((chat, index) => {
         if(chat.room === room){
@@ -216,7 +216,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
                       </div>
                       <Chat
                         socket={socket}
-                        username="Agent"
+                        username="Manager"
                         uID={userData.user_id}
                         currActiveChat={currActiveChat}
                         setCurrActiveChat={setCurrActiveChat}

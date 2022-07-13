@@ -31,6 +31,9 @@ const userSchema = new mongoose.Schema({
   apiKey: {
     type: String,
   },
+  escalations: {
+    type: [Object]
+  },
   token: {
     type: String,
   }

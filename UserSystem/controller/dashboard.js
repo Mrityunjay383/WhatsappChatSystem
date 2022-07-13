@@ -215,3 +215,50 @@ exports.changePassword = async (req, res) => {
     console.log(e);
   }
 }
+
+exports.newEscatation = async (req, res) => {
+  const {room, customerPhoneNo, escalatedBy, managerID} = req.body;
+
+  const date = `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
+
+  const foundManager = await User.findOne({_id: managerID});
+
+  if(foundManager.escalations){
+    foundManager.escalations = [...foundManager.escalations, {
+      customerName: room,
+      customerPhoneNo,
+      escalatedBy,
+      date
+    }]
+  }else{
+    foundManager.escalations = {
+      customerName: room,
+      customerPhoneNo,
+      escalatedBy,
+      date
+    }
+  }
+
+  await foundManager.save((err) => {
+    if(err){
+      res.status(400).send(err);
+    }else{
+      res.status(200).send("Done");
+    }
+  });
+
+}
+
+exports.getEscatations = async (req, res) => {
+  const {managerID} = req.body;
+
+  const foundManager = await User.findOne({_id: managerID});
+
+  if(foundManager){
+    res.status(200).json({escalations: foundManager.escalations});
+  }else{
+    res.status(200).json({escalations: []});
+  }
+
+
+}

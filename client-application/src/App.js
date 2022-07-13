@@ -52,7 +52,7 @@ function App() {
     return (
       <>
         <React.Suspense fallback={<></>}>
-          {(userData.role === "Agent") && <ChatPage socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />}
+          {(userData.role === "Agent") && <ChatPage socket={socket} baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />}
         </React.Suspense>
       </>
     )
@@ -129,11 +129,11 @@ function App() {
   //Rendring dashboard based on the role of the user
   const Dashboard = ({role}) => {
     if(role === "Admin"){
-      return <AdminDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} noOfPendingTemplates={noOfPendingTemplates}/>
+      return <AdminDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} setIsLogedin={setIsLogedin} userData={userData} noOfPendingTemplates={noOfPendingTemplates}/>
     }else if(role === "Manager"){
-      return <ManagerDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name}  noOfRequestedChats={noOfRequestedChats}/>
+      return <ManagerDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} setIsLogedin={setIsLogedin} userData={userData}  noOfRequestedChats={noOfRequestedChats} socket={socket}/>
     }else if(role === "Agent"){
-      return <AgentDb baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userName={userData.name} />
+      return <AgentDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} setIsLogedin={setIsLogedin} userData={userData} socket={socket}/>
     }
   };
 

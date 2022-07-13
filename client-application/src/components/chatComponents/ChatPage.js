@@ -7,7 +7,7 @@ import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 
-function ChatPage({socket, userData, baseURL, setIsLogedin}) {
+function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIsLogedin}) {
 
     const [activeRooms, setActiveRooms] = useState([]);//store all active romms exist
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
@@ -21,7 +21,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     });
 
     const getActiveAgents = async () => {
-      await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
+      await axios.get(`${baseChatSystemURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
         await setActiveAgents( () => {
           return response.data.activeAgents.filter((agent) => {
             return agent.email !== userData.email && agent.creatorUID === userData.creatorUID
@@ -33,7 +33,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     //Getting all active rooms exist currently
     const getRooms = async () => {
 
-      await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseChatSystemURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
         const rooms = response.data.chats;
         // console.log(rooms);
         for(let i=0; i < rooms.length; i++){
@@ -48,12 +48,12 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     //Getting all assigned rooms to this agent
     const getAssignedChats = async () => {
 
-      await axios.get(`${baseURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
         //Filtering assigned rooms for this perticular agent
-        // console.log(response.data.assignList);
+        console.log(response.data.assignList);
         setAssignedChats(() => {
           return response.data.assignList.filter((assined) => {
-            return assined.agentEmail === userData.email
+            return assined.agent.email === userData.email
           });
         });
 
@@ -62,7 +62,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
 
     const disconnect = async (room) => {
 
-      await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
+      await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name, managerID: userData.creatorUID});
 
       currJoinedChats.forEach((chat, index) => {
         if(chat.room === room){
@@ -97,16 +97,21 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
       }else{
         managerID = userData.creatorUID;
 
+        //Adding ecalation to DB
+        await axios.post(`${baseUserSystemURL}/new_escalation`, {room, customerPhoneNo: currActiveChat.phoneNo, escalatedBy: userData.name, managerID}, { validateStatus: false, withCredentials: true }).then((response) => {
+          console.log(response.data);
+        });
+
         await socket.emit("reassign", {room, managerID, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
       }
 
       if(agent != undefined || managerID != undefined){
-        await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name});
+        await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name, managerID: userData.creatorUID});
 
         currJoinedChats.forEach((chat, index) => {
           if(chat.room === room){
             setCurrJoinedChats((curr) => {
-              console.log(curr.splice(index, 1));
+              curr.splice(index, 1);
               return [...curr]
             })
           }
@@ -253,7 +258,7 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
     return (
         <div className="rootCon">
 
-          <Sidebar role="Agent" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" />
+          <Sidebar role="Agent" baseChatSystemURL={baseChatSystemURL} setIsLogedin={setIsLogedin} page="chat" />
 
 
           <div className="dataCon">
@@ -316,8 +321,8 @@ function ChatPage({socket, userData, baseURL, setIsLogedin}) {
                         <ReassignCom room={currActiveChat.room} />
 
                         <button className="joinbtn" onClick={(e) => {
-                          reassign(e, "subToManager", `${currActiveChat.room}`);
-                        }}>Sub to Manager</button>
+                          reassign(e, "escToManager", `${currActiveChat.room}`);
+                        }}>Escalate to Manager</button>
 
                         <button className="rmBtn disBtn" onClick={(e) => {
                           disconnect(currActiveChat.room);
