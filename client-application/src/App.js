@@ -24,6 +24,7 @@ import AlertBox from "./components/uiComponent/AlertBox";
 
 import ManagerChat from "./components/chatComponents/ManagerChat";
 
+import ManagerProfile from "./components/ManagerProfile";
 
 //Importing as lazy so that socket only runs when user is agent or customer
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
@@ -279,6 +280,24 @@ function App() {
             <Route path="/asign_agent" element={
               userData.role === "Manager" ? ( //Agents didnt have Access to allAgents page
                 <ManagerAssignPage />
+              ) : (
+                <h1>Access Denied!!</h1>
+              )
+            } />
+
+            <Route path="/manager/:id" element={
+              userData.role === "Admin" ? ( //Agents didnt have Access to allAgents page
+                <div>
+                  {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
+
+                  <ManagerProfile
+                    baseURL={baseUserSystemURL}
+                    baseChatSystemURL={baseChatSystemURL}
+                    userData={userData}
+                    setIsLogedin={setIsLogedin}
+                    noOfPendingTemplates={noOfPendingTemplates}
+                  />
+                </div>
               ) : (
                 <h1>Access Denied!!</h1>
               )

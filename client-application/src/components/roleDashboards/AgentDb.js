@@ -12,6 +12,9 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
     const [noOfAssignedChats, setNoOfAssignedChats] = useState(0);
     const [totalNoOfCustomerHandled, setTotalNoOfCustomerHandled] = useState(0);
 
+    const [totalCompletedChats, setTotalCompletedChats] = useState([]);
+    const [totalCustomerHandled, setTotalCustomerHandled] = useState([]);
+
     //Getting all active rooms exist currently
     const getRooms = async () => {
 
@@ -33,7 +36,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
         })
 
         getNoOfUniqueConstomerhandled(chatsByThisAgent);
-
+        setTotalCompletedChats(chatsByThisAgent);
         setTotalNoOfCompletedChats(chatsByThisAgent.length);
       });
     }
@@ -44,7 +47,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
       await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
 
         const assignedChats = response.data.assignList.filter((assined) => {
-          return assined.agent.email === userData.email
+          return assined.agentEmail === userData.email
         });
 
         setNoOfAssignedChats(assignedChats.length);
@@ -59,7 +62,45 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
           t.userPhoneNo === value.userPhoneNo
         ))
       )
+      setTotalCustomerHandled(chatList)
       setTotalNoOfCustomerHandled(chatList.length);
+    }
+
+    const filterData = (selectedFilter) => {
+
+      const currentDate = new Date().getTime();
+
+      let noOfCompletedChats = 0, noOfCustomerHandled = 0;
+
+      if(selectedFilter == "all"){
+
+
+        noOfCompletedChats = totalCompletedChats.length;
+        noOfCustomerHandled = totalCustomerHandled.length;
+
+      }else{
+        let comparedDate;
+
+        if(selectedFilter == 7){
+          comparedDate = currentDate - 7*24*60*60*1000;
+        }else if(selectedFilter == 30){
+          comparedDate = currentDate - 30*24*60*60*1000;
+        }
+
+        for(let chat of totalCompletedChats){
+          if(chat.lastInteraction >= comparedDate){
+            noOfCompletedChats++
+          }
+        }
+        for(let chat of totalCustomerHandled){
+          if(chat.lastInteraction >= comparedDate){
+            noOfCustomerHandled++
+          }
+        }
+      }
+
+      setTotalNoOfCustomerHandled(noOfCustomerHandled);
+      setTotalNoOfCompletedChats(noOfCompletedChats);
     }
 
     useEffect(() => {
@@ -90,10 +131,19 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
                 Number of Pending Chats: {totalNoOfOpenChats}
               </div>
               <div>
-                 Number of Completed Chats: {totalNoOfCompletedChats}
+                 Number of Assigned Chats: {noOfAssignedChats}
               </div>
               <div>
-                 Number of Assigned Chats: {noOfAssignedChats}
+                  <select onChange={(e) => {
+                    filterData(e.target.value)
+                  }}>
+                    <option value="all">All Time</option>
+                    <option value="7">Past 7 Days</option>
+                    <option value="30">Past 30 Days</option>
+                  </select>
+              </div>
+              <div>
+                 Number of Completed Chats: {totalNoOfCompletedChats}
               </div>
               <div>
                 Total Number of Contacts handled: {totalNoOfCustomerHandled}

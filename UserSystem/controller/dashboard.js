@@ -219,8 +219,7 @@ exports.changePassword = async (req, res) => {
 exports.newEscatation = async (req, res) => {
   const {room, customerPhoneNo, escalatedBy, managerID} = req.body;
 
-  const date = `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
-
+  const date = new Date().getTime();
   const foundManager = await User.findOne({_id: managerID});
 
   if(foundManager.escalations){

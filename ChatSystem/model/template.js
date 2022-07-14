@@ -24,6 +24,10 @@ const templateSchema = new mongoose.Schema({
   requestByUID: {
     type: String,
     default: null,
+  },
+  creationDate: {
+    type: String,
+    default: null,
   }
 });
 

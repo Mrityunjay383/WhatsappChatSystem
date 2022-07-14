@@ -50,10 +50,9 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
 
       await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
         //Filtering assigned rooms for this perticular agent
-        console.log(response.data.assignList);
         setAssignedChats(() => {
           return response.data.assignList.filter((assined) => {
-            return assined.agent.email === userData.email
+            return assined.agentEmail === userData.email
           });
         });
 

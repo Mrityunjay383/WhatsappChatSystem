@@ -14,6 +14,10 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
     const [totalNoOfTemplates, setTotalNoOfTemplates] = useState(0);
     const [totalNoOfCompletedChats, setTotalNoOfCompletedChats] = useState(0);
 
+    const [totalEscalations, setTotalEscalations] = useState([]);
+    const [totalTemplates, setTotalTemplates] = useState([]);
+    const [totalCompletedChats, setTotalCompletedChats] = useState([]);
+
 
     const getAgents = async () => {
       await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
@@ -53,20 +57,65 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
     const getEscalations = async () => {
       await axios.post(`${baseUserSystemURL}/get_escalations`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
+        setTotalEscalations(response.data.escalations);
         setTotalNoOfEscalations(response.data.escalations.length);
       });
     }
 
     const getTemplates = async() => {
       await axios.post(`${baseChatSystemURL}/allTemplatesByManager`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
+        setTotalTemplates(response.data.templates);
         setTotalNoOfTemplates(response.data.templates.length);
       });
     }
 
     const getCompletedChats = async () => {
       await axios.post(`${baseChatSystemURL}/completedChats`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
+        setTotalCompletedChats(response.data.chats);
         setTotalNoOfCompletedChats(response.data.chats.length);
       });
+    }
+
+    const filterData = (selectedFilter) => {
+      const currentDate = new Date().getTime();
+
+      let noOfEscalations= 0, noOfTemplates = 0, noOfCompletedChats = 0;
+
+      if(selectedFilter == "all"){
+
+        noOfEscalations = totalEscalations.length;
+        noOfTemplates = totalTemplates.length;
+        noOfCompletedChats = totalCompletedChats.length;
+
+      }else{
+        let comparedDate;
+
+        if(selectedFilter == 7){
+          comparedDate = currentDate - 7*24*60*60*1000;
+        }else if(selectedFilter == 30){
+          comparedDate = currentDate - 30*24*60*60*1000;
+        }
+
+        for(let ecalation of totalEscalations){
+          if(ecalation.date >= comparedDate){
+            noOfEscalations++
+          }
+        }
+        for(let template of totalTemplates){
+          if(template.creationDate >= comparedDate){
+            noOfTemplates++
+          }
+        }
+        for(let chat of totalCompletedChats){
+          if(chat.lastInteraction >= comparedDate){
+            noOfCompletedChats++
+          }
+        }
+      }
+
+      setTotalNoOfEscalations(noOfEscalations);
+      setTotalNoOfTemplates(noOfTemplates);
+      setTotalNoOfCompletedChats(noOfCompletedChats);
     }
 
     useEffect(() => {
@@ -106,6 +155,17 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
               <div>
                 Total Unresponded Chats: {totalNoOfOpenChats}
               </div>
+
+              <div>
+                  <select onChange={(e) => {
+                    filterData(e.target.value)
+                  }}>
+                    <option value="all">All Time</option>
+                    <option value="7">Past 7 Days</option>
+                    <option value="30">Past 30 Days</option>
+                  </select>
+              </div>
+
               <div>
                 Total Escalated Chats: {totalNoOfEscalations}
               </div>

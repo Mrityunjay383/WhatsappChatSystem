@@ -10,6 +10,8 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
     const [totalNoOfManagers, setTotalNoOfManagers] = useState(0);
     const [totalNoOfCompletedChats, setTotalNoOfCompletedChats] = useState(0);
 
+    const [totalCompletedChats, setTotalCompletedChats] = useState([]);
+
     const getAgents = async () => {
       await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
         const allAgents = response.data.agents;
@@ -28,15 +30,44 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
 
     const getCompletedChats = async () => {
       await axios.post(`${baseChatSystemURL}/completedChats`, {},{ validateStatus: false, withCredentials: true }).then((response) => {
+        setTotalCompletedChats(response.data.chats);
         setTotalNoOfCompletedChats(response.data.chats.length);
       });
+    }
+
+    const filterData = (selectedFilter) => {
+      const currentDate = new Date().getTime();
+
+      let noOfCompletedChats = 0;
+
+      if(selectedFilter == "all"){
+
+        noOfCompletedChats = totalCompletedChats.length;
+
+      }else{
+        let comparedDate;
+
+        if(selectedFilter == 7){
+          comparedDate = currentDate - 7*24*60*60*1000;
+        }else if(selectedFilter == 30){
+          comparedDate = currentDate - 30*24*60*60*1000;
+        }
+
+        for(let chat of totalCompletedChats){
+          if(chat.lastInteraction >= comparedDate){
+            noOfCompletedChats++
+          }
+        }
+      }
+
+      setTotalNoOfCompletedChats(noOfCompletedChats);
     }
 
     useEffect(() => {
       getAgents();
       getManagers();
       getCompletedChats();
-    })
+    }, [])
 
     return (
         <div className="rootCon ">
@@ -51,6 +82,17 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
               <div>
                 Total Agents: {totalNoOfAgents}
               </div>
+
+              <div>
+                <select onChange={(e) => {
+                  filterData(e.target.value)
+                }}>
+                  <option value="all">All Time</option>
+                  <option value="7">Past 7 Days</option>
+                  <option value="30">Past 30 Days</option>
+                </select>
+              </div>
+
               <div>
                 Total Number of Completed Chats: {totalNoOfCompletedChats}
               </div>
