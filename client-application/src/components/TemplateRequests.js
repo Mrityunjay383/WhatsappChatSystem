@@ -4,12 +4,17 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, noOfPendingTemplates}) {
+function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, noOfPendingTemplates, setNoOfPendingTemplates}) {
 
     const [allTemplates, setAllTemplates] = useState([]);
 
     const getTemplates = async () => {
       axios.get(`${baseBulkMessagingURL}/get_all_templates`, {validateStatus: false, withCredentials: true}).then((response) => {
+
+        const pendingChats = response.data.allTemplates.filter((template) => {
+          return template.status === "Pending"
+        })
+        setNoOfPendingTemplates(pendingChats.length);
         setAllTemplates(response.data.allTemplates);
       });
     }

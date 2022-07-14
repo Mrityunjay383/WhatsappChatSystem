@@ -127,12 +127,15 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
             <TopCon userName={userData.name} page="Overview"/>
 
             <div className="dashBoard">
-              <div>
-                Number of Pending Chats: {totalNoOfOpenChats}
+              <div className="upCon">
+                <div>
+                  Pending Chats: <span>{totalNoOfOpenChats}</span>
+                </div>
+                <div>
+                   Assigned Chats: <span>{noOfAssignedChats}</span>
+                </div>
               </div>
-              <div>
-                 Number of Assigned Chats: {noOfAssignedChats}
-              </div>
+
               <div>
                   <select onChange={(e) => {
                     filterData(e.target.value)

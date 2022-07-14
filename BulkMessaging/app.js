@@ -104,18 +104,6 @@ app.get("/storedCustomers", async (req, res) => {
   }
 })
 
-app.post("/get_templates", async (req, res) => {
-  const {userID} = req.body;
-
-  const userTemplates = await Template.find({requestByUID: userID});
-
-  if(userTemplates){
-    return res.status(200).json({templates: userTemplates.reverse()})
-  }
-
-  return res.status(404).send("Templates not found");
-})
-
 app.get("/get_all_templates", async (req, res) => {
   const allTemplates = await Template.find();
 

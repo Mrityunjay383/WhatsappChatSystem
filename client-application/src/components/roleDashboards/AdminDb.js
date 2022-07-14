@@ -4,10 +4,12 @@ import axios from "axios";
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
-function AdminDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, noOfPendingTemplates}) {
+function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,setIsLogedin, userData, noOfPendingTemplates}) {
 
     const [totalNoOfAgents, setTotalNoOfAgents] = useState(0);
     const [totalNoOfManagers, setTotalNoOfManagers] = useState(0);
+    const [totalNoOfTemplates, setTotalNoOfTemplates] = useState(0);
+
     const [totalNoOfCompletedChats, setTotalNoOfCompletedChats] = useState(0);
 
     const [totalCompletedChats, setTotalCompletedChats] = useState([]);
@@ -25,6 +27,13 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
         const allManagers = response.data.managers;
 
         setTotalNoOfManagers(allManagers.length);
+      });
+    }
+
+    const getTemplates = async() => {
+      await axios.get(`${baseBulkMessagingURL}/get_all_templates`, { validateStatus: false, withCredentials: true }).then((response) => {
+        console.log(response.data.allTemplates);
+        setTotalNoOfTemplates(response.data.allTemplates.length);
       });
     }
 
@@ -67,6 +76,7 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
       getAgents();
       getManagers();
       getCompletedChats();
+      getTemplates();
     }, [])
 
     return (
@@ -76,12 +86,18 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
             <TopCon userName={userData.name} page="Overview"/>
 
             <div className="dashBoard">
-              <div>
-                Total Managers: {totalNoOfManagers}
+              <div className="upCon">
+                <div>
+                  Managers <span>{totalNoOfManagers}</span>
+                </div>
+                <div>
+                  Agents <span>{totalNoOfAgents}</span>
+                </div>
+                <div>
+                  Templates <span>{totalNoOfTemplates}</span>
+                </div>
               </div>
-              <div>
-                Total Agents: {totalNoOfAgents}
-              </div>
+
 
               <div>
                 <select onChange={(e) => {

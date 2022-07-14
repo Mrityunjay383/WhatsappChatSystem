@@ -130,7 +130,7 @@ function App() {
   //Rendring dashboard based on the role of the user
   const Dashboard = ({role}) => {
     if(role === "Admin"){
-      return <AdminDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} setIsLogedin={setIsLogedin} userData={userData} noOfPendingTemplates={noOfPendingTemplates}/>
+      return <AdminDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} baseBulkMessagingURL={baseBulkMessagingURL} setIsLogedin={setIsLogedin} userData={userData} noOfPendingTemplates={noOfPendingTemplates}/>
     }else if(role === "Manager"){
       return <ManagerDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} setIsLogedin={setIsLogedin} userData={userData}  noOfRequestedChats={noOfRequestedChats} socket={socket}/>
     }else if(role === "Agent"){
@@ -243,7 +243,9 @@ function App() {
                     baseUserSystemURL={baseUserSystemURL}
                     userName={userData.name}
                     setIsLogedin={setIsLogedin}
-                    noOfPendingTemplates={noOfPendingTemplates}/>
+                    noOfPendingTemplates={noOfPendingTemplates}
+                    setNoOfPendingTemplates={setNoOfPendingTemplates}
+                  />
                 </div>
 
               )

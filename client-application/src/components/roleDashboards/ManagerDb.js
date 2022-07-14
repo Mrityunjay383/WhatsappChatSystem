@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
+import "./DB.css";
+
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
@@ -146,15 +148,19 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
             <TopCon userName={userData.name} page="Overview"/>
 
             <div className="dashBoard">
-              <div>
-                Total Agents: {totalNoOfAgents}
+
+              <div className="upCon">
+                <div className="">
+                  Agents: <span>{totalNoOfAgents}</span>
+                </div>
+                <div>
+                  Active Agents: <span>{totalNoOfActiveAgents}</span>
+                </div>
+                <div>
+                  Unresponded Chats: <span>{totalNoOfOpenChats}</span>
+                </div>
               </div>
-              <div>
-                Total Active Agents: {totalNoOfActiveAgents}
-              </div>
-              <div>
-                Total Unresponded Chats: {totalNoOfOpenChats}
-              </div>
+
 
               <div>
                   <select onChange={(e) => {
