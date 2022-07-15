@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
+import { Bar } from "react-chartjs-2";
 
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
@@ -87,19 +88,28 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
 
             <div className="dashBoard">
               <div className="upCon">
-                <div>
-                  Managers <span>{totalNoOfManagers}</span>
-                </div>
-                <div>
-                  Agents <span>{totalNoOfAgents}</span>
-                </div>
-                <div>
-                  Templates <span>{totalNoOfTemplates}</span>
-                </div>
+                <a href="/managers">
+                  <div>
+                    Managers <span>{totalNoOfManagers}</span>
+                  </div>
+                </a>
+
+                <a href="/managers">
+                  <div>
+                    Agents <span>{totalNoOfAgents}</span>
+                  </div>
+                </a>
+
+                <a href="/template_requests">
+                  <div>
+                    Templates <span>{totalNoOfTemplates}</span>
+                  </div>
+                </a>
+
               </div>
 
 
-              <div>
+              <div className="filterSelect">
                 <select onChange={(e) => {
                   filterData(e.target.value)
                 }}>
@@ -109,9 +119,14 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
                 </select>
               </div>
 
-              <div>
-                Total Number of Completed Chats: {totalNoOfCompletedChats}
+              <div className="upCon">
+                <a href="/managers">
+                  <div>
+                    Completed Chats <span>{totalNoOfCompletedChats}</span>
+                  </div>
+                </a>
               </div>
+
 
             </div>
           </div>

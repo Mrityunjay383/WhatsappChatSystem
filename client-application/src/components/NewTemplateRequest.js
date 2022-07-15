@@ -13,7 +13,7 @@ function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSy
     const [allTemplates, setAllTemplates] = useState([]);
 
     const getTemplates = async () => {
-      axios.post(`${baseBulkMessagingURL}/get_templates`, {userID}, {validateStatus: false, withCredentials: true}).then((response) => {
+      axios.post(`${baseChatSystemURL}/allTemplatesByManager`, {managerID: userID}, {validateStatus: false, withCredentials: true}).then((response) => {
         setAllTemplates(response.data.templates);
       });
     }

@@ -73,11 +73,14 @@ body {
   border-radius: 5px;
   padding: 5px 10px;
   cursor: pointer;
-  transition-duration: 0.3s;
+  transition: 0.5s ease;
 }
 
 .joinbtn:hover {
-  box-shadow: 1px 1px 3px 3px rgba(0, 0, 0, 0.2)
+  box-shadow: 1px 1px 3px 3px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  color: #777;
+  font-weight: bolder;
 }
 
 .userCon {
@@ -87,18 +90,22 @@ body {
 
 .userCard {
   min-width: 25vw;
-  padding: 5px 20px;
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 2vh 0;
+  margin: 0 0 10px;
   min-height: 9vh;
-  border-radius: 10px;
-  box-shadow: 3px 3px 8px 5px rgba(0, 0, 0, 0.2)
+  background: #fff;
+  /* border-radius: 10px; */
+  /* box-shadow: 3px 3px 8px 5px rgba(0, 0, 0, 0.2) */
 }
-
+.userCard p{
+  margin-bottom: 0;
+}
 .userCard h3 {
-  width: 20vw;
+  width: 40vw;
+  font-weight: bold;
 }
 
 .rmBtn {

@@ -20,7 +20,6 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
     const [totalTemplates, setTotalTemplates] = useState([]);
     const [totalCompletedChats, setTotalCompletedChats] = useState([]);
 
-
     const getAgents = async () => {
       await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
         const allAgents = response.data.agents;
@@ -150,19 +149,28 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
             <div className="dashBoard">
 
               <div className="upCon">
-                <div className="">
-                  Agents: <span>{totalNoOfAgents}</span>
-                </div>
-                <div>
-                  Active Agents: <span>{totalNoOfActiveAgents}</span>
-                </div>
-                <div>
-                  Unresponded Chats: <span>{totalNoOfOpenChats}</span>
-                </div>
+                <a href="/agents">
+                  <div className="">
+                    Agents <span>{totalNoOfAgents}</span>
+                  </div>
+                </a>
+
+                <a href="/asign_agent">
+                  <div>
+                    Active Agents <span>{totalNoOfActiveAgents}</span>
+                  </div>
+                </a>
+
+
+                <a href="/asign_agent">
+                  <div>
+                    Unresponded Chats <span>{totalNoOfOpenChats}</span>
+                  </div>
+                </a>
               </div>
 
 
-              <div>
+              <div className="filterSelect">
                   <select onChange={(e) => {
                     filterData(e.target.value)
                   }}>
@@ -172,15 +180,27 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
                   </select>
               </div>
 
-              <div>
-                Total Escalated Chats: {totalNoOfEscalations}
+              <div className="upCon">
+                <a href="/chat_requests">
+                  <div>
+                    Escalated Chats <span>{totalNoOfEscalations}</span>
+                  </div>
+                </a>
+
+                <a href="/new_template_request">
+                  <div>
+                    Template Created <span>{totalNoOfTemplates}</span>
+                  </div>
+                </a>
+
+                <a href="">
+                  <div>
+                    Completed Chats <span>{totalNoOfCompletedChats}</span>
+                  </div>
+                </a>
+
               </div>
-              <div>
-                Total Template Created: {totalNoOfTemplates}
-              </div>
-              <div>
-                Total Completed Chats: {totalNoOfCompletedChats}
-              </div>
+
 
             </div>
           </div>

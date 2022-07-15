@@ -115,11 +115,13 @@ function App() {
       setAlertData(data);
     })
 
-    socket.on("broadcast", (data) => {
-      setTimeout(() => {
-        getAssignedChats(userId);
-      }, 500);
-    });
+    if(userData.role === "Manager"){
+      socket.on("broadcast", (data) => {
+        setTimeout(() => {
+          getAssignedChats(userId);
+        }, 500);
+      });
+    }
   }, [socket]);
 
   useEffect(() => {//validating JWT on every time the component mount

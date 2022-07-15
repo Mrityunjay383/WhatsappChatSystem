@@ -4,6 +4,8 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
+import PlaceHolderImg from "../images/managerPicPH.jpg";
+
 
 function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, noOfPendingTemplates, noOfRequestedChats}) {
     const [usersList, setusersList] = useState([]);
@@ -46,11 +48,12 @@ function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, n
     const UserCard = ({user}) => {
       return (
         <div className="userCard">
-          <h3>{user.firstName} {user.lastName}</h3>
+          <img className="ProfilePic allUserImage" src={PlaceHolderImg} />
+          <h3 className="">{user.firstName} {user.lastName}</h3>
           <p>{user.email}</p>
 
           {user.role === "Manager" ? (
-            <a href={`/manager/${user._id}`}>View More</a>
+            <a className="joinbtn" href={`/manager/${user._id}`}>View More</a>
           ) : (<></>)}
 
           <button className="rmBtn" value={user._id} onClick={(e) => {

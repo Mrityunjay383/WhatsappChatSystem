@@ -72,7 +72,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
 
       let noOfCompletedChats = 0, noOfCustomerHandled = 0;
 
-      if(selectedFilter == "all"){
+      if(selectedFilter === "all"){
 
 
         noOfCompletedChats = totalCompletedChats.length;
@@ -128,15 +128,21 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
 
             <div className="dashBoard">
               <div className="upCon">
-                <div>
-                  Pending Chats: <span>{totalNoOfOpenChats}</span>
-                </div>
-                <div>
-                   Assigned Chats: <span>{noOfAssignedChats}</span>
-                </div>
+                <a href="/chat">
+                  <div>
+                    Pending Chats <span>{totalNoOfOpenChats}</span>
+                  </div>
+                </a>
+
+                <a href="/chat">
+                  <div>
+                     Assigned Chats <span>{noOfAssignedChats}</span>
+                  </div>
+                </a>
+
               </div>
 
-              <div>
+              <div className="filterSelect">
                   <select onChange={(e) => {
                     filterData(e.target.value)
                   }}>
@@ -145,11 +151,21 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
                     <option value="30">Past 30 Days</option>
                   </select>
               </div>
-              <div>
-                 Number of Completed Chats: {totalNoOfCompletedChats}
-              </div>
-              <div>
-                Total Number of Contacts handled: {totalNoOfCustomerHandled}
+
+              <div className="upCon">
+
+                <a href="">
+                  <div>
+                     Completed Chats <span>{totalNoOfCompletedChats}</span>
+                  </div>
+                </a>
+
+                <a href="">
+                  <div>
+                    Contacts handled <span>{totalNoOfCustomerHandled}</span>
+                  </div>
+                </a>
+                
               </div>
 
             </div>

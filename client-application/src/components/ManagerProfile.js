@@ -2,8 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from "axios";
 
+import "./managerProfile.css";
+
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
+
+import CoverImg from "../images/managerBG-2.jpg";
+import PlaceHolderImg from "../images/managerPicPH.jpg";
+
 
 function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noOfPendingTemplates}) {
 
@@ -113,25 +119,24 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
         <div className="dataCon">
           <TopCon userName={userData.name} page={manager.firstName+"'s Profile"}/>
 
-          <div>
-            <div>
-              <h3>Personal Details</h3>
-              <p>Name: {manager.firstName+" "+manager.lastName}</p>
-              <p>Email: {manager.email}</p>
-            </div>
-
-            <div>
-              <h3>Whatsapp Details</h3>
-              <p>Assigned Number: {manager.assignedNumber}</p>
-              <p>App Name: {manager.appName}</p>
-              <p>API Key: {manager.apiKey}</p>
-            </div>
-
-            <div>
-              <h3>System Details</h3>
-              <p>Total Number of Agents: {totalNoOfAgents}</p>
-
+          <div className="managerProfileCon">
+            <div className="perDetCon">
+              <img className="ProfilePic" src={PlaceHolderImg} />
               <div>
+                <p className="ProfileName">{manager.firstName+" "+manager.lastName}</p>
+                <p>{manager.email}</p>
+              </div>
+            </div>
+
+            <div className="whaDelCon">
+              <p>{manager.assignedNumber}</p>
+              <p>{manager.appName}</p>
+              <p>{manager.apiKey}</p>
+            </div>
+
+            <div className="sysDelCon">
+
+              <div className="selCon">
                 <select onChange={(e) => {
                   filterData(e.target.value)
                 }}>
@@ -141,30 +146,41 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
                 </select>
               </div>
 
-              <p>Number of Completed Chats: {totalNoOfCompletedChats}</p>
-              <p>Number of Escalations: {totalNoOfEscalations}</p>
-              <p>Number of Template Created: {totalNoOfTemplates}</p>
+              <div className="filterCon">
+                <p>Completed Chats: {totalNoOfCompletedChats}</p>
+                <p>Escalations: {totalNoOfEscalations}</p>
+                <p>Template Created: {totalNoOfTemplates}</p>
+              </div>
+
             </div>
 
-            <div>
-              <h3>Agents</h3>
-              {agents.map((agent) => {
-                return <div>
-                  <p>Name: {agent.firstName+" "+agent.lastName}</p>
-                  <p>Email: {agent.email}</p>
-                </div>
-              })}
+            <div className="agentsCon">
+              <h3>Agents ({totalNoOfAgents})</h3>
+              <div className="agentPopulateCon">
+                {agents.map((agent) => {
+                  return <div>
+                    <p>{agent.firstName+" "+agent.lastName}</p>
+                    <p>{agent.email}</p>
+                    <p></p>
+                  </div>
+                })}
+              </div>
+
             </div>
 
-            <div>
-              <h3>Templates</h3>
-              {templates.map((template) => {
-                return <div>
-                  <p>Name: {template.name}</p>
-                  <p>Format: {template.format}</p>
-                  <p>Status: {template.status}</p>
-                </div>
-              })}
+            <div className="tempProfileCon">
+              <h3>Templates ({totalNoOfTemplates})</h3>
+
+              <div className="tempProfilePopulateCon">
+                {templates.map((template) => {
+                  return <div>
+                    <p>{template.name}</p>
+                    <p>{template.format}</p>
+                    <p>{template.status}</p>
+                  </div>
+                })}
+              </div>
+
             </div>
           </div>
 
