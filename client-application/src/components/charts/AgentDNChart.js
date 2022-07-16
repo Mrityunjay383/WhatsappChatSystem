@@ -7,14 +7,15 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 function AgentDNChart({exData}) {
 
     const data = {
-      labels: ['Pending Chats', 'Assigned Chats'],
+      labels: ['Pending Chats', 'Assigned Chats', "Completed Chats"],
       datasets: [
         {
           label: '# of Votes',
-          data: [exData.penChats, exData.assChats],
+          data: [exData.penChats, exData.assChats, exData.comChats],
           backgroundColor: [
-            '#73FFC5',
+            '#3751FF',
             '#97A4FC',
+            '#73FFC5'
           ],
           borderColor: ['#fff'],
           borderWidth: 1,

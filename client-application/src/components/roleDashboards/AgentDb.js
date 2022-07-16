@@ -133,7 +133,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
 
               <div className="firstCon">
 
-                <div className="upCon">
+                <div className="upCon agentUpCon">
                   <a href="/chat">
                     <div>
                       Pending Chats <span>{totalNoOfOpenChats}</span>
@@ -146,7 +146,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
                     </div>
                   </a>
 
-                  <p className="filterSelect">
+                  <p className="filterSelect agentSelect">
                       <select onChange={(e) => {
                         filterData(e.target.value)
                       }}>
@@ -174,7 +174,8 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
                 <div className="doughnutChart">
                   <AgentDNChart exData = {{
                     penChats: totalNoOfOpenChats,
-                    assChats: noOfAssignedChats
+                    assChats: noOfAssignedChats,
+                    comChats: totalNoOfCompletedChats,
                   }}/>
                 </div>
 

@@ -203,7 +203,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
                 <div className="optinNoCon">
                   <h3>Otp In Numbers: </h3>
-                  <div>
+                  <div className="searchCon">
                     <input type="number" placeholder="Search by Number" onChange={(e) => {
                       sortOptedinNumbers(e, "Number")
                     }}/>

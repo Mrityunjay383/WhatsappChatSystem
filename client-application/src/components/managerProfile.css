@@ -24,7 +24,7 @@
   height: 20vh;
   border-radius: 50%;
   border: 2px solid #CDF6E5;
-  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2)
+  box-shadow: 2px 2px 2px 2px #EFF0F2;
 }
 
 .ProfileName {
@@ -35,13 +35,15 @@
 .whaDelCon, .sysDelCon, .agentsCon, .tempProfileCon {
   margin-top: 10px;
   background: #fff;
-  padding: 15px 30px 0 25vh;
+  padding: 15px 30px 20px 27vh;
   display: flex;
   justify-content: space-between;
+  box-shadow: 2px 2px 2px 2px #EFF0F2;
 }
 
 .whaDelCon p, .sysDelCon p, .agentPopulateCon p, .tempProfilePopulateCon p {
   width: 24vw;
+  margin-bottom: 0;
 }
 
 .sysDelCon, .agentsCon, .tempProfileCon {
@@ -62,17 +64,55 @@
   justify-content: space-between;
 }
 
+.filterCon p{
+  padding: 10px 20px;
+  text-align: center;
+  font-weight: bolder;
+}
+
+.manEsc {
+  background: #97A4FC;
+  color: #fff;
+
+}
+
+.manTemp {
+  background: #4EFFB5;
+  color: #777;
+}
+
+.manComChats {
+  background: #3751FF;
+  color: #fff;
+
+}
+
+.manProChartCon {
+  width: 100%;
+  margin: 5vh 0;
+}
+
 .agentPopulateCon, .tempProfilePopulateCon {
   max-width: 100%;
   margin-top: 3vh;
+  height: auto;
 }
 
 .agentPopulateCon div, .tempProfilePopulateCon div {
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  box-shadow: 3px 3px 5px 5px #EFF0F2;
   display: flex;
+  align-items: center;
   justify-content: space-between;
 }
 
 .allUserImage {
   width: 7vh;
   height: 7vh;
+}
+
+.tempStatus {
+  text-align: center;
+  width: 15px;
 }

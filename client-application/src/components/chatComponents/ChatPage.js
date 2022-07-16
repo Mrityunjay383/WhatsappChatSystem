@@ -91,7 +91,9 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
         const agentSelect = e.target.parentElement.querySelector(".agentSelect");
 
         agent = activeAgents[agentSelect.selectedIndex];
-        await socket.emit("reassign", {room, agentEmail: agent.email, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
+        if(agent){
+          await socket.emit("reassign", {room, agentEmail: agent.email, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
+        }
 
       }else{
         managerID = userData.creatorUID;

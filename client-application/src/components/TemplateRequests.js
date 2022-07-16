@@ -56,25 +56,32 @@ function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin
             <TopCon userName={userName} page="Template Requests"/>
 
             <div className="allTempCon">
+
+              <div className="populateTempCon headCon">
+
+                <div className="tempConDet tempHeadCon">
+                  <p>Title</p>
+                  <p>Format</p>
+                  <p>Sample</p>
+                  <p>Requested By</p>
+                  <span></span>
+                </div>
+              </div>
+
               {allTemplates.map((temp, index) => {
                 return (
                   <div className="populateTempCon" key={index}>
 
                     <div className="tempConDet">
-                      <div>
-                        <h4>{temp.name}</h4>
-                        <span><b>Format: </b>{temp.format}</span><br/>
-                        <span><b>Sample: </b>{temp.sample}</span>
-                      </div>
-
-                      <div className="tempRightCon">
-                        <span>{temp.status}</span>
-                        <span>{temp.requestByName}</span>
-                      </div>
+                      <p>{temp.name}</p>
+                      <p>{temp.format}</p>
+                      <p>{temp.sample}</p>
+                      <p>{temp.requestByName}</p>
+                      <span className={temp.status}></span>
                     </div>
-
-
-                    <StatusBtn temp={temp} />
+                    <div className="staBtnCon">
+                      <StatusBtn temp={temp} />
+                    </div>
                   </div>
 
                 )

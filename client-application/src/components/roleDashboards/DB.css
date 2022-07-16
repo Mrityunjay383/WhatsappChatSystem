@@ -13,6 +13,12 @@
   padding: 15px 30px;
   /* min-height: 55vh; */
 }
+.agentUpCon{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+}
 
 .adminUpCon{
   width: 40vw;
@@ -72,6 +78,10 @@
   background: #CDF6E5;
   color: #555;
   cursor: pointer;
+}
+
+.agentSelect select{
+  margin: 20px 0 0;
 }
 
 .chartsCon{

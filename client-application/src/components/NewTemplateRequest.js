@@ -48,13 +48,27 @@ function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSy
               )}
 
               <div className="allTempCon">
+
+                <div className="populateTempCon headCon">
+
+                  <div className="tempConDet tempHeadCon">
+                    <p>Title</p>
+                    <p>Format</p>
+                    <p>Sample</p>
+                    <span></span>
+                  </div>
+                </div>
+
                 {allTemplates.map((temp, index) => {
                   return (
                     <div className="populateTempCon" key={index}>
-                      <span>{temp.name}</span>
-                      <span>{temp.format}</span>
-                      <span>{temp.sample}</span>
-                      <span>{temp.status}</span>
+
+                      <div className="tempConDet">
+                        <p>{temp.name}</p>
+                        <p>{temp.format}</p>
+                        <p>{temp.sample}</p>
+                        <span className={temp.status}></span>
+                      </div>
                     </div>
                   )
                 })}

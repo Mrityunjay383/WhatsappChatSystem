@@ -7,7 +7,8 @@ import "./managerProfile.css";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-import CoverImg from "../images/managerBG-2.jpg";
+import ManagerMultiline from "./charts/ManagerMultiline"
+
 import PlaceHolderImg from "../images/managerPicPH.jpg";
 
 
@@ -147,18 +148,27 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
               </div>
 
               <div className="filterCon">
-                <p>Completed Chats: {totalNoOfCompletedChats}</p>
-                <p>Escalations: {totalNoOfEscalations}</p>
-                <p>Template Created: {totalNoOfTemplates}</p>
+                <p className="manEsc">Escalations: {totalNoOfEscalations}</p>
+                <p className="manTemp">Template Created: {totalNoOfTemplates}</p>
+                <p className="manComChats">Completed Chats: {totalNoOfCompletedChats}</p>
               </div>
+
+              <div className className="manProChartCon">
+                <ManagerMultiline
+                  totalEscalations={totalEscalations}
+                  totalTemplates={templates}
+                  totalCompletedChats={totalCompletedChats}
+                />
+              </div>
+
 
             </div>
 
             <div className="agentsCon">
               <h3>Agents ({totalNoOfAgents})</h3>
               <div className="agentPopulateCon">
-                {agents.map((agent) => {
-                  return <div>
+                {agents.map((agent, index) => {
+                  return <div key={index}>
                     <p>{agent.firstName+" "+agent.lastName}</p>
                     <p>{agent.email}</p>
                     <p></p>
@@ -172,11 +182,12 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
               <h3>Templates ({totalNoOfTemplates})</h3>
 
               <div className="tempProfilePopulateCon">
-                {templates.map((template) => {
-                  return <div>
+                {templates.map((template, index) => {
+                  return <div key={index}>
                     <p>{template.name}</p>
                     <p>{template.format}</p>
-                    <p>{template.status}</p>
+                    <p>{template.sample}</p>
+                    <span className={`tempStatus ${template.status}`}></span>
                   </div>
                 })}
               </div>
