@@ -3,6 +3,9 @@ import axios from "axios";
 
 import "./DB.css";
 
+import DoughnutChart from "../charts/DoughnutChart"
+import ManagerMultiline from "../charts/ManagerMultiline"
+
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
@@ -148,59 +151,83 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
             <div className="dashBoard">
 
-              <div className="upCon">
-                <a href="/agents">
-                  <div className="">
-                    Agents <span>{totalNoOfAgents}</span>
-                  </div>
-                </a>
+              <div className="firstCon">
 
-                <a href="/asign_agent">
-                  <div>
-                    Active Agents <span>{totalNoOfActiveAgents}</span>
-                  </div>
-                </a>
+                <div className="upCon">
+                  <a href="/agents">
+                    <div className="">
+                      <p className="upConHeading">Agents</p>
+                      <span>{totalNoOfAgents}</span>
+                    </div>
+                  </a>
+
+                  <a href="/asign_agent">
+                    <div>
+                      <p className="upConHeading">Active Agents</p>
+                      <span>{totalNoOfActiveAgents}</span>
+                    </div>
+                  </a>
 
 
-                <a href="/asign_agent">
-                  <div>
-                    Unresponded Chats <span>{totalNoOfOpenChats}</span>
+                  <a href="/asign_agent">
+                    <div>
+                      <p className="upConHeading">Unresponded Chats</p>
+                      <span>{totalNoOfOpenChats}</span>
+                    </div>
+                  </a>
+
+                  <p className="filterSelect">
+                      <select onChange={(e) => {
+                        filterData(e.target.value)
+                      }}>
+                        <option value="all">All Time</option>
+                        <option value="7">Past 7 Days</option>
+                        <option value="30">Past 30 Days</option>
+                      </select>
+                  </p>
+
+                  <a href="/chat_requests">
+                    <div>
+                      <p className="upConHeading">Escalated Chats</p>
+                      <span>{totalNoOfEscalations}</span>
+                    </div>
+                  </a>
+
+                  <a href="/new_template_request">
+                    <div>
+                      <p className="upConHeading">Template Created</p>
+                      <span>{totalNoOfTemplates}</span>
+                    </div>
+                  </a>
+
+                  <a href="">
+                    <div>
+                      <p className="upConHeading">Completed Chats</p>
+                      <span>{totalNoOfCompletedChats}</span>
+                    </div>
+                  </a>
+
+                </div>
+
+                <div className="chartsCon">
+                  <div className="doughnutChart">
+                    <DoughnutChart exData = {{
+                      agent: totalNoOfAgents,
+                      activeAgent: totalNoOfActiveAgents
+                    }}/>
+
                   </div>
-                </a>
+                  <div className="managerLineChart">
+                    <ManagerMultiline
+                      totalEscalations={totalEscalations}
+                      totalTemplates={totalTemplates}
+                      totalCompletedChats={totalCompletedChats}
+                    />
+                  </div>
+                </div>
+
+
               </div>
-
-
-              <div className="filterSelect">
-                  <select onChange={(e) => {
-                    filterData(e.target.value)
-                  }}>
-                    <option value="all">All Time</option>
-                    <option value="7">Past 7 Days</option>
-                    <option value="30">Past 30 Days</option>
-                  </select>
-              </div>
-
-              <div className="upCon">
-                <a href="/chat_requests">
-                  <div>
-                    Escalated Chats <span>{totalNoOfEscalations}</span>
-                  </div>
-                </a>
-
-                <a href="/new_template_request">
-                  <div>
-                    Template Created <span>{totalNoOfTemplates}</span>
-                  </div>
-                </a>
-
-                <a href="">
-                  <div>
-                    Completed Chats <span>{totalNoOfCompletedChats}</span>
-                  </div>
-                </a>
-
-              </div>
-
 
             </div>
           </div>

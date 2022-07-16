@@ -1,53 +1,107 @@
-.dashBoard{
-  height: 80vh;
+.dashBoard {
+  margin-bottom: 20px;
 }
-
-.upCon{
+.firstCon{
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10vh;
 }
-.upCon a{
+.upCon {
+  background: #fff;
+  border-radius: 5px;
+  flex: 1;
+  box-shadow: 0px 0px 6px 6px #EBECEE;
+  padding: 15px 30px;
+  /* min-height: 55vh; */
+}
+
+.adminUpCon{
+  width: 40vw;
+}
+
+.upCon a {
   text-decoration: none;
 }
-.upCon div{
+
+.upCon div {
   font-size: 1.2rem;
-  height: 20vh;
-  width: 22vw;
+  height: 14vh;
+  width: 100%;;
+  margin: 20px 0 0;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
   justify-content: space-around;
   background: #CDF6E5;
   color: #777;
   padding: 20px 0;
-  border-radius: 10px;
+  border-radius: 5px;
   font-weight: bolder;
   cursor: pointer;
-  box-shadow: 8px 8px 6px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 3px 3px #EBECEE;
   transition: 0.5s ease;
+  flex: 1;
 }
-.upCon div:hover{
+
+.upCon div:hover {
   font-size: 1.5rem;
   background: #fff;
   color: #999;
   /* box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.2); */
 }
-.upCon span{
+
+.upCon span {
   font-size: 2rem;
 }
-.upCon p{
+
+.upCon p {
+  /* margin-bottom: 0; */
+}
+.upConHeading{
+  margin-bottom: 0;
   width: 22vw;
 }
-.filterSelect{
-  margin-bottom: 20px;
+.filterSelect {
+  margin: 40px 0 15px;
   text-align: right;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
-.filterSelect select{
+
+.filterSelect select {
   padding: 5px 10px;
   border-radius: 5px;
   background: #CDF6E5;
   color: #555;
   cursor: pointer;
+}
+
+.chartsCon{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 30px;
+
+}
+.barChart{
+  margin-bottom: 30px;
+}
+.barChart, .doughnutChart, .managerLineChart {
+  display: flex;
+  align-items: center;
+  width: 30vw;
+  height: 46vh;
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 6px 6px #EFF0F2;
+}
+.doughnutChart{
+  width: 100%;
+  height: auto;
+  margin-bottom: 30px;
+
+  /* filter: drop-shadow(30px 10px 4px #4444dd); */
+}
+
+.managerLineChart{
+  width: 30vw;
 }

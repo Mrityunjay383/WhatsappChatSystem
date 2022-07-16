@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
+import AgentDNChart from "../charts/AgentDNChart";
+import AdminLine from "../charts/AdminLine";
+
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
@@ -127,47 +130,59 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
             <TopCon userName={userData.name} page="Overview"/>
 
             <div className="dashBoard">
-              <div className="upCon">
-                <a href="/chat">
-                  <div>
-                    Pending Chats <span>{totalNoOfOpenChats}</span>
-                  </div>
-                </a>
 
-                <a href="/chat">
-                  <div>
-                     Assigned Chats <span>{noOfAssignedChats}</span>
-                  </div>
-                </a>
+              <div className="firstCon">
 
+                <div className="upCon">
+                  <a href="/chat">
+                    <div>
+                      Pending Chats <span>{totalNoOfOpenChats}</span>
+                    </div>
+                  </a>
+
+                  <a href="/chat">
+                    <div>
+                       Assigned Chats <span>{noOfAssignedChats}</span>
+                    </div>
+                  </a>
+
+                  <p className="filterSelect">
+                      <select onChange={(e) => {
+                        filterData(e.target.value)
+                      }}>
+                        <option value="all">All Time</option>
+                        <option value="7">Past 7 Days</option>
+                        <option value="30">Past 30 Days</option>
+                      </select>
+                  </p>
+
+                  <a href="">
+                    <div>
+                       Completed Chats <span>{totalNoOfCompletedChats}</span>
+                    </div>
+                  </a>
+
+                  <a href="">
+                    <div>
+                      Contacts handled <span>{totalNoOfCustomerHandled}</span>
+                    </div>
+                  </a>
+                </div>
+
+
+              <div className="chartsCon">
+                <div className="doughnutChart">
+                  <AgentDNChart exData = {{
+                    penChats: totalNoOfOpenChats,
+                    assChats: noOfAssignedChats
+                  }}/>
+                </div>
+
+                <div className="managerLineChart">
+                  <AdminLine totalCompletedChats={totalCompletedChats}/>
+                </div>
               </div>
-
-              <div className="filterSelect">
-                  <select onChange={(e) => {
-                    filterData(e.target.value)
-                  }}>
-                    <option value="all">All Time</option>
-                    <option value="7">Past 7 Days</option>
-                    <option value="30">Past 30 Days</option>
-                  </select>
-              </div>
-
-              <div className="upCon">
-
-                <a href="">
-                  <div>
-                     Completed Chats <span>{totalNoOfCompletedChats}</span>
-                  </div>
-                </a>
-
-                <a href="">
-                  <div>
-                    Contacts handled <span>{totalNoOfCustomerHandled}</span>
-                  </div>
-                </a>
-                
-              </div>
-
+            </div>
             </div>
           </div>
         </div>

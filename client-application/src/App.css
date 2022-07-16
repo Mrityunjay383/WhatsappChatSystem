@@ -19,7 +19,7 @@ body {
 
 .dataCon {
   padding: 3vh 25px;
-  width: 100vw;
+  width: 82vw;
 }
 
 .topCon {
@@ -98,7 +98,7 @@ body {
   min-height: 9vh;
   background: #fff;
   /* border-radius: 10px; */
-  /* box-shadow: 3px 3px 8px 5px rgba(0, 0, 0, 0.2) */
+  box-shadow: 3px 3px 8px 5px #EBECEE;
 }
 .userCard p{
   margin-bottom: 0;
@@ -149,7 +149,7 @@ body {
   background: #fff;
   padding: 20px 30px;
   border-radius: 5px;
-  box-shadow: 3px 3px 8px 5px rgba(0, 0, 0, 0.2)
+  box-shadow: 3px 3px 8px 5px #EBECEE;
 }
 
 .roleSelect {

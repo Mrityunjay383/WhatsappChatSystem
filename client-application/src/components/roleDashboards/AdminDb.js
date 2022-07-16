@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
-import { Bar } from "react-chartjs-2";
+
+import BarChart from "../charts/BarChart";
+import AdminLine from "../charts/AdminLine";
+
 
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
@@ -33,7 +36,6 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
 
     const getTemplates = async() => {
       await axios.get(`${baseBulkMessagingURL}/get_all_templates`, { validateStatus: false, withCredentials: true }).then((response) => {
-        console.log(response.data.allTemplates);
         setTotalNoOfTemplates(response.data.allTemplates.length);
       });
     }
@@ -87,48 +89,64 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
             <TopCon userName={userData.name} page="Overview"/>
 
             <div className="dashBoard">
-              <div className="upCon">
-                <a href="/managers">
-                  <div>
-                    Managers <span>{totalNoOfManagers}</span>
-                  </div>
-                </a>
 
-                <a href="/managers">
-                  <div>
-                    Agents <span>{totalNoOfAgents}</span>
-                  </div>
-                </a>
+              <div className="firstCon">
 
-                <a href="/template_requests">
-                  <div>
-                    Templates <span>{totalNoOfTemplates}</span>
+                <div className="upCon">
+                  <a href="/managers">
+                    <div>
+                      Managers <span>{totalNoOfManagers}</span>
+                    </div>
+                  </a>
+
+                  <a href="/managers">
+                    <div>
+                      Agents <span>{totalNoOfAgents}</span>
+                    </div>
+                  </a>
+
+                  <a href="/template_requests">
+                    <div>
+                      Templates <span>{totalNoOfTemplates}</span>
+                    </div>
+                  </a>
+
+                  <p className="filterSelect">
+                    <select onChange={(e) => {
+                      filterData(e.target.value)
+                    }}>
+                      <option value="all">All Time</option>
+                      <option value="7">Past 7 Days</option>
+                      <option value="30">Past 30 Days</option>
+                    </select>
+                  </p>
+
+                  <a href="/managers">
+                    <div>
+                      Completed Chats <span>{totalNoOfCompletedChats}</span>
+                    </div>
+                  </a>
+                </div>
+
+                <div className="chartsCon">
+                  <div className="barChart">
+                    <BarChart exData = {{
+                      manager: totalNoOfManagers,
+                      agent: totalNoOfAgents,
+                      template: totalNoOfTemplates
+                    }}/>
                   </div>
-                </a>
+                  <div className="managerLineChart">
+                    <AdminLine totalCompletedChats={totalCompletedChats}/>
+                  </div>
+                </div>
+
 
               </div>
-
-
-              <div className="filterSelect">
-                <select onChange={(e) => {
-                  filterData(e.target.value)
-                }}>
-                  <option value="all">All Time</option>
-                  <option value="7">Past 7 Days</option>
-                  <option value="30">Past 30 Days</option>
-                </select>
-              </div>
-
-              <div className="upCon">
-                <a href="/managers">
-                  <div>
-                    Completed Chats <span>{totalNoOfCompletedChats}</span>
-                  </div>
-                </a>
-              </div>
-
 
             </div>
+
+
           </div>
         </div>
     )

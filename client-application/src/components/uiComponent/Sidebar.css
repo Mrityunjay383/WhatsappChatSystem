@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Averia+Sans+Libre&display=swap');
 
-
-.sidebar{
+.sidebar {
   background: #CDF6E5;
   height: 100vh;
   width: 17vw;
@@ -9,19 +8,22 @@
   font-family: 'Averia Sans Libre', cursive;
   position: sticky;
   top: 0;
+  box-shadow: 3px 3px 8px 5px #EBECEE;
 }
-.sidebar h1{
+
+.sidebar h1 {
   font-size: 1.7rem;
   font-weight: 500;
   padding-left: 20px;
 }
 
-.links{
+.links {
   margin: 4vh 0 2vh;
   padding: 20px 0;
   border-bottom: 1px solid #999;
 }
-.links a{
+
+.links a {
   display: flex;
   width: 100%;
   align-items: center;
@@ -30,11 +32,11 @@
   text-decoration: none;
 }
 
-.links a:hover, .active{
+.links a:hover, .active {
   background: #fff;
 }
 
-.floatNumber{
+.floatNumber {
   background: #97a4fc;
   padding: 3px 8px;
   border-radius: 50%;
@@ -42,14 +44,12 @@
   margin-left: 8px;
 }
 
-.links span{
+.links span {
   margin-left: 10px;
   color: #555;
 }
 
-
-
-.logoutCon{
+.logoutCon {
   display: flex;
   align-items: center;
   padding: 5px 0;
@@ -59,12 +59,12 @@
   width: 100%;
 }
 
-.logoutBtn{
+.logoutBtn {
   text-align: left;
   margin-left: 10px;
 }
 
-.logoutCon:hover{
+.logoutCon:hover {
   background: #fff;
 }
 

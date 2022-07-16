@@ -1,68 +1,78 @@
-.managerProfileCon{
+.managerProfileCon {
   max-width: 80vw;
 }
 
-.managerImg{
+.managerImg {
   /* transform: rotate(90deg); */
   width: 100%;
   height: 30vh;
 }
-.perDetCon{
-  padding: 20px 0 20px 30px;
 
+.perDetCon {
+  padding: 20px 0 20px 30px;
   display: flex;
   background: #fff;
 }
-.perDetCon div{
+
+.perDetCon div {
   margin-top: 30px;
   margin-left: 20px;
 }
 
-.ProfilePic{
+.ProfilePic {
   width: 20vh;
   height: 20vh;
   border-radius: 50%;
   border: 2px solid #CDF6E5;
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2)
 }
-.ProfileName{
+
+.ProfileName {
   font-size: 2rem;
   font-weight: bolder;
 }
-.whaDelCon, .sysDelCon, .agentsCon, .tempProfileCon{
+
+.whaDelCon, .sysDelCon, .agentsCon, .tempProfileCon {
   margin-top: 10px;
   background: #fff;
   padding: 15px 30px 0 25vh;
   display: flex;
   justify-content: space-between;
 }
-.whaDelCon p, .sysDelCon p, .agentPopulateCon p, .tempProfilePopulateCon p{
+
+.whaDelCon p, .sysDelCon p, .agentPopulateCon p, .tempProfilePopulateCon p {
   width: 24vw;
 }
-.sysDelCon, .agentsCon, .tempProfileCon{
+
+.sysDelCon, .agentsCon, .tempProfileCon {
   flex-direction: column;
 }
-.sysDelCon .selCon{
+
+.sysDelCon .selCon {
   margin: 0 0 15px;
 }
-.sysDelCon .selCon select{
+
+.sysDelCon .selCon select {
   padding: 3px 7px;
   border-radius: 5px;
 }
-.sysDelCon .filterCon{
-  display: flex;
-  justify-content: space-between;
-}
-.agentPopulateCon, .tempProfilePopulateCon{
-  max-width: 100%;
-  margin-top: 3vh;
-}
-.agentPopulateCon div, .tempProfilePopulateCon div{
+
+.sysDelCon .filterCon {
   display: flex;
   justify-content: space-between;
 }
 
-.allUserImage{
+.agentPopulateCon, .tempProfilePopulateCon {
+  max-width: 100%;
+  margin-top: 3vh;
+}
+
+.agentPopulateCon div, .tempProfilePopulateCon div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.allUserImage {
   width: 7vh;
   height: 7vh;
 }
