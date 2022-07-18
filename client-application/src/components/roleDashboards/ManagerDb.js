@@ -4,7 +4,7 @@ import axios from "axios";
 import "./DB.css";
 
 import DoughnutChart from "../charts/DoughnutChart"
-import ManagerMultiline from "../charts/ManagerMultiline"
+import ManagerBar from "../charts/ManagerBar"
 
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
@@ -218,7 +218,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
                   </div>
                   <div className="managerLineChart">
-                    <ManagerMultiline
+                    <ManagerBar
                       totalEscalations={totalEscalations}
                       totalTemplates={totalTemplates}
                       totalCompletedChats={totalCompletedChats}

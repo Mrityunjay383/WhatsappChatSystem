@@ -30,10 +30,10 @@ function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSy
             <TopCon userName={userName} page="Your Templates"/>
 
             <div>
-              <button onClick={(e) => {
+              <button className="joinbtn" onClick={(e) => {
                 setShowAddComp((curr) => {
                   if(!curr){
-                    e.target.innerText = "Close";
+                    e.target.innerHTML = "&#9587;";
                   }else{
                     e.target.innerText = "Add More";
                   }

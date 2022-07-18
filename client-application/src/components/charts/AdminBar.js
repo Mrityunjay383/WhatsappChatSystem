@@ -3,19 +3,17 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -29,7 +27,7 @@ export const options = {
     },
     title: {
       display: false,
-      text: 'Chart.js Line Chart',
+      text: 'Chart.js Bar Chart',
     },
   },
 };
@@ -46,8 +44,7 @@ for(let i = 4; i >= 0; i--){
   labels.push(monthArr[tempDate.getMonth()]);
 }
 
-
-function AdminLine({totalCompletedChats}) {
+function AdminBar({totalCompletedChats}) {
 
     const filterChats = (timeArr) =>{
 
@@ -107,13 +104,12 @@ function AdminLine({totalCompletedChats}) {
         {
           label: 'Completed Chats',
           data: filterData(),
-          borderColor: '#7AF4C1',
           backgroundColor: '#7AF4C1',
         },
       ],
     };
 
-    return <Line options={options} data={data} />;
+    return <Bar options={options} data={data} />;
 }
 
-export default AdminLine;
+export default AdminBar;

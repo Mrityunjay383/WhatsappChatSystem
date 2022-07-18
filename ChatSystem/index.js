@@ -162,14 +162,6 @@ io.on("connection", (socket) => {
     } = data;
 
     let lastInteraction = new Date().getTime();
-    // if (chat.messageList.length > 0) {
-    //   //getting the latest time for the chat
-    //   const lastInteractionTime = chat.messageList[chat.messageList.length - 1].time;
-    //
-    //   lastInteraction = `${lastInteractionTime} ${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`
-    // } else {
-    //   lastInteraction = "";
-    // }
 
     //Creating a new Chat Document
     const newChat = await Chat.create({
@@ -412,7 +404,7 @@ app.post("/add_new_template", async (req, res) => {
     requestByUID
   } = req.body;
 
-  sendMessage(`A new template (${name}) is requested by ${requestByName}.`, process.env.ADMIN_NUMBER, "917397694169", "shortroute", "1e38f8359f7942dcc2f6c2ac21e5f4fb");
+  sendMessage(`A new template (${name}) is requested by ${requestByName}.`, process.env.ADMIN_NUMBER, process.env.GUPSHUP_TEMP_NOTICATION_NUM, process.env.GUPSHUP_APP_NAME, process.env.GUPSHUP_API_KEY);
 
   const currentDate = new Date().getTime();
 

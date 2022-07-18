@@ -7,7 +7,7 @@ import "./managerProfile.css";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-import ManagerMultiline from "./charts/ManagerMultiline"
+import ManagerBar from "./charts/ManagerBar"
 
 import PlaceHolderImg from "../images/managerPicPH.jpg";
 
@@ -154,7 +154,7 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
               </div>
 
               <div className className="manProChartCon">
-                <ManagerMultiline
+                <ManagerBar
                   totalEscalations={totalEscalations}
                   totalTemplates={templates}
                   totalCompletedChats={totalCompletedChats}

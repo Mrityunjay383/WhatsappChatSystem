@@ -3,19 +3,17 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -29,11 +27,10 @@ export const options = {
     },
     title: {
       display: false,
-      text: 'Chart.js Line Chart',
+      text: 'Month wise',
     },
   },
 };
-
 const monthArr = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 export let labels = [];
@@ -47,7 +44,7 @@ for(let i = 4; i >= 0; i--){
 }
 
 
-function ManagerMultiline({totalEscalations, totalTemplates, totalCompletedChats}) {
+function ManagerBar({totalEscalations, totalTemplates, totalCompletedChats}) {
 
     const filterEsc = (timeArr) =>{
       let arr = [0, 0, 0, 0, 0];
@@ -157,31 +154,29 @@ function ManagerMultiline({totalEscalations, totalTemplates, totalCompletedChats
       return datasetArr;
     }
 
+
     const data = {
       labels,
       datasets: [
         {
           label: 'Escalated Chats',
           data: filterData("esc"),
-          borderColor: '#97A4FC',
           backgroundColor: '#97A4FC',
         },
         {
           label: 'Template Created',
           data: filterData("temp"),
-          borderColor: '#4EFFB5',
           backgroundColor: '#4EFFB5',
         },
         {
           label: 'Completed Chats',
           data: filterData("chat"),
-          borderColor: '#3751FF',
           backgroundColor: '#3751FF',
         },
       ],
     };
 
-    return <Line options={options} data={data} />;
+    return <Bar options={options} data={data} />;
 }
 
-export default ManagerMultiline;
+export default ManagerBar;

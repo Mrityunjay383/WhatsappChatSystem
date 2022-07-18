@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
 import BarChart from "../charts/BarChart";
-import AdminLine from "../charts/AdminLine";
+import AdminBar from "../charts/AdminBar";
 
 
 import Sidebar from "../uiComponent/Sidebar";
@@ -137,7 +137,7 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
                     }}/>
                   </div>
                   <div className="managerLineChart">
-                    <AdminLine totalCompletedChats={totalCompletedChats}/>
+                    <AdminBar totalCompletedChats={totalCompletedChats}/>
                   </div>
                 </div>
 

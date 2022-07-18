@@ -174,7 +174,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
 
               <div className="activeChatsCon">
                 <div>
-                  <h3>Requested Chats</h3>
+                  <h3>Escalated Chats</h3>
 
                   <div className="chatList">
                     {assignedChats.map((chat, index) => {
