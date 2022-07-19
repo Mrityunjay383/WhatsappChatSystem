@@ -92,7 +92,7 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates, n
                 <div>
                   <div className="form-group">
                     <label>Assign Number:</label>
-                    <input type="number" className="form-control" placeholder="Enter Number" onChange={(e) => {
+                    <input type="number" className="form-control" placeholder="918949190774" onChange={(e) => {
                       setNewUserData((currObj) => {
                         return {...currObj, assignedNumber: e.target.value}
                       });
