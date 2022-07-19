@@ -15,7 +15,6 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates, n
       lastName: "",
       email: "",
       password: "",
-      role: "",
       assignedNumber: "",
       appName: "",
       apiKey: ""
@@ -26,7 +25,11 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates, n
       if(userData.role !== ""){
         if(userData.role === "Manager"){//is user is Manager then he/she should be creating a new agent user.
           newUserData.creatorUID = userData.user_id;
+          newUserData.role = "Agent";
+        }else{
+          newUserData.role = "Manager";
         }
+
         axios.post(`${baseURL}/auth/register`, newUserData, {validateStatus: false, withCredentials: true}).then((response) => {
           if(response.status === 201){
             window.location = '/';
@@ -84,25 +87,6 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates, n
                   });
                 }}/>
               </div>
-
-              <div>
-                <label>Role: </label>
-                <select className="form-select form-select-sm roleSelect" onChange={(e) => {
-                  setNewUserData((currObj) => {
-                    return {...currObj, role: e.target.value}
-                  });
-                }}>
-                  <option value=""></option>
-
-                  {userData.role === "Admin" ? (
-                    <option value="Manager">Manager</option>
-                  ) : (
-                    <option value="Agent">Agent</option>
-                  )}
-
-                </select>
-              </div>
-              <br />
 
               {userData.role === "Admin" ? (
                 <div>

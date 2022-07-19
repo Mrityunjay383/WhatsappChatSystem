@@ -3,6 +3,7 @@ import axios from "axios";
 
 import BarChart from "../charts/BarChart";
 import AdminBar from "../charts/AdminBar";
+import AdminLine from "../charts/AdminLine";
 
 
 import Sidebar from "../uiComponent/Sidebar";
@@ -17,6 +18,8 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
     const [totalNoOfCompletedChats, setTotalNoOfCompletedChats] = useState(0);
 
     const [totalCompletedChats, setTotalCompletedChats] = useState([]);
+
+    const [showBar, setShowBar] = useState(true);
 
     const getAgents = async () => {
       await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
@@ -129,6 +132,7 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
                 </div>
 
                 <div className="chartsCon">
+
                   <div className="barChart">
                     <BarChart exData = {{
                       manager: totalNoOfManagers,
@@ -136,8 +140,25 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
                       template: totalNoOfTemplates
                     }}/>
                   </div>
+
+                  <select onChange={(e) => {
+                    console.log(e.target.value);
+                    if(e.target.value === "bar"){
+                      setShowBar(true);
+                    }else{
+                      setShowBar(false);
+                    }
+                  }}>
+                    <option value="bar">Bar</option>
+                    <option value="line">Line</option>
+                  </select>
+
                   <div className="managerLineChart">
-                    <AdminBar totalCompletedChats={totalCompletedChats}/>
+                    {showBar ? (
+                      <AdminBar totalCompletedChats={totalCompletedChats}/>
+                    ): (
+                      <AdminLine totalCompletedChats={totalCompletedChats}/>
+                    )}
                   </div>
                 </div>
 

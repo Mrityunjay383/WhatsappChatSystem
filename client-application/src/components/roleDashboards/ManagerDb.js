@@ -5,6 +5,7 @@ import "./DB.css";
 
 import DoughnutChart from "../charts/DoughnutChart"
 import ManagerBar from "../charts/ManagerBar"
+import ManagerLine from "../charts/ManagerLine"
 
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
@@ -22,6 +23,8 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
     const [totalEscalations, setTotalEscalations] = useState([]);
     const [totalTemplates, setTotalTemplates] = useState([]);
     const [totalCompletedChats, setTotalCompletedChats] = useState([]);
+
+    const [showBar, setShowBar] = useState(true);
 
     const getAgents = async () => {
       await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
@@ -217,15 +220,35 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
                     }}/>
 
                   </div>
+
+                  <select onChange={(e) => {
+                    console.log(e.target.value);
+                    if(e.target.value === "bar"){
+                      setShowBar(true);
+                    }else{
+                      setShowBar(false);
+                    }
+                  }}>
+                    <option value="bar">Bar</option>
+                    <option value="line">Line</option>
+                  </select>
+
                   <div className="managerLineChart">
-                    <ManagerBar
-                      totalEscalations={totalEscalations}
-                      totalTemplates={totalTemplates}
-                      totalCompletedChats={totalCompletedChats}
-                    />
+                    {showBar ? (
+                      <ManagerBar
+                        totalEscalations={totalEscalations}
+                        totalTemplates={totalTemplates}
+                        totalCompletedChats={totalCompletedChats}
+                      />
+                    ): (
+                      <ManagerLine
+                        totalEscalations={totalEscalations}
+                        totalTemplates={totalTemplates}
+                        totalCompletedChats={totalCompletedChats}
+                      />
+                    )}
                   </div>
                 </div>
-
 
               </div>
 

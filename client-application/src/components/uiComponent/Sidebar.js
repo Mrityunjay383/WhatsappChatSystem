@@ -87,7 +87,7 @@ function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0, noO
 
           <a href="/asign_agent" className={page === "assignAgents" ? "active" : "nonActive"}>
             <AgentIcon />
-            <span>Assign Agnets</span>
+            <span>Assign Agents</span>
           </a>
 
           <a href="/chat_requests" className={page === "chat" ? "active" : "nonActive"}>

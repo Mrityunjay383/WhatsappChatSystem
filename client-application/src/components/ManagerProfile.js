@@ -8,6 +8,8 @@ import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
 import ManagerBar from "./charts/ManagerBar"
+import ManagerLine from "./charts/ManagerLine"
+
 
 import PlaceHolderImg from "../images/managerPicPH.jpg";
 
@@ -28,6 +30,8 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
 
     const [agents, setAgents] = useState([]);
     const [templates, setTemplates] = useState([]);
+
+    const [showBar, setShowBar] = useState(true);
 
     const getManager = async () => {
       await axios.post(`${baseURL}/indi_user`, {userId: id}, { validateStatus: false, withCredentials: true }).then((response) => {
@@ -153,12 +157,31 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
                 <p className="manComChats">Completed Chats: {totalNoOfCompletedChats}</p>
               </div>
 
+              <select onChange={(e) => {
+                console.log(e.target.value);
+                if(e.target.value === "bar"){
+                  setShowBar(true);
+                }else{
+                  setShowBar(false);
+                }
+              }}>
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+              </select>
               <div className className="manProChartCon">
+              {showBar ? (
                 <ManagerBar
                   totalEscalations={totalEscalations}
                   totalTemplates={templates}
                   totalCompletedChats={totalCompletedChats}
                 />
+              ): (
+                <ManagerLine
+                  totalEscalations={totalEscalations}
+                  totalTemplates={templates}
+                  totalCompletedChats={totalCompletedChats}
+                />
+              )}
               </div>
 
 

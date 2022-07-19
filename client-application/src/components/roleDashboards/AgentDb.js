@@ -3,6 +3,7 @@ import axios from "axios";
 
 import AgentDNChart from "../charts/AgentDNChart";
 import AdminBar from "../charts/AdminBar";
+import AdminLine from "../charts/AdminLine";
 
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
@@ -17,6 +18,8 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
 
     const [totalCompletedChats, setTotalCompletedChats] = useState([]);
     const [totalCustomerHandled, setTotalCustomerHandled] = useState([]);
+
+    const [showBar, setShowBar] = useState(true);
 
     //Getting all active rooms exist currently
     const getRooms = async () => {
@@ -179,8 +182,24 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
                   }}/>
                 </div>
 
+                <select onChange={(e) => {
+                  console.log(e.target.value);
+                  if(e.target.value === "bar"){
+                    setShowBar(true);
+                  }else{
+                    setShowBar(false);
+                  }
+                }}>
+                  <option value="bar">Bar</option>
+                  <option value="line">Line</option>
+                </select>
+
                 <div className="managerLineChart">
-                  <AdminBar totalCompletedChats={totalCompletedChats}/>
+                  {showBar ? (
+                    <AdminBar totalCompletedChats={totalCompletedChats}/>
+                  ): (
+                    <AdminLine totalCompletedChats={totalCompletedChats}/>
+                  )}
                 </div>
               </div>
             </div>
