@@ -3,10 +3,12 @@ const jwt = require('jsonwebtoken');
 
 const User = require("../model/user");
 
+//linked to /auth/register
 exports.register = async (req, res) => {
 
   try {
 
+    //getting details from the request body
     const {
       firstName,
       lastName,
@@ -19,10 +21,15 @@ exports.register = async (req, res) => {
       apiKey
     } = req.body;
 
+    //checking if all important fields exist
     if (!(firstName && lastName && email && password && role)) {
       res.status(422).send("All fields are required");
     }
+
+    //checking the same role user is not creating a new user of same role
     if (req.userData.role !== role) {
+
+      //checking if the user not already exist
       const existingUser = await User.findOne({
         email
       });
@@ -30,11 +37,12 @@ exports.register = async (req, res) => {
         return res.status(401).send("User already exist");
       }
 
+      //hashing the password using bcrypt
       const encPassword = await bcrypt.hash(password, 10);
 
       let user;
-      console.log(role);
 
+      //setting the user based on the request role
       if(role === "Manager"){
         user = await User.create({
           firstName,
@@ -57,7 +65,7 @@ exports.register = async (req, res) => {
         });
       }
 
-      //token
+      //signing the jwt token
       const token = jwt.sign({
           user_id: user._id,
           email,
@@ -71,6 +79,7 @@ exports.register = async (req, res) => {
 
       user.token = token;
 
+      //removing password so that it doen't go to frontend
       user.password = undefined;
 
       return res.status(201).json(user);
@@ -84,22 +93,26 @@ exports.register = async (req, res) => {
 
 }
 
+//linked to /auth/login
 exports.login = async (req, res) => {
 
   try {
 
+    //getting details from the request body
     const {
       email,
       password
     } = req.body;
 
+    //geting the user from the database
     const user = await User.findOne({
       email
     });
 
+    //checking the password from the database of user by the input password
     if (user && (await bcrypt.compare(password, user.password))) {
 
-      //token
+      //signing jwt token
       const token = jwt.sign({
           user_id: user._id,
           email,
@@ -112,6 +125,7 @@ exports.login = async (req, res) => {
         }
       );
 
+      //removing password so that it doen't go to frontend
       user.password = undefined;
 
       // Setting Up cookies
@@ -136,6 +150,7 @@ exports.login = async (req, res) => {
 
 }
 
+//linked to /auth/login
 exports.logout = (req, res) => {
   res.clearCookie('token').send("Done");
 }

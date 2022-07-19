@@ -3,12 +3,14 @@ const bcrypt = require('bcrypt');
 
 const User = require("../model/user");
 
+//linked to /
 exports.home = (req, res) => {
   res.status(200).json({
     user: req.userData
   });
 }
 
+//linked to /agents
 exports.agents = async (req, res) => {
 
   try {
@@ -32,13 +34,17 @@ exports.agents = async (req, res) => {
 
 }
 
+//linked to /indi_user
 exports.indiUser = async (req, res) => {
+
+  //Getting Id and role from the body of the request
   const {
     userId, appName
-  } = req.body; //Getting Id and role from the body of the request
+  } = req.body;
 
   try {
 
+    //checking if userId exist, if not getting user by appName
     if(userId){
       await User.findOne({
         _id: userId
@@ -73,6 +79,7 @@ exports.indiUser = async (req, res) => {
   }
 }
 
+//linked to /managers
 exports.managers = async (req, res) => {
 
   try {
@@ -91,6 +98,7 @@ exports.managers = async (req, res) => {
 
 }
 
+//linked to /del_agent
 exports.delAgent = async (req, res) => {
 
   try {
@@ -113,6 +121,7 @@ exports.delAgent = async (req, res) => {
 
 }
 
+//linked to /del_manager
 exports.delManager = async (req, res) => {
 
   try {
@@ -134,6 +143,7 @@ exports.delManager = async (req, res) => {
 
 }
 
+//linked to /change_name
 exports.changeName = async (req, res) => {
   try {
     const {
@@ -165,6 +175,7 @@ exports.changeName = async (req, res) => {
               name: firstName + " " + lastName
             }
 
+            //changing the token in frontend so that changed nane got auto updated
             const token = jwt.sign({
                 ...data
               },
@@ -191,6 +202,7 @@ exports.changeName = async (req, res) => {
   }
 }
 
+//linked to /change_password
 exports.changePassword = async (req, res) => {
   try {
     const {
@@ -216,6 +228,7 @@ exports.changePassword = async (req, res) => {
   }
 }
 
+//linked to /new_escalation
 exports.newEscatation = async (req, res) => {
   const {room, customerPhoneNo, escalatedBy, managerID} = req.body;
 
@@ -248,6 +261,7 @@ exports.newEscatation = async (req, res) => {
 
 }
 
+//linked to /get_escalations
 exports.getEscatations = async (req, res) => {
   const {managerID} = req.body;
 
@@ -258,6 +272,5 @@ exports.getEscatations = async (req, res) => {
   }else{
     res.status(200).json({escalations: []});
   }
-
 
 }

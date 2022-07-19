@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require("../model/user");
 
-//Checking if the token is valid or not
+//Checking if the jwt token is valid or not
 const valToken = async (req, res, next) => {
   try {
     // looking for token in the header & cookies
