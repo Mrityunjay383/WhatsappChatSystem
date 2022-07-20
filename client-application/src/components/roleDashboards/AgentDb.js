@@ -137,17 +137,21 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
               <div className="firstCon">
 
                 <div className="upCon agentUpCon">
+
+                <div className="upConFirstCon">
                   <a href="/chat">
-                    <div>
+                    <div className="divInA">
                       Pending Chats <span>{totalNoOfOpenChats}</span>
                     </div>
                   </a>
 
                   <a href="/chat">
-                    <div>
+                    <div className="divInA">
                        Assigned Chats <span>{noOfAssignedChats}</span>
                     </div>
                   </a>
+                </div>
+
 
                   <p className="filterSelect agentSelect">
                       <select onChange={(e) => {
@@ -159,17 +163,20 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
                       </select>
                   </p>
 
-                  <a href="">
-                    <div>
-                       Completed Chats <span>{totalNoOfCompletedChats}</span>
-                    </div>
-                  </a>
+                  <div className="upConFirstCon">
+                    <a href="">
+                      <div className="divInA">
+                         Completed Chats <span>{totalNoOfCompletedChats}</span>
+                      </div>
+                    </a>
 
-                  <a href="">
-                    <div>
-                      Contacts handled <span>{totalNoOfCustomerHandled}</span>
-                    </div>
-                  </a>
+                    <a href="">
+                      <div className="divInA">
+                        Contacts handled <span>{totalNoOfCustomerHandled}</span>
+                      </div>
+                    </a>
+                  </div>
+
                 </div>
 
 

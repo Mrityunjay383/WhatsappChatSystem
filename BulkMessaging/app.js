@@ -6,11 +6,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require("cors");//for enabling api requuest from external source
 
-const axios = require("axios").default;
-const { URLSearchParams } = require('url');
 
 const PORT = process.env.PORT || 3003;
-const baseUserSystemURL = "http://localhost:3002";
 
 const app = express();
 
@@ -41,7 +38,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 
-app.use("/auth", indexRouter);
+app.use("/", indexRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}...`);

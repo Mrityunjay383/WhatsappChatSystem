@@ -18,7 +18,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
 
-      await axios.post(`${baseURL}/assign_agent`, {room, agent, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
+      await axios.post(`${baseURL}/assign_agent`, {room, agentEmail: agent.email, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
           console.log("Assignment Done");
 

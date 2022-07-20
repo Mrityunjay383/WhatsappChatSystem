@@ -1,14 +1,18 @@
 const express = require("express");
 const router = express.Router();
 
+const axios = require("axios").default;
+const { URLSearchParams } = require('url');
+
 const {allOtpedUsers, allAprovedTemplates} = require("../helpers/getUsersOrTemplate");
 const {sendMessage} = require("../helpers/sendMessage");
 
 const Customer = require("../model/customer");
 const Template = require("../model/template");
 
+const baseUserSystemURL = "http://localhost:3002";
 
-//gwtting the all opted user from the gupshup API
+//getting the all opted user from the gupshup API
 router.post("/optedinUsers", async (req, res) => {
   const {userId} = req.body;
 

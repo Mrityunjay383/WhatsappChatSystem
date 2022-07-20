@@ -96,23 +96,26 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
               <div className="firstCon">
 
                 <div className="upCon">
-                  <a href="/managers">
-                    <div>
-                      Managers <span>{totalNoOfManagers}</span>
-                    </div>
-                  </a>
+                  <div className="upConFirstCon">
+                    <a href="/managers">
+                      <div className="divInA">
+                        Managers <span>{totalNoOfManagers}</span>
+                      </div>
+                    </a>
 
-                  <a href="/managers">
-                    <div>
-                      Agents <span>{totalNoOfAgents}</span>
-                    </div>
-                  </a>
+                    <a href="/managers">
+                      <div className="divInA">
+                        Agents <span>{totalNoOfAgents}</span>
+                      </div>
+                    </a>
 
-                  <a href="/template_requests">
-                    <div>
-                      Templates <span>{totalNoOfTemplates}</span>
-                    </div>
-                  </a>
+                    <a href="/template_requests">
+                      <div className="divInA">
+                        Templates <span>{totalNoOfTemplates}</span>
+                      </div>
+                    </a>
+                  </div>
+
 
                   <p className="filterSelect">
                     <select onChange={(e) => {
@@ -122,13 +125,14 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
                       <option value="7">Past 7 Days</option>
                       <option value="30">Past 30 Days</option>
                     </select>
+
+                    <a href="/managers">
+                      <div className="divInA">
+                        Completed Chats <span>{totalNoOfCompletedChats}</span>
+                      </div>
+                    </a>
                   </p>
 
-                  <a href="/managers">
-                    <div>
-                      Completed Chats <span>{totalNoOfCompletedChats}</span>
-                    </div>
-                  </a>
                 </div>
 
                 <div className="chartsCon">

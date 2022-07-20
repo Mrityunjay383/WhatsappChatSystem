@@ -10,7 +10,7 @@ const {valToken, isAdmin, isAdminOrManager} = require("../middleware/auth");
 //route for registering a new user to the system
 router.post("/register", valToken, isAdminOrManager, controller.register);
 
-//route for loging in a new to the system
+//route for loging in a new user to the system
 router.post("/login", controller.login);
 
 //route for loging out a user from the system

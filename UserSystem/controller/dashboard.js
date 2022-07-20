@@ -132,7 +132,7 @@ exports.delManager = async (req, res) => {
       if (!err) {
         data.password = undefined;
         res.status(200).json({
-          DeletedAgent: data
+          DeletedManager: data
         });
       }
     });
@@ -188,8 +188,9 @@ exports.changeName = async (req, res) => {
               httpOnly: true
             };
 
+            foundUser.password = undefined;
             return res.status(200).cookie('token', token, options).json({
-              newName: firstName + " " + lastName
+              user: foundUser
             })
           }
         });

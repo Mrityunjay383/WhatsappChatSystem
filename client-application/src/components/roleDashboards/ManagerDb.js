@@ -157,15 +157,17 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
               <div className="firstCon">
 
                 <div className="upCon">
+
+                <div className="upConFirstCon">
                   <a href="/agents">
-                    <div className="">
+                    <div className="divInA">
                       <p className="upConHeading">Agents</p>
                       <span>{totalNoOfAgents}</span>
                     </div>
                   </a>
 
                   <a href="/asign_agent">
-                    <div>
+                    <div className="divInA">
                       <p className="upConHeading">Active Agents</p>
                       <span>{totalNoOfActiveAgents}</span>
                     </div>
@@ -173,11 +175,14 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
 
                   <a href="/asign_agent">
-                    <div>
+                    <div className="divInA">
                       <p className="upConHeading">Unresponded Chats</p>
                       <span>{totalNoOfOpenChats}</span>
                     </div>
                   </a>
+                </div>
+
+
 
                   <p className="filterSelect">
                       <select onChange={(e) => {
@@ -189,26 +194,30 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
                       </select>
                   </p>
 
-                  <a href="/chat_requests">
-                    <div>
-                      <p className="upConHeading">Escalated Chats</p>
-                      <span>{totalNoOfEscalations}</span>
-                    </div>
-                  </a>
+                  <div className="upConFirstCon">
+                    <a href="/chat_requests">
+                      <div className="divInA">
+                        <p className="upConHeading">Escalated Chats</p>
+                        <span>{totalNoOfEscalations}</span>
+                      </div>
+                    </a>
 
-                  <a href="/new_template_request">
-                    <div>
-                      <p className="upConHeading">Template Created</p>
-                      <span>{totalNoOfTemplates}</span>
-                    </div>
-                  </a>
+                    <a href="/new_template_request">
+                      <div className="divInA">
+                        <p className="upConHeading">Template Created</p>
+                        <span>{totalNoOfTemplates}</span>
+                      </div>
+                    </a>
 
-                  <a href="">
-                    <div>
-                      <p className="upConHeading">Completed Chats</p>
-                      <span>{totalNoOfCompletedChats}</span>
-                    </div>
-                  </a>
+                    <a href="">
+                      <div className="divInA">
+                        <p className="upConHeading">Completed Chats</p>
+                        <span>{totalNoOfCompletedChats}</span>
+                      </div>
+                    </a>
+                  </div>
+
+
 
                 </div>
 
