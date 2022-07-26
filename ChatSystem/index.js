@@ -16,12 +16,16 @@ const {
 } = require('url');
 
 const PORT = process.env.PORT || 3001
+
+//URL of the chat system
 const baseUserSystemURL = "http://localhost:3002";
 
+//requiring the database collections
 const Customer = require("./model/customer");
 const Template = require("./model/template");
 const Chat = require("./model/chat");
 
+//requiring the hepler methods
 const activeSocketRooms = require("./helpers/activeSocketRooms");
 const { otpedinUser } = require("./helpers/checkUserOptedin");
 const {
@@ -62,7 +66,7 @@ const io = new Server(server, {
 
 //passing the io to all routes
 app.use(function(req, res, next) {
-  req.io = io;
+  io = io;
   next();
 });
 
@@ -131,6 +135,7 @@ io.on("connection", (socket) => {
 
     let userId, managerDel;
 
+    //getting the managers detail to send message from the specific number
     if(messageData.creatorUID){
       userId = messageData.creatorUID
     }else{
@@ -240,11 +245,11 @@ app.post("/hook", async (req, res) => {
       })
     }
 
-
+    //method for checking if the user is a optin user and if not making it the optin user
     await otpedinUser(payload.sender.dial_code, payload.sender.phone, managerDel);
 
     //Checking if an agent is alreday joined the room
-    const roomsWhichHaveAgent = await activeSocketRooms(req.io);
+    const roomsWhichHaveAgent = await activeSocketRooms(io);
 
     const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
     //If an agent is in the room
@@ -258,12 +263,12 @@ app.post("/hook", async (req, res) => {
           new Date(Date.now()).getMinutes(),
       };
 
-      await req.io.to(payload.sender.name).emit("receive_message", messageData);
+      await io.to(payload.sender.name).emit("receive_message", messageData);
 
     } else {
-      req.io.sockets.emit("broadcast", {});
-      // Checking if this chat already in the activeChats
+      io.sockets.emit("broadcast", {});
 
+      // Checking if this chat already in the activeChats
       for (let i = 0; i < activeChats.length; i++) {
         if (activeChats[i].room === payload.sender.name) {
           activeChats[i].messages.push(payload.payload.text);
@@ -271,6 +276,7 @@ app.post("/hook", async (req, res) => {
         }
       }
 
+      // Checking if this chat already in the assigned chats
       for (let i = 0; i < assignList.length; i++) {
         if (assignList[i].room === payload.sender.name) {
           assignList[i].messages.push(payload.payload.text);
@@ -324,7 +330,7 @@ app.get("/active_agents", (req, res) => {
 
 //assign agent route used by manager to assign chats to different agents
 app.post("/assign_agent", (req, res) => {
-  req.io.sockets.emit("broadcast", {});
+  io.sockets.emit("broadcast", {});
 
   const {
     room,
@@ -360,6 +366,7 @@ app.get("/assigned", (req, res) => {
 
 });
 
+//route for getting all the completed chats
 app.post("/completedChats", async (req, res) => {
   const {managerID} = req.body;
 
@@ -371,14 +378,19 @@ app.post("/completedChats", async (req, res) => {
   }
 
   res.status(200).json({chats: foundChats});
-})
+});
 
 // Template functionalities
 
+//route for getting number of pending templates
 app.get("/noOfPendingTemplates", async (req, res) => {
+
+  //getting all the pending templates from the database
   const pendingTemplates = await Template.find({
     status: "Pending"
   });
+
+  //getting the length of pending templates array
   const noOfPendingTemplates = pendingTemplates.length;
 
   res.status(200).json({
@@ -386,6 +398,7 @@ app.get("/noOfPendingTemplates", async (req, res) => {
   });
 })
 
+//route for getting all the templates by a preticular manager
 app.post("/allTemplatesByManager", async (req, res) => {
   const {managerID} = req.body;
 
@@ -394,6 +407,7 @@ app.post("/allTemplatesByManager", async (req, res) => {
   res.status(200).json({templates: foundTemplates});
 });
 
+//route for adding a new temoplate request to the database
 app.post("/add_new_template", async (req, res) => {
   const {
     name,
@@ -403,10 +417,12 @@ app.post("/add_new_template", async (req, res) => {
     requestByUID
   } = req.body;
 
+  //sending the whatsapp notification to the admin on a new template request
   sendMessage(`A new template (${name}) is requested by ${requestByName}.`, process.env.ADMIN_NUMBER, process.env.GUPSHUP_TEMP_NOTICATION_NUM, process.env.GUPSHUP_APP_NAME, process.env.GUPSHUP_API_KEY);
 
   const currentDate = new Date().getTime();
 
+  //creating a new template in the database
   await Template.create({
     name,
     format,
@@ -417,12 +433,14 @@ app.post("/add_new_template", async (req, res) => {
     creationDate: currentDate
   });
 
+  //getting all the pending template so that we can return the no of pending template on adding a new template
   const pendingTemplates = await Template.find({
     status: "Pending"
   });
   const noOfPendingTemplates = pendingTemplates.length;
 
-  await req.io.emit("new_temp", {
+  //emmiting new template so that clint can be auto updated
+  await io.emit("new_temp", {
     name,
     requestByName,
     noOfPendingTemplates

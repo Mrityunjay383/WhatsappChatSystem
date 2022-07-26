@@ -14,7 +14,7 @@ exports.sendMessage = (message, destination, appNumber, appName, apiKey) => {
 
   const options = {
     method: 'POST',
-    url: 'https://api.gupshup.io/sm/api/v1/msg',
+    url: 'https://api.gupshup.io/sm/api/v1/msg',//endpoint for sending messages
     headers: {
       Accept: 'application/json',
       apikey: apiKey,
