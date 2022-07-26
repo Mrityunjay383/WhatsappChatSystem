@@ -8,8 +8,7 @@ import TopCon from "./uiComponent/TopCon";
 
 function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates, noOfRequestedChats}) {
 
-    // console.log(userData.user_id);
-
+    //defining state variables
     const [newUserData, setNewUserData] = useState({
       firstName: "",
       lastName: "",
@@ -20,6 +19,7 @@ function CreateNewUser({baseURL, userData, setIsLogedin, noOfPendingTemplates, n
       apiKey: ""
     });
 
+    //function for registering a new user
     const regNewUser = () => {
 
       if(userData.role !== ""){

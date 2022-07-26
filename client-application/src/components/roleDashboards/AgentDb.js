@@ -1,16 +1,19 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
+//importing charts
 import AgentDNChart from "../charts/AgentDNChart";
 import AdminBar from "../charts/AdminBar";
 import AdminLine from "../charts/AdminLine";
 
+//importing UI Components
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 
 function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, socket}) {
 
+    //defining state variables
     const [totalNoOfOpenChats, setTotalNoOfOpenChats] = useState(0);
     const [totalNoOfCompletedChats, setTotalNoOfCompletedChats] = useState(0);
     const [noOfAssignedChats, setNoOfAssignedChats] = useState(0);
@@ -35,6 +38,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
       });
     }
 
+    //function for getting all the completed chats from the database
     const getCompletedChats = async () => {
       await axios.post(`${baseChatSystemURL}/completedChats`, {managerID: userData.creatorUID},{ validateStatus: false, withCredentials: true }).then((response) => {
         const chatsByThisAgent = response.data.chats.filter((chat) => {
@@ -52,6 +56,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
 
       await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
 
+        //filtering out the vhats which are not assigned to this perticular agent
         const assignedChats = response.data.assignList.filter((assined) => {
           return assined.agentEmail === userData.email
         });
@@ -63,6 +68,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
     //For getting the number of unique customers handled by this perticular agent
     const getNoOfUniqueConstomerhandled = async (chatList) => {
 
+      //filtering out duplicate chats
       chatList = chatList.filter((value, index, self) =>
         index === self.findIndex((t) => (
           t.userPhoneNo === value.userPhoneNo
@@ -72,6 +78,7 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
       setTotalNoOfCustomerHandled(chatList.length);
     }
 
+    //filtering data based on time
     const filterData = (selectedFilter) => {
 
       const currentDate = new Date().getTime();
@@ -116,13 +123,11 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
     }, []);
 
     useEffect(() => {
+      //updating data on broadcast
       socket.on("broadcast", (data) => {
         getRooms();
         getCompletedChats();
         getAssignedChats();
-        // setTimeout(() => {
-        //
-        // }, 500);
       });
     }, [socket])
 

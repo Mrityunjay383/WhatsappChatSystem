@@ -9,6 +9,7 @@ import TopCon from "../uiComponent/TopCon";
 
 function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIsLogedin}) {
 
+    //defining state variables
     const [activeRooms, setActiveRooms] = useState([]);//store all active romms exist
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
     const [activeAgents, setActiveAgents] = useState([]);
@@ -20,6 +21,7 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
       messageList: []
     });
 
+    //function for getting all the current active agents
     const getActiveAgents = async () => {
       await axios.get(`${baseChatSystemURL}/active_agents`, { validateStatus: false, withCredentials: true }).then(async (response) => {
         await setActiveAgents( () => {
@@ -59,6 +61,7 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
       });
     }
 
+    //function for disconnecting the chat
     const disconnect = async (room) => {
 
       await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name, managerID: userData.creatorUID});
@@ -84,10 +87,11 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
 
     }
 
+    //function for reassigning the chat (also using for escalations)
     const reassign = async (e, action, room) => {
 
       let agent, managerID;
-      if(action === "reassign"){
+      if(action === "reassign"){//if action is reassign
         const agentSelect = e.target.parentElement.querySelector(".agentSelect");
 
         agent = activeAgents[agentSelect.selectedIndex];
@@ -95,7 +99,7 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
           await socket.emit("reassign", {room, agentEmail: agent.email, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
         }
 
-      }else{
+      }else{//if action is escalation
         managerID = userData.creatorUID;
 
         //Adding ecalation to DB
@@ -132,7 +136,7 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
       }
     }
 
-
+    //component for pupulating reassign functionality
     const ReassignCom = ({room}) => {
       return <div>
         <select className="agentSelect">
@@ -148,6 +152,7 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
       </div>
     }
 
+    //function for joining a new room/chat
     const joinRoom = async (room) => {
       if (room !== "") {
 
@@ -155,11 +160,13 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
       }
     };
 
+    //function for changing the chat form the currJoinedChats
     const changeChat = async (room) => {
 
       for(let i = 0; i < currJoinedChats.length; i++){
         if(currJoinedChats[i].room === currActiveChat.room){
 
+          //if a chat has changed adding the updated current chat to the currJoinedChats
           await setCurrJoinedChats((curr) => {
             curr.splice(i, 1, currActiveChat);
             return [...curr]
@@ -168,7 +175,7 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
         }
       }
 
-
+      //updating the current active chat with the new changed chat
       await currJoinedChats.forEach((chat) => {
         if(chat.room === room){
           setCurrActiveChat((curr) => {
@@ -180,13 +187,15 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
     }
 
     useEffect(() => {
+
+      //emitting the "Agent so that current active agents can get updated in the backend"
       socket.emit("Agent", {email: userData.email, name: userData.name, socket_id: socket.id, creatorUID: userData.creatorUID});
+
       getRooms();
       getAssignedChats();
       getActiveAgents();
 
-      // sessionStorage.removeItem('currJoinedChats');
-
+      //getting the currJoinedChats form thr sessionStorage
       const chats = sessionStorage.getItem("currJoinedChats");
       if(chats != null){
         setCurrJoinedChats(JSON.parse(chats));
@@ -241,12 +250,15 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
 
     useEffect(() => {
 
+      //setting the curr Chats in the session
       sessionStorage.setItem("currJoinedChats", JSON.stringify(currJoinedChats));
 
+      //joining all the rooms that were previously joined
       for(let chat of currJoinedChats){
         socket.emit("join_room", {room: chat.room, email: userData.email});
       }
 
+      //setting the active chat with the most relaible chat
       if(currActiveChat.room === "" && currJoinedChats[0]){
         setCurrActiveChat({
           room: currJoinedChats[0].room,

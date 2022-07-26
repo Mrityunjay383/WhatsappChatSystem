@@ -7,11 +7,11 @@ import TopCon from "./uiComponent/TopCon";
 
 function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOfRequestedChats}) {
 
-
+    //defining state variables
     const [activeRooms, setActiveRooms] = useState([]);
     const [activeAgents, setActiveAgents] = useState([]);
 
-    //This is for assigning Agets to chat with specific customer
+    //This is for assigning Agents to chat with specific customer
     const assign = async (e) => {
       const room = e.target.parentElement.firstChild.innerText;
 
@@ -28,6 +28,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
       });
     }
 
+    //Getting all active rooms exist currently
     const getRooms = async () => {
       await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
         let rooms = response.data.chats;
@@ -41,6 +42,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
       });
     }
 
+    //function for getting all the current active agents
     const getActiveAgents = async () => {
       await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then((response) => {
         setActiveAgents(() => {
@@ -57,6 +59,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
     }, []);
 
     useEffect(() => {
+      //broadcast is used for dynamiclly updating if there is any change in socket
       socket.on("broadcast", (data) => {
         getRooms();
         setTimeout(getActiveAgents, 500);

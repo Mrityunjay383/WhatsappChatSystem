@@ -5,14 +5,16 @@ import "./Login.css"
 
 function Login({baseURL, changeLogin}) {
 
+    //defining state variables
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    //function for loging in a users
     const login = async () => {
       axios.post(`${baseURL}/auth/login`, {email, password}, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200 && response.data.success){
           console.log("User Logedin");
-          changeLogin(response.data.user);
+          changeLogin(response.data.user);//changing the state if login seccessful
         }else{
           console.log("Login Failed");
         }

@@ -9,6 +9,7 @@ import TopCon from "../uiComponent/TopCon";
 
 function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChats}) {
 
+    //defining state variables
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
 
     const [currJoinedChats, setCurrJoinedChats] = useState([]);
@@ -23,9 +24,9 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
     //Getting all assigned rooms to this agent
     const getAssignedChats = async () => {
 
+      //getting escalated chats for this manager
       await axios.get(`${baseURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
-        //Filtering assigned rooms for this perticular agent
-        // console.log(response.data.assignList);
+        //Filtering escalated rooms for this perticular manager
         setAssignedChats(() => {
           return response.data.assignList.filter((assined) => {
             return assined.managerID === userData.user_id
@@ -35,6 +36,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
       });
     }
 
+    //function for disconnecting the chat
     const disconnect = async (room) => {
 
       await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name, managerID: userData.user_id});
@@ -60,6 +62,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
 
     }
 
+    //function for joining a new room/chat
     const joinRoom = async (room) => {
       if (room !== "") {
 
@@ -67,11 +70,13 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
       }
     };
 
+    //function for changing the chat form the currJoinedChats
     const changeChat = async (room) => {
 
       for(let i = 0; i < currJoinedChats.length; i++){
         if(currJoinedChats[i].room === currActiveChat.room){
 
+          //if a chat has changed adding the updated current chat to the currJoinedChats
           await setCurrJoinedChats((curr) => {
             curr.splice(i, 1, currActiveChat);
             return [...curr]
@@ -80,7 +85,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
         }
       }
 
-
+      //updating the current active chat with the new changed chat
       await currJoinedChats.forEach((chat) => {
         if(chat.room === room){
           setCurrActiveChat((curr) => {
@@ -96,6 +101,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
 
       // sessionStorage.removeItem('currJoinedChats');
 
+      //getting the currJoinedChats form thr sessionStorage
       const chats = sessionStorage.getItem("currJoinedChats");
       if(chats != null){
         setCurrJoinedChats(JSON.parse(chats));
@@ -148,12 +154,15 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
 
     useEffect(() => {
 
+      //setting the curr Chats in the session
       sessionStorage.setItem("currJoinedChats", JSON.stringify(currJoinedChats));
 
+      //joining all the rooms that were previously joined
       for(let chat of currJoinedChats){
         socket.emit("join_room", {room: chat.room, email: userData.email});
       }
 
+      //setting the active chat with the most relaible chat
       if(currActiveChat.room === "" && currJoinedChats[0]){
         setCurrActiveChat({
           room: currJoinedChats[0].room,

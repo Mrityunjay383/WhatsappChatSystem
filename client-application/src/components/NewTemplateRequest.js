@@ -8,10 +8,12 @@ import AddNewTemp from "./uiComponent/AddNewTemp";
 
 function NewTemplateRequest({baseBulkMessagingURL, baseChatSystemURL, baseUserSystemURL, userName, userID, setIsLogedin, noOfRequestedChats}) {
 
+    //defining state variables
     const [showAddCom, setShowAddComp] = useState(false);
 
     const [allTemplates, setAllTemplates] = useState([]);
 
+    //function for getting all the templates from the database
     const getTemplates = async () => {
       axios.post(`${baseChatSystemURL}/allTemplatesByManager`, {managerID: userID}, {validateStatus: false, withCredentials: true}).then((response) => {
         setAllTemplates(response.data.templates);

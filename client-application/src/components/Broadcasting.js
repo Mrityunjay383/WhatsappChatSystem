@@ -7,6 +7,7 @@ import TopCon from "./uiComponent/TopCon";
 
 function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, userId, noOfRequestedChats}) {
 
+    //defining state variables
     const [templates, setTemplated] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState({});
 
@@ -24,6 +25,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
     const [populateMessage, setPopulateMessage] = useState("");
 
+    //getting all the approved templates
     const getTemplates = async () => {
 
       await axios.post(`${baseBulkMessagingURL}/aprovedTemplates`, {userId}, { validateStatus: false, withCredentials: true }).then((response) => {
@@ -42,13 +44,11 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
       await axios.post(`${baseBulkMessagingURL}/optedinUsers`, {userId}, { validateStatus: false, withCredentials: true }).then((response) => {
         //setting the optedinUsers with the response from the API
         optedinUsers = response.data.users;
-        // setOptedinUsers(response.data.users);
       });
 
       await axios.get(`${baseBulkMessagingURL}/storedCustomers`, { validateStatus: false, withCredentials: true }).then((response) => {
         //getting the stored users from the response from the API
         storedUsers = response.data.users;
-        // setOptedinUsers(response.data.users);
       });
 
       //gettig name of the customers from the stored users
@@ -66,11 +66,10 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
       setSearchedOptedinUsers(toBePopulateUsers);
     }
 
+    //function for broadcasting a new message
     const broadcast = async () => {
-      // const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
-      //
-      // let selectedPhoneNo = Array.from(checkboxes).map(i => i.value);
 
+      //getting the numbers for the input container
       let newNumbersArr = newNumbers.split(",");
       newNumbersArr = await newNumbersArr.map((i) => i.replace(" ", ""))
 
@@ -104,6 +103,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
       })
     }
 
+    //function for selecting a number by checking
     const listSelectedNos = async () => {
       const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
       let selectedPhoneNo = await Array.from(checkboxes).map(i => i.value);
@@ -112,6 +112,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
       setSelNosByCheck(selectedPhoneNo);
     }
 
+    //function for removing the selected numbers
     const rmSelectedNo = (number) => {
 
       if(newNumbers.includes(number)){

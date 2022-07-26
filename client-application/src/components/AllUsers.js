@@ -8,8 +8,11 @@ import PlaceHolderImg from "../images/managerPicPH.jpg";
 
 
 function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, noOfPendingTemplates, noOfRequestedChats}) {
+
+    //defining state variables
     const [usersList, setusersList] = useState([]);
 
+    //function for getting all the users
     const getUsers = async () => {
       await axios.get(`${baseURL}/${getRole}`, { validateStatus: false, withCredentials: true }).then((response) => {
         let allUsers = response.data[`${getRole}`];
@@ -24,9 +27,11 @@ function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, n
       });
     }
 
+    //function for deleting a perticular user
     const delUser = async (userID) => {
       let url;
 
+      //selecting the backend route based on role
       if(getRole === "agents"){
         url = `${baseURL}/del_agent`;
       }else{

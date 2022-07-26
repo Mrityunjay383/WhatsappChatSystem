@@ -6,6 +6,7 @@ import TopCon from "./uiComponent/TopCon";
 
 function Profile({baseURL, setIsLogedin, userData, setUserData, noOfPendingTemplates, noOfRequestedChats}) {
 
+    //defining state variables
     const [newDel, setNewDel] = useState({
       firstName: userData.name.split(" ")[0],
       lastName: userData.name.split(" ")[1],
@@ -22,6 +23,7 @@ function Profile({baseURL, setIsLogedin, userData, setUserData, noOfPendingTempl
 
     const [userDelByPost, setUserDelByPost] = useState({})
 
+    //Getting details on this perticular a user
     const getManagerDetails = async (managerUID) => {
       axios.post(`${baseURL}/indi_user`, {userId: managerUID}, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
@@ -39,10 +41,11 @@ function Profile({baseURL, setIsLogedin, userData, setUserData, noOfPendingTempl
     }
 
 
-
+    //function for changing the personal detail of the user
     const changeName = async () => {
       axios.post(`${baseURL}/change_name`, newDel, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
+          //setting the new detail in the state variable
           setUserData((curr) => {
             return {...curr, name: response.data.newDel}
           });
@@ -51,6 +54,7 @@ function Profile({baseURL, setIsLogedin, userData, setUserData, noOfPendingTempl
       });
     }
 
+    //function for changing the password of the user
     const changePassword = async () => {
       axios.post(`${baseURL}/change_password`, newPassword, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){

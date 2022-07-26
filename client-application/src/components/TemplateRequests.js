@@ -6,8 +6,10 @@ import TopCon from "./uiComponent/TopCon";
 
 function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, noOfPendingTemplates, setNoOfPendingTemplates}) {
 
+    //defining state variables
     const [allTemplates, setAllTemplates] = useState([]);
 
+    //function for getting all the templates from the database
     const getTemplates = async () => {
       axios.get(`${baseBulkMessagingURL}/get_all_templates`, {validateStatus: false, withCredentials: true}).then((response) => {
 
@@ -19,6 +21,7 @@ function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin
       });
     }
 
+    //function for updating the status of the template
     const updateStatus = async (tempID, status) => {
       axios.post(`${baseBulkMessagingURL}/updateTempStatus`, {tempID, status},{validateStatus: false, withCredentials: true}).then((response) => {
         getTemplates();
@@ -26,6 +29,7 @@ function TemplateRequests({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin
       });
     }
 
+    //Status Button component
     const StatusBtn = ({temp}) => {
       if(temp.status === "Pending"){
         return (

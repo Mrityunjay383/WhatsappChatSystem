@@ -16,8 +16,9 @@ import PlaceHolderImg from "../images/managerPicPH.jpg";
 
 function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noOfPendingTemplates}) {
 
-    const {id} = useParams();
+    const {id} = useParams();//getting is of the manager form the URL
 
+    //defining state variables
     const [manager, setManager] = useState({});
 
     const [totalNoOfAgents, setTotalNoOfAgents] = useState(0);
@@ -33,6 +34,7 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
 
     const [showBar, setShowBar] = useState(true);
 
+    //Getting details on this perticular manager
     const getManager = async () => {
       await axios.post(`${baseURL}/indi_user`, {userId: id}, { validateStatus: false, withCredentials: true }).then((response) => {
         const managerDel = response.data.foundUser;
@@ -42,10 +44,12 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
       });
     }
 
+    //getting all the agents in the database
     const getAgents = async () => {
       await axios.get(`${baseURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
         const allAgents = response.data.agents;
 
+        //filtering out the agents which are not created by this manager
         const allAgentsOfThisManager = allAgents.filter((agent) => {
           return agent.creatorUID === id
         })
@@ -55,6 +59,7 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
       });
     }
 
+    //function for getting all the completed chats from the database
     const getCompletedChats = async () => {
       await axios.post(`${baseChatSystemURL}/completedChats`, {managerID: id},{ validateStatus: false, withCredentials: true }).then((response) => {
         setTotalCompletedChats(response.data.chats);
@@ -62,6 +67,7 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
       });
     }
 
+    //function for getting all the templates from the database
     const getTemplates = async() => {
       await axios.post(`${baseChatSystemURL}/allTemplatesByManager`, {managerID: id},{ validateStatus: false, withCredentials: true }).then((response) => {
         setTemplates(response.data.templates);
@@ -69,6 +75,7 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
       });
     }
 
+    //filtering data based on time
     const filterData = (selectedFilter) => {
       const currentDate = new Date().getTime();
 

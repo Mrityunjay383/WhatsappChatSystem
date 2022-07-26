@@ -3,15 +3,18 @@ import axios from "axios";
 
 import "./DB.css";
 
+//importing charts
 import DoughnutChart from "../charts/DoughnutChart"
 import ManagerBar from "../charts/ManagerBar"
 import ManagerLine from "../charts/ManagerLine"
 
+//importing UI Components
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, noOfRequestedChats, socket}) {
 
+    //defining state variables
     const [totalNoOfAgents, setTotalNoOfAgents] = useState(0);
     const [totalNoOfActiveAgents, setTotalNoOfActiveAgents] = useState(0);
     const [totalNoOfOpenChats, setTotalNoOfOpenChats] = useState(0);
@@ -26,6 +29,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
     const [showBar, setShowBar] = useState(true);
 
+    //function for getting all the agents from the database
     const getAgents = async () => {
       await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
         const allAgents = response.data.agents;
@@ -38,6 +42,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       });
     }
 
+    //function for getting all the active agents
     const getActiveAgents = async () => {
 
       await axios.get(`${baseChatSystemURL}/active_agents`, { validateStatus: false, withCredentials: true }).then((response) => {
@@ -49,10 +54,12 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       });
     }
 
+    //function for getting all the active rooms
     const getRooms = async () => {
       await axios.get(`${baseChatSystemURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
         let rooms = response.data.chats;
 
+        //removing rooms which are not for this perticular manager
         for(let i=0; i < rooms.length; i++){
           if(rooms[i].managerID !== userData.user_id){
             rooms.splice(i, 1);
@@ -62,6 +69,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       });
     }
 
+    //function for getting all the escalations of this perticular manager
     const getEscalations = async () => {
       await axios.post(`${baseUserSystemURL}/get_escalations`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
         setTotalEscalations(response.data.escalations);
@@ -69,6 +77,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       });
     }
 
+    //function for getting all the templates from the database
     const getTemplates = async() => {
       await axios.post(`${baseChatSystemURL}/allTemplatesByManager`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
         setTotalTemplates(response.data.templates);
@@ -76,6 +85,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       });
     }
 
+    //function for getting all the completed chats from the database
     const getCompletedChats = async () => {
       await axios.post(`${baseChatSystemURL}/completedChats`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
         setTotalCompletedChats(response.data.chats);
@@ -83,6 +93,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       });
     }
 
+    //filtering data based on time
     const filterData = (selectedFilter) => {
       const currentDate = new Date().getTime();
 
@@ -135,6 +146,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
     }, []);
 
     useEffect(() => {
+      //updating data on broadcast
       socket.on("broadcast", (data) => {
         getRooms();
         setTimeout(() => {

@@ -1,16 +1,18 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
+//importing charts
 import BarChart from "../charts/BarChart";
 import AdminBar from "../charts/AdminBar";
 import AdminLine from "../charts/AdminLine";
 
-
+//importing UI Components
 import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
-function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,setIsLogedin, userData, noOfPendingTemplates}) {
+function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL, setIsLogedin, userData, noOfPendingTemplates}) {
 
+    //defining state variables
     const [totalNoOfAgents, setTotalNoOfAgents] = useState(0);
     const [totalNoOfManagers, setTotalNoOfManagers] = useState(0);
     const [totalNoOfTemplates, setTotalNoOfTemplates] = useState(0);
@@ -21,6 +23,7 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
 
     const [showBar, setShowBar] = useState(true);
 
+    //function for getting all the agents from the database
     const getAgents = async () => {
       await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
         const allAgents = response.data.agents;
@@ -29,6 +32,7 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
       });
     }
 
+    //function for getting all the managers from the database
     const getManagers = async () => {
       await axios.get(`${baseUserSystemURL}/managers`, { validateStatus: false, withCredentials: true }).then((response) => {
         const allManagers = response.data.managers;
@@ -37,12 +41,14 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
       });
     }
 
+    //function for getting all the templates from the database
     const getTemplates = async() => {
       await axios.get(`${baseBulkMessagingURL}/get_all_templates`, { validateStatus: false, withCredentials: true }).then((response) => {
         setTotalNoOfTemplates(response.data.allTemplates.length);
       });
     }
 
+    //function for getting all the completed chats from the database
     const getCompletedChats = async () => {
       await axios.post(`${baseChatSystemURL}/completedChats`, {},{ validateStatus: false, withCredentials: true }).then((response) => {
         setTotalCompletedChats(response.data.chats);
@@ -50,6 +56,8 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL,set
       });
     }
 
+
+    //filtering data based on time
     const filterData = (selectedFilter) => {
       const currentDate = new Date().getTime();
 

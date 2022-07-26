@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
+
+//scroll to bottom dynamicly scroll container to botton on addition of new element
 import ScrollToBottom from "react-scroll-to-bottom";
 
 function Chat({ socket, username, creatorUID, uID, currActiveChat, currJoinedChats, setCurrActiveChat, setCurrJoinedChat }) {
+
+  //defining state variables
   const [currentMessage, setCurrentMessage] = useState("");
 
-
+  //funcation for sending new message
   const sendMessage = async () => {
-    
+
     if (currentMessage !== "") {
       const messageData = {
         room: currActiveChat.room,
@@ -21,12 +25,14 @@ function Chat({ socket, username, creatorUID, uID, currActiveChat, currJoinedCha
           new Date(Date.now()).getMinutes(),
       };
 
+      //emitting new message and storing it in the currActiveChat
       await socket.emit("send_message", messageData);
       setCurrActiveChat((chat) => {
           return {...chat, messageList: [...chat.messageList, messageData]}
       });
       setCurrentMessage("");
 
+      //storing the message in the currJoinedChats so that it can be send to backend for storing the chat in the database
       currJoinedChats.forEach((chat, index) => {
         if(chat.room === currActiveChat.room){
           setCurrJoinedChat((curr) => {
@@ -41,6 +47,7 @@ function Chat({ socket, username, creatorUID, uID, currActiveChat, currJoinedCha
 
   useEffect(() => {
 
+    //on reciving the new message populating it on the page and storing it in the currJoinedChats
     socket.on("receive_message", (data) => {
 
       if(data.room === currActiveChat.room){

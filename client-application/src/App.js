@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import "./App.css";
+
+//importing axios for https requests
 import axios from "axios";
+
+//importing Router functionality
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
+//importing the socket after connection
 import {socket} from "./components/chatComponents/socket";
 
+//importing all the necessary components
 import Profile from "./components/Profile";
 
 import AllUsers from "./components/AllUsers";
@@ -26,20 +32,20 @@ import ManagerChat from "./components/chatComponents/ManagerChat";
 
 import ManagerProfile from "./components/ManagerProfile";
 
-//Importing as lazy so that socket only runs when user is agent or customer
+//Importing as lazy so that socket only runs when user is agent or manager
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
 const ManagerAssign = React.lazy(() => import('./components/ManagerAssignPage'));
 
-
+//all the URLs of the backend systems
 const baseUserSystemURL = "http://localhost:3002";
 const baseChatSystemURL = "http://localhost:3001";
 const baseBulkMessagingURL = "http://localhost:3003";
 
 
-let userId;
+let userId;//variable for storing the current id of the user
 function App() {
 
-  const [isLogedin, setIsLogedin] = useState(false);
+  const [isLogedin, setIsLogedin] = useState(false);//login state variable
   const [userData, setUserData] = useState({});
 
   const [showAlert, setShowAlert] = useState(false);
@@ -49,6 +55,7 @@ function App() {
   const [noOfRequestedChats, setNoOfRequestedChats] = useState(0);
 
 
+  //Rendring the ChatPage Only if the userRole is Agent
   const ChatPageRender = () => {
     return (
       <>
@@ -59,7 +66,7 @@ function App() {
     )
   }
 
-
+  //Rendring the ManagerAssign Oonly if the userRole is Manager
   const ManagerAssignPage = () => {
     return (
       <>
@@ -97,6 +104,7 @@ function App() {
     });
   }
 
+  //getting the number of pendng templates to show in notification
   const getNoOfPendingTemplates = async () => {
     await axios.get(`${baseChatSystemURL}/noOfPendingTemplates `, { validateStatus: false, withCredentials: true }).then((response) => {
       setNoOfPendingTemplates(response.data.noOfPendingTemplates);
@@ -122,8 +130,11 @@ function App() {
       });
   }, [socket]);
 
-  useEffect(() => {//validating JWT on every time the component mount
+  useEffect(() => {
+    //validating JWT on every time the component mount
     valToken();
+
+    //getting number of pending template on component mount
     getNoOfPendingTemplates();
   }, []);
 
@@ -155,7 +166,12 @@ function App() {
             <Route path="/profile" element={
               <div>
                 {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
-                <Profile baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} userData={userData} setUserData={setUserData} noOfPendingTemplates={noOfPendingTemplates}/>
+                <Profile
+                  baseURL={baseUserSystemURL}
+                  setIsLogedin={setIsLogedin}
+                  userData={userData}
+                  setUserData={setUserData}
+                  noOfPendingTemplates={noOfPendingTemplates}/>
               </div>
             } />
 
@@ -196,7 +212,7 @@ function App() {
               )
             } />
 
-            //Broadcasting Rote
+            //Broadcasting Route
             <Route path="/broadcast" element={
               userData.role === "Manager" ? (//Only Managers have Access to Broadcasting page
                 <Broadcasting
@@ -251,6 +267,7 @@ function App() {
               )
             } />
 
+            //route for checking escalated chats for manager
             <Route path="/chat_requests" element={
               userData.role === "Manager" ? (
                 <ManagerChat socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>
@@ -260,7 +277,7 @@ function App() {
             } />
 
             <Route path="/create_new_user" element={
-              userData.role === "Agent" ? (//Agents and Managers didnt have Access to allManagers page
+              userData.role === "Agent" ? (//Agents didnt have Access to create new user page
                 <h1>Access Denied!!</h1>
               ) : (
 
