@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import axios from "axios";
 
 const nameLabel = "For example, a verification code template for an app will be: Your verification code is {{1}}. Hence, this can be named: app_verification_code. An element name can only be in lowercase alphanumeric characters and underscores. Special characters and white-space are not allowed."

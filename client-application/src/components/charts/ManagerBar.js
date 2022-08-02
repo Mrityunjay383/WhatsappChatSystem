@@ -36,7 +36,6 @@ const monthArr = ['January', 'February', 'March', 'April', 'May', 'June', 'July'
 export let labels = [];
 
 var d = new Date();
-var m = d.getMonth();
 var tempDate = new Date();
 for(let i = 4; i >= 0; i--){
   tempDate.setMonth(d.getMonth() - i);
@@ -122,7 +121,6 @@ function ManagerBar({totalEscalations, totalTemplates, totalCompletedChats}) {
 
     const filterData = (toBeFilterArr) => {
       var d = new Date();
-      var m = d.getMonth();
 
       let timeArr = [];
       var tempDate = new Date();
@@ -135,7 +133,7 @@ function ManagerBar({totalEscalations, totalTemplates, totalCompletedChats}) {
 
         timeArr.push(tempDate.getTime());
 
-        if(i == 0){
+        if(i === 0){
           tempDate = new Date();
           timeArr.push(tempDate.getTime());
         }

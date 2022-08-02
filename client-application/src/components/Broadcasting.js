@@ -122,7 +122,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
         setSelNosByText((curr) => {
           curr = curr.filter((num, index) => {
-            return num != number
+            return num !== number
           });
           return curr;
         })
@@ -154,7 +154,6 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
     }, []);
 
     useEffect(() => {
-      // console.log(selNosByText);
       setSelectedNos([...selNosByCheck, ...selNosByText])
     }, [selNosByCheck, selNosByText])
 
@@ -236,7 +235,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
                     let newNumbersArr = e.target.value.split(",");
                     newNumbersArr = newNumbersArr.map((i) => i.replace(" ", ""))
                     newNumbersArr = newNumbersArr.filter((number) => {
-                      return number.length == 12
+                      return number.length === 12
                     });
 
                     setSelNosByText(newNumbersArr);

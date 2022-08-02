@@ -127,18 +127,18 @@ function App() {
       setTimeout(() => {
         getAssignedChats(userId);
       }, 500);
-      });
+    });
   }, [socket]);
 
   useEffect(() => {
-    //validating JWT on every time the component mount
+    {/* validating JWT on every time the component mount */}
     valToken();
 
-    //getting number of pending template on component mount
+    {/* getting number of pending template on component mount */}
     getNoOfPendingTemplates();
   }, []);
 
-  //Rendring dashboard based on the role of the user
+  {/*Rendring dashboard based on the role of the user*/}
   const Dashboard = ({role}) => {
     if(role === "Admin"){
       return <AdminDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} baseBulkMessagingURL={baseBulkMessagingURL} setIsLogedin={setIsLogedin} userData={userData} noOfPendingTemplates={noOfPendingTemplates}/>
@@ -155,7 +155,7 @@ function App() {
         {isLogedin ? (
           <Routes>
 
-            //Home Route have Dashboard
+            {/*Home Route have Dashboard */}
             <Route path="/" element={
               <div>
                 {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
@@ -175,7 +175,7 @@ function App() {
               </div>
             } />
 
-            //agents Route have AllUsers with role agents
+            {/*agents Route have AllUsers with role agents */}
             <Route path="/agents" element={
               userData.role === "Agent" ? ( //Agents didnt have Access to allAgents page
                 <h1>Access Denied!!</h1>
@@ -192,7 +192,7 @@ function App() {
               )
             } />
 
-            //managers Route have AllUsers with role managers
+            {/*managers Route have AllUsers with role managers */}
             <Route path="/managers" element={
               userData.role === "Agent" || userData.role === "Manager" ? (//Agents and Managers didnt have Access to allManagers page
                 <h1>Access Denied!!</h1>
@@ -212,7 +212,7 @@ function App() {
               )
             } />
 
-            //Broadcasting Route
+            {/*Broadcasting Route */}
             <Route path="/broadcast" element={
               userData.role === "Manager" ? (//Only Managers have Access to Broadcasting page
                 <Broadcasting
@@ -229,7 +229,7 @@ function App() {
               )
             } />
 
-            //Managers route for submiting new template request to admin
+            {/*Managers route for submiting new template request to admin */}
             <Route path="/new_template_request" element={
               userData.role === "Agent" && userData.role === "Admin" ? ( //Admin & Agents didnt have Access to this page
                 <h1>Access Denied!!</h1>
@@ -246,7 +246,7 @@ function App() {
               )
             } />
 
-            //Admin route for accessing new template request from manager
+            {/*Admin route for accessing new template request from manager */}
             <Route path="/template_requests" element={
               userData.role === "Agent" && userData.role === "Manager" ? ( //Managers & Agents didnt have Access to this page
                 <h1>Access Denied!!</h1>
@@ -267,7 +267,7 @@ function App() {
               )
             } />
 
-            //route for checking escalated chats for manager
+            {/*route for checking escalated chats for manager */}
             <Route path="/chat_requests" element={
               userData.role === "Manager" ? (
                 <ManagerChat socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>
@@ -324,7 +324,6 @@ function App() {
 
           </Routes>
         ) : (
-          //if the token is not found, placing the Login component
           <Login baseURL={baseUserSystemURL} changeLogin={changeLoginState} />
         )}
       </div>

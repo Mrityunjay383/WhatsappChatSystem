@@ -81,7 +81,7 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
 
       let noOfEscalations= 0, noOfTemplates = 0, noOfCompletedChats = 0;
 
-      if(selectedFilter == "all"){
+      if(selectedFilter === "all"){
 
         noOfEscalations = totalEscalations.length;
         noOfTemplates = templates.length;
@@ -90,9 +90,9 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
       }else{
         let comparedDate;
 
-        if(selectedFilter == 7){
+        if(selectedFilter === 7){
           comparedDate = currentDate - 7*24*60*60*1000;
-        }else if(selectedFilter == 30){
+        }else if(selectedFilter === 30){
           comparedDate = currentDate - 30*24*60*60*1000;
         }
 
@@ -133,7 +133,7 @@ function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noO
 
           <div className="managerProfileCon">
             <div className="perDetCon">
-              <img className="ProfilePic" src={PlaceHolderImg} />
+              <img className="ProfilePic" src={PlaceHolderImg} alt="profile pic"/>
               <div>
                 <p className="ProfileName">{manager.firstName+" "+manager.lastName}</p>
                 <p>{manager.email}</p>

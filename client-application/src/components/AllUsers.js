@@ -53,7 +53,7 @@ function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, n
     const UserCard = ({user}) => {
       return (
         <div className="userCard">
-          <img className="ProfilePic allUserImage" src={PlaceHolderImg} />
+          <img className="ProfilePic allUserImage" src={PlaceHolderImg} alt="Profile pic" />
           <h3 className="">{user.firstName} {user.lastName}</h3>
           <p>{user.email}</p>
 

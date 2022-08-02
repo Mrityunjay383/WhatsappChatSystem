@@ -94,9 +94,9 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
       }else{
         let comparedDate;
 
-        if(selectedFilter == 7){
+        if(selectedFilter === 7){
           comparedDate = currentDate - 7*24*60*60*1000;
-        }else if(selectedFilter == 30){
+        }else if(selectedFilter === 30){
           comparedDate = currentDate - 30*24*60*60*1000;
         }
 
@@ -169,13 +169,13 @@ function AgentDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, 
                   </p>
 
                   <div className="upConFirstCon">
-                    <a href="">
+                    <a href="/">
                       <div className="divInA">
                          Completed Chats <span>{totalNoOfCompletedChats}</span>
                       </div>
                     </a>
 
-                    <a href="">
+                    <a href="/">
                       <div className="divInA">
                         Contacts handled <span>{totalNoOfCustomerHandled}</span>
                       </div>

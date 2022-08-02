@@ -110,7 +110,7 @@ function ChatPage({socket, userData, baseUserSystemURL, baseChatSystemURL, setIs
         await socket.emit("reassign", {room, managerID, phoneNo: currActiveChat.phoneNo, assignedBy: userData.name});
       }
 
-      if(agent != undefined || managerID != undefined){
+      if(agent !== undefined || managerID !== undefined){
         await socket.emit("disconnect_chat", {chat: currActiveChat, agentName: userData.name, managerID: userData.creatorUID});
 
         currJoinedChats.forEach((chat, index) => {

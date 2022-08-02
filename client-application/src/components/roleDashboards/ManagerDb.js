@@ -99,7 +99,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
       let noOfEscalations= 0, noOfTemplates = 0, noOfCompletedChats = 0;
 
-      if(selectedFilter == "all"){
+      if(selectedFilter === "all"){
 
         noOfEscalations = totalEscalations.length;
         noOfTemplates = totalTemplates.length;
@@ -108,9 +108,9 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       }else{
         let comparedDate;
 
-        if(selectedFilter == 7){
+        if(selectedFilter === 7){
           comparedDate = currentDate - 7*24*60*60*1000;
-        }else if(selectedFilter == 30){
+        }else if(selectedFilter === 30){
           comparedDate = currentDate - 30*24*60*60*1000;
         }
 
@@ -221,7 +221,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
                       </div>
                     </a>
 
-                    <a href="">
+                    <a href="/">
                       <div className="divInA">
                         <p className="upConHeading">Completed Chats</p>
                         <span>{totalNoOfCompletedChats}</span>

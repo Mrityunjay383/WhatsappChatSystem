@@ -63,16 +63,16 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL, se
 
       let noOfCompletedChats = 0;
 
-      if(selectedFilter == "all"){
+      if(selectedFilter === "all"){
 
         noOfCompletedChats = totalCompletedChats.length;
 
       }else{
         let comparedDate;
 
-        if(selectedFilter == 7){
+        if(selectedFilter === 7){
           comparedDate = currentDate - 7*24*60*60*1000;
-        }else if(selectedFilter == 30){
+        }else if(selectedFilter === 30){
           comparedDate = currentDate - 30*24*60*60*1000;
         }
 
