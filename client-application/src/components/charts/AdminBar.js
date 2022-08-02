@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -103,7 +103,7 @@ function AdminBar({totalCompletedChats}) {
       datasets: [
         {
           label: 'Completed Chats',
-          data: filterData(),
+          data: totalCompletedChats ? filterData() : console.log("Not found"),
           backgroundColor: '#7AF4C1',
         },
       ],

@@ -66,7 +66,7 @@ const io = new Server(server, {
 
 //passing the io to all routes
 app.use(function(req, res, next) {
-  io = io;
+  req.io = io;
   next();
 });
 
@@ -77,7 +77,6 @@ let assignList = []; //store if a agent gets assigned to chat with any specific 
 
 
 io.on("connection", (socket) => {
-  console.log(`User Connected: ${socket.id}`);
 
   socket.on("Agent", async (data) => {
     //if the request is comming from an agent passing it into the activeAgnets list
@@ -126,7 +125,6 @@ io.on("connection", (socket) => {
 
       socket.join(data.room);
     }
-    // console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
   });
 
 
@@ -202,7 +200,6 @@ io.on("connection", (socket) => {
   })
 
   socket.on("disconnect", async () => {
-    console.log("User Disconnected", socket.id);
     io.sockets.emit("broadcast", {});
 
     //if a avtive agent got Disconnected removing it from the active agents list
@@ -359,7 +356,6 @@ app.post("/assign_agent", (req, res) => {
 
 //route to get all the chats which are assigned by the manager
 app.get("/assigned", (req, res) => {
-
   res.status(200).json({
     assignList
   });
