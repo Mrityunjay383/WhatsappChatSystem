@@ -267,7 +267,6 @@ exports.getEscatations = async (req, res) => {
   const {managerID} = req.body;
 
   const foundManager = await User.findOne({_id: managerID});
-
   if(foundManager){
     res.status(200).json({escalations: foundManager.escalations});
   }else{

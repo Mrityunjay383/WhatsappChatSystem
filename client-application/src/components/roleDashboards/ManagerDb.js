@@ -13,7 +13,6 @@ import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData, noOfRequestedChats, socket}) {
-
     //defining state variables
     const [totalNoOfAgents, setTotalNoOfAgents] = useState(0);
     const [totalNoOfActiveAgents, setTotalNoOfActiveAgents] = useState(0);
@@ -71,7 +70,9 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
     //function for getting all the escalations of this perticular manager
     const getEscalations = async () => {
+      console.log("User ID", userData._id);
       await axios.post(`${baseUserSystemURL}/get_escalations`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
+        console.log("escalations", response.data.escalations);
         setTotalEscalations(response.data.escalations);
         setTotalNoOfEscalations(response.data.escalations.length);
       });
@@ -136,24 +137,25 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
       setTotalNoOfCompletedChats(noOfCompletedChats);
     }
 
-    useEffect(() => {
+    const featchData = () => {
       getAgents();
       getActiveAgents();
       getRooms();
       getEscalations();
       getTemplates();
       getCompletedChats();
+    }
+
+    useEffect(() => {
+      featchData();
     }, []);
+
 
     useEffect(() => {
       //updating data on broadcast
       socket.on("broadcast", (data) => {
-        getRooms();
         setTimeout(() => {
-          getActiveAgents();
-          getEscalations();
-          getTemplates();
-          getCompletedChats();
+          featchData();
         }, 500);
       });
     }, [socket])

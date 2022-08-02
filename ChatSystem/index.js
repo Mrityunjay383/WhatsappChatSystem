@@ -365,7 +365,6 @@ app.get("/assigned", (req, res) => {
 //route for getting all the completed chats
 app.post("/completedChats", async (req, res) => {
   const {managerID} = req.body;
-
   let foundChats;
   if(managerID){
     foundChats = await Chat.find({managerID});

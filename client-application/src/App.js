@@ -136,7 +136,7 @@ function App() {
 
     {/* getting number of pending template on component mount */}
     getNoOfPendingTemplates();
-  }, []);
+  }, [isLogedin]);
 
   {/*Rendring dashboard based on the role of the user*/}
   const Dashboard = ({role}) => {
