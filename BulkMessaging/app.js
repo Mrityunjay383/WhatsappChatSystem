@@ -7,7 +7,7 @@ const session = require('express-session');
 const cors = require("cors");//for enabling api requuest from external source
 
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT;
 
 const app = express();
 

@@ -15,7 +15,7 @@ const {
   URLSearchParams
 } = require('url');
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT;
 
 //URL of the chat system
 const baseUserSystemURL = "http://localhost:3002";
