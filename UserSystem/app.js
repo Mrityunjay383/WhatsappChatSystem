@@ -19,7 +19,7 @@ app.use(express.json());
 
 //middleware using cors with options
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'], //change origin based on domain main of the application
+    origin: ['http://localhost:3000', 'http://localhost:3001', "http://localhost:5001", "http://localhost:5000"], //change origin based on domain main of the application
     optionsSuccessStatus: 200,
     credentials: true
   }

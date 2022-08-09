@@ -37,10 +37,20 @@ const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage')
 const ManagerAssign = React.lazy(() => import('./components/ManagerAssignPage'));
 
 //all the URLs of the backend systems
-const baseUserSystemURL = "http://localhost:3002";
-const baseChatSystemURL = "http://localhost:3001";
-const baseBulkMessagingURL = "http://localhost:3003";
+let baseUserSystemURL = "http://localhost:3002";
+let baseChatSystemURL = "http://localhost:3001";
+let baseBulkMessagingURL = "http://localhost:3003";
 
+console.log(process.env.REACT_APP_ENV);
+if(process.env.REACT_APP_ENV === "production"){
+  baseUserSystemURL = "http://localhost:5002";
+  baseChatSystemURL = "http://localhost:5001";
+  baseBulkMessagingURL = "http://localhost:5003";
+}else{
+  baseUserSystemURL = "http://localhost:3002";
+  baseChatSystemURL = "http://localhost:3001";
+  baseBulkMessagingURL = "http://localhost:3003";
+}
 
 let userId;//variable for storing the current id of the user
 function App() {
