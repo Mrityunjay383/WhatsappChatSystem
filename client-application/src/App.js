@@ -41,7 +41,6 @@ let baseUserSystemURL = "http://localhost:3002";
 let baseChatSystemURL = "http://localhost:3001";
 let baseBulkMessagingURL = "http://localhost:3003";
 
-console.log(process.env.REACT_APP_ENV);
 if(process.env.REACT_APP_ENV === "production"){
   baseUserSystemURL = "http://localhost:5002";
   baseChatSystemURL = "http://localhost:5001";
@@ -81,7 +80,7 @@ function App() {
     return (
       <>
         <React.Suspense fallback={<></>}>
-          {(userData.role === "Manager") && <ManagerAssign socket={socket} baseURL={baseChatSystemURL} userName={userData.name} userId={userData.user_id} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>}
+          {(userData.role === "Manager") && <ManagerAssign socket={socket} baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} userName={userData.name} userId={userData.user_id} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>}
         </React.Suspense>
       </>
     )
@@ -280,7 +279,7 @@ function App() {
             {/*route for checking escalated chats for manager */}
             <Route path="/chat_requests" element={
               userData.role === "Manager" ? (
-                <ManagerChat socket={socket} baseURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>
+                <ManagerChat socket={socket} baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} noOfRequestedChats={noOfRequestedChats}/>
               ) : (
                 <h1>Access Denied!!</h1>
               )

@@ -31,6 +31,7 @@ function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0, noO
     const logOut = async () => {
       await axios.get(`${baseURL}/auth/logout`, { validateStatus: false, withCredentials: true }).then((response) => {
         setIsLogedin(false);
+        window.location = "/";
       });
     }
 
@@ -124,9 +125,9 @@ function Sidebar({role, baseURL, setIsLogedin, page, noOfPendingTemplates=0, noO
 
           <Links />
 
-          <div className="logoutCon">
+          <div className="logoutCon" onClick={logOut}>
             <LogoutIcon/>
-            <span className="logoutBtn" onClick={logOut}>LogOut</span>
+            <span className="logoutBtn">LogOut</span>
           </div>
         </div>
     )

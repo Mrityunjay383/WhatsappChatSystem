@@ -5,7 +5,7 @@ import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
 
-function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOfRequestedChats}) {
+function ManagerAsignPage({socket, baseUserSystemURL, baseChatSystemURL, userName, userId, setIsLogedin, noOfRequestedChats}) {
 
     //defining state variables
     const [activeRooms, setActiveRooms] = useState([]);
@@ -18,7 +18,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
       const agentSelect = e.target.parentElement.querySelector(".agentSelect");
       const agent = activeAgents[agentSelect.selectedIndex];
 
-      await axios.post(`${baseURL}/assign_agent`, {room, agentEmail: agent.email, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
+      await axios.post(`${baseChatSystemURL}/assign_agent`, {room, agentEmail: agent.email, assignedBy: userName}, {validateStatus: false, withCredentials: true}).then((response) => {
         if(response.status === 200){
           console.log("Assignment Done");
 
@@ -30,7 +30,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
 
     //Getting all active rooms exist currently
     const getRooms = async () => {
-      await axios.get(`${baseURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseChatSystemURL}/active_rooms`, { validateStatus: false, withCredentials: true }).then((response) => {
         let rooms = response.data.chats;
         // console.log(rooms);
         for(let i=0; i < rooms.length; i++){
@@ -44,7 +44,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
 
     //function for getting all the current active agents
     const getActiveAgents = async () => {
-      await axios.get(`${baseURL}/active_agents`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseChatSystemURL}/active_agents`, { validateStatus: false, withCredentials: true }).then((response) => {
         setActiveAgents(() => {
           return response.data.activeAgents.filter((agent) => {
             return agent.creatorUID === userId
@@ -68,7 +68,7 @@ function ManagerAsignPage({socket, baseURL, userName, userId, setIsLogedin, noOf
 
     return (
         <div className="rootCon">
-        <Sidebar role = "Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="assignAgents" noOfRequestedChats={noOfRequestedChats}/>
+        <Sidebar role = "Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="assignAgents" noOfRequestedChats={noOfRequestedChats}/>
 
           <div className="dataCon">
             <TopCon userName={userName} page="Assign Agents"/>

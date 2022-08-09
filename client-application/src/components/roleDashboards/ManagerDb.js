@@ -70,9 +70,7 @@ function ManagerDb({baseUserSystemURL, baseChatSystemURL, setIsLogedin, userData
 
     //function for getting all the escalations of this perticular manager
     const getEscalations = async () => {
-      console.log("User ID", userData._id);
       await axios.post(`${baseUserSystemURL}/get_escalations`, {managerID: userData.user_id},{ validateStatus: false, withCredentials: true }).then((response) => {
-        console.log("escalations", response.data.escalations);
         setTotalEscalations(response.data.escalations);
         setTotalNoOfEscalations(response.data.escalations.length);
       });

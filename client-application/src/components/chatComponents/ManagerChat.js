@@ -7,7 +7,7 @@ import Sidebar from "../uiComponent/Sidebar";
 import TopCon from "../uiComponent/TopCon";
 
 
-function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChats}) {
+function ManagerChat({socket, userData, baseUserSystemURL, baseChatSystemURL, setIsLogedin, noOfRequestedChats}) {
 
     //defining state variables
     const [assignedChats, setAssignedChats] = useState([]);//store assigned rooms to agents
@@ -25,7 +25,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
     const getAssignedChats = async () => {
 
       //getting escalated chats for this manager
-      await axios.get(`${baseURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
+      await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
         //Filtering escalated rooms for this perticular manager
         setAssignedChats(() => {
           return response.data.assignList.filter((assined) => {
@@ -175,7 +175,7 @@ function ManagerChat({socket, userData, baseURL, setIsLogedin, noOfRequestedChat
     return (
         <div className="rootCon">
 
-          <Sidebar role="Manager" baseURL={baseURL} setIsLogedin={setIsLogedin} page="chat" noOfRequestedChats={noOfRequestedChats}/>
+          <Sidebar role="Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="chat" noOfRequestedChats={noOfRequestedChats}/>
 
 
           <div className="dataCon">
