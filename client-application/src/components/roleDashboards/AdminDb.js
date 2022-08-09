@@ -111,7 +111,7 @@ function AdminDb({baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL, se
                       </div>
                     </a>
 
-                    <a href="/managers">
+                    <a href="/">
                       <div className="divInA">
                         Agents <span>{totalNoOfAgents}</span>
                       </div>
