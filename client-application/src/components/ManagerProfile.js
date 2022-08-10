@@ -11,7 +11,7 @@ import ManagerBar from "./charts/ManagerBar"
 import ManagerLine from "./charts/ManagerLine"
 
 
-import PlaceHolderImg from "../images/managerPicPH.jpg";
+import PlaceHolderImg from "../images/managerPicPH.png";
 
 
 function ManagerProfile({baseURL, baseChatSystemURL, userData, setIsLogedin, noOfPendingTemplates}) {

@@ -4,7 +4,7 @@ import axios from "axios";
 import Sidebar from "./uiComponent/Sidebar";
 import TopCon from "./uiComponent/TopCon";
 
-import PlaceHolderImg from "../images/managerPicPH.jpg";
+import PlaceHolderImg from "../images/managerPicPH.png";
 
 
 function AllUsers({baseURL, getRole, setIsLogedin, userRole, userName, userID, noOfPendingTemplates, noOfRequestedChats}) {
