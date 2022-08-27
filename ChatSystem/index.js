@@ -6,6 +6,7 @@ const app = express();
 var bodyParser = require('body-parser') //for reading json from form data
 const http = require("http");
 const cors = require("cors"); //for enabling api requuest from external source
+const schedule = require('node-schedule');
 const {
   Server
 } = require("socket.io"); //framework to use web sockets
@@ -19,15 +20,20 @@ const PORT = process.env.PORT;
 
 //URL of the chat system
 const baseUserSystemURL = "http://localhost:3002";
+let baseBulkMessagingURL = "http://localhost:3003";
 
 //requiring the database collections
 const Customer = require("./model/customer");
 const Template = require("./model/template");
 const Chat = require("./model/chat");
+const Flow = require("./model/flow");
+
 
 //requiring the hepler methods
 const activeSocketRooms = require("./helpers/activeSocketRooms");
-const { otpedinUser } = require("./helpers/checkUserOptedin");
+const {
+  otpedinUser
+} = require("./helpers/checkUserOptedin");
 const {
   sendMessage
 } = require("./helpers/sendMessage");
@@ -74,15 +80,16 @@ app.use(function(req, res, next) {
 let activeChats = []; //store all the current active chats
 let activeAgents = []; //store all the active agents in a perticular time
 let assignList = []; //store if a agent gets assigned to chat with any specific customer
-
+let talkToAgentList = [];
+let botChats = [];
 
 io.on("connection", (socket) => {
 
   socket.on("Agent", async (data) => {
     //if the request is comming from an agent passing it into the activeAgnets list
-    if(activeAgents.some(agent => agent.email === data.email)){
+    if (activeAgents.some(agent => agent.email === data.email)) {
       console.log("Agent Already In");
-    }else{
+    } else {
       await activeAgents.push({
         ...data
       });
@@ -134,9 +141,9 @@ io.on("connection", (socket) => {
     let userId, managerDel;
 
     //getting the managers detail to send message from the specific number
-    if(messageData.creatorUID){
+    if (messageData.creatorUID) {
       userId = messageData.creatorUID
-    }else{
+    } else {
       userId = messageData.uID;
     }
 
@@ -160,6 +167,7 @@ io.on("connection", (socket) => {
 
     //broadcasting so the all active rooms get updated for all users
     io.sockets.emit("broadcast", {});
+
     const {
       chat,
       agentName,
@@ -167,6 +175,7 @@ io.on("connection", (socket) => {
     } = data;
 
     let lastInteraction = new Date().getTime();
+
 
     //Creating a new Chat Document
     const newChat = await Chat.create({
@@ -177,6 +186,26 @@ io.on("connection", (socket) => {
       managerID,
       lastInteraction
     });
+
+
+    let managerDel;
+    await axios.post(`${baseUserSystemURL}/indi_user`, {
+      userId: managerID
+    }, {
+      validateStatus: false,
+      withCredentials: true
+    }).then((response) => {
+      if (response.status === 200) {
+        managerDel = response.data.foundUser;
+      }
+    });
+
+    //removing the number from talkToAgentList list after chat got Disconnected
+    const numberIndex = talkToAgentList.indexOf(chat.phoneNo);
+    if(numberIndex > -1){
+      talkToAgentList.splice(numberIndex, 1);
+      await sendMessage("Agent Disconnected!!", chat.phoneNo, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+    }
 
     //Removing agent from the room
     socket.leave(chat.room);
@@ -212,30 +241,50 @@ io.on("connection", (socket) => {
 app.post("/hook", async (req, res) => {
   const {
     type,
-    payload
+    payload,
+    app: appName
   } = req.body
+
+  let managerDel;
+  await axios.post(`${baseUserSystemURL}/indi_user`, {
+    appName
+  }, {
+    validateStatus: false,
+    withCredentials: true
+  }).then((response) => {
+    if (response.status === 200) {
+      managerDel = response.data.foundUser;
+    }
+  });
+
+  let flow, flowPos;
+  //getting the flow from customer collection
+  const customer = await Customer.findOne({
+    userPhoneNo: payload.destination || payload.source
+  });
+
+  if(customer){
+    flowPos = customer.currFlow.currPos;
+    flow = await Flow.findOne({_id: customer.currFlow.flowID});
+
+    if(flowPos.temp === flow.startNode && flowPos.show === true){
+      console.log("Started");
+      flow.data.started = flow.data.started + 1;
+
+      flow.markModified('data');
+      await flow.save();
+    }
+
+  }
+
+  if(flow && flowPos.temp !== "!end" && flowPos.show && talkToAgentList.indexOf(payload.source) === -1){
+    await sendMessage(flow.tMessageList[flowPos.temp].tMessage, payload.destination || payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+  }
 
   //Checking the request is an incoming message form whatsapp
   if (type === 'message') {
 
-    let managerDel;
-    await axios.post(`${baseUserSystemURL}/indi_user`, {
-      appName: req.body.app
-    }, {
-      validateStatus: false,
-      withCredentials: true
-    }).then((response) => {
-      if (response.status === 200) {
-        managerDel = response.data.foundUser;
-      }
-    });
-
-    //storing a new user in the database if already not exist
-    const user = await Customer.findOne({
-      userPhoneNo: payload.source
-    });
-
-    if (!user) {
+    if (!customer) {
       const newCustomer = Customer.create({
         userName: payload.sender.name,
         userPhoneNo: payload.source
@@ -243,32 +292,21 @@ app.post("/hook", async (req, res) => {
     }
 
     //method for checking if the user is a optin user and if not making it the optin user
-    await otpedinUser(payload.sender.dial_code, payload.sender.phone, managerDel);
+    await otpedinUser(payload.sender.phone, managerDel.appName, managerDel.apiKey);
 
-    //Checking if an agent is alreday joined the room
-    const roomsWhichHaveAgent = await activeSocketRooms(io);
+    //Bot Starting
+    if (payload.payload.text === "Talk to Agent" || payload.payload.text === "!Agent") {
 
-    const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
-    //If an agent is in the room
-    if (roomIndex !== -1) {
-      const messageData = {
-        room: payload.sender.name,
-        author: payload.sender.name,
-        message: payload.payload.text,
-        time: new Date(Date.now()).getHours() +
-          ":" +
-          new Date(Date.now()).getMinutes(),
-      };
+      talkToAgentList.push(payload.source);
 
-      await io.to(payload.sender.name).emit("receive_message", messageData);
+      await sendMessage("Assigning an Agent...", payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
 
-    } else {
       io.sockets.emit("broadcast", {});
 
       // Checking if this chat already in the activeChats
       for (let i = 0; i < activeChats.length; i++) {
         if (activeChats[i].room === payload.sender.name) {
-          activeChats[i].messages.push(payload.payload.text);
+          activeChats[i].messages.push(`Cutomer ${payload.sender.name} requested to chat with a agent.`);
           return res.status(200).end();
         }
       }
@@ -276,7 +314,7 @@ app.post("/hook", async (req, res) => {
       // Checking if this chat already in the assigned chats
       for (let i = 0; i < assignList.length; i++) {
         if (assignList[i].room === payload.sender.name) {
-          assignList[i].messages.push(payload.payload.text);
+          assignList[i].messages.push(`Cutomer ${payload.sender.name} requested to chat with a agent.`);
           return res.status(200).end();
         }
       }
@@ -284,15 +322,181 @@ app.post("/hook", async (req, res) => {
       //if chat didn't exist then creating a new one
       activeChats.push({
         room: payload.sender.name,
-        messages: [payload.payload.text],
+        messages: [`Customer ${payload.sender.name} requested to chat.`],
         phoneNo: payload.sender.phone,
         managerID: managerDel._id
       });
+
+    } else {
+
+      if (talkToAgentList.indexOf(payload.source) !== -1) {
+
+        //Checking if an agent is alreday joined the room
+        const roomsWhichHaveAgent = await activeSocketRooms(io);
+
+        const roomIndex = roomsWhichHaveAgent.indexOf(payload.sender.name);
+        //If an agent is in the room
+        if (roomIndex !== -1) {
+          const messageData = {
+            room: payload.sender.name,
+            author: payload.sender.name,
+            message: payload.payload.text,
+            time: new Date(Date.now()).getHours() +
+              ":" +
+              new Date(Date.now()).getMinutes(),
+          };
+
+          await io.to(payload.sender.name).emit("receive_message", messageData);
+
+        } else {
+          io.sockets.emit("broadcast", {});
+
+          // Checking if this chat already in the activeChats
+          for (let i = 0; i < activeChats.length; i++) {
+            if (activeChats[i].room === payload.sender.name) {
+              activeChats[i].messages.push(payload.payload.text);
+              return res.status(200).end();
+            }
+          }
+
+          // Checking if this chat already in the assigned chats
+          for (let i = 0; i < assignList.length; i++) {
+            if (assignList[i].room === payload.sender.name) {
+              assignList[i].messages.push(payload.payload.text);
+              return res.status(200).end();
+            }
+          }
+
+          //if chat didn't exist then creating a new one
+          activeChats.push({
+            room: payload.sender.name,
+            messages: [payload.payload.text],
+            phoneNo: payload.sender.phone,
+            managerID: managerDel._id
+          });
+        }
+      }else{
+        if(!flow){
+          //storing number in bot chat if alread didn't exist
+          if(botChats.indexOf(payload.source) === -1){
+            botChats.push(payload.source);
+            await sendMessage(`Hello ${payload.sender.name},\nWelcome to the ChatBot\n\nNOTE:- If you need to talk to an agent anytime in the middle of the chat, just type \"!Agent\",  and we will arrange an agent for you. | [Talk to Agent]`, payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+            return res.status(200).end();
+          }
+
+        }else{
+          if(flowPos.temp !== "!end"){
+            let found = false;
+            for(let eventObj of flow.tMessageList[flowPos.temp].events){
+
+              if(typeof(eventObj.event) === "number"){
+                const favTime = new Date().getTime() + (eventObj.event*1000);
+                const favDate = new Date(favTime);
+
+                schedule.scheduleJob(favDate, () => {
+                  sendMessage(flow.tMessageList[eventObj.action].tMessage, payload.destination || payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+                })
+              }
+
+              if(eventObj.event === `${payload.payload.text.toLowerCase()}`){
+                customer.currFlow.currPos = {
+                  temp: eventObj.action,
+                  show: false
+                }
+                found = true;
+                await sendMessage(flow.tMessageList[customer.currFlow.currPos.temp].tMessage, payload.destination || payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+                break;
+              }else if(eventObj.event === "!end"){
+
+                if(!customer.currFlow.currPos.show){
+                  flow.data.ended = flow.data.ended + 1;
+
+                  flow.markModified('data');
+                  await flow.save();
+                }
+
+                customer.currFlow.currPos = {
+                  temp: eventObj.action,
+                  show: true
+                }
+                found = true;
+                break;
+              }
+            }
+
+            if(!found){
+              customer.currFlow.currPos.show = false;
+            }
+
+            customer.markModified('currFlow');
+            await customer.save();
+          }
+        }
+
+      }
+
     }
 
+  }else{
+    if(flow && flowPos.temp !== "!end"){
+      let found = false;
+      for(let eventObj of flow.tMessageList[flowPos.temp].events){
+
+        if(typeof(eventObj.event) === "number"){
+          const favTime = new Date().getTime() + (eventObj.event*1000);
+          const favDate = new Date(favTime);
+
+          schedule.scheduleJob(favDate, () => {
+            sendMessage(flow.tMessageList[eventObj.action].tMessage, payload.destination || payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+          })
+        }
+
+        if(eventObj.event === `!${payload.type}`){
+
+          customer.currFlow.currPos = {
+            temp: eventObj.action,
+            show: false
+          }
+          found = true;
+          await sendMessage(flow.tMessageList[customer.currFlow.currPos.temp].tMessage, payload.destination || payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+          break;
+        }else if(eventObj.event === "!end"){
+
+          if(!customer.currFlow.currPos.show){
+            flow.data.ended = flow.data.ended + 1;
+
+            flow.markModified('data');
+            await flow.save();
+          }
+
+          customer.currFlow.currPos = {
+            temp: eventObj.action,
+            show: true
+          }
+          found = true;
+          break;
+        }
+      }
+
+      if(!found){
+        customer.currFlow.currPos.show = false;
+      }
+      customer.markModified('currFlow');
+      await customer.save();
+
+    }
   }
 
   return res.status(200).end();
+});
+
+app.post("/updateBotChatByBroadcasting", (req, res) => {
+  const {numberList} = req.body;
+
+  newBotChats = [...botChats, ...numberList];
+  botChats = [...new Set(newBotChats)];
+
+  res.status(200).send("Done");
 })
 
 //route for getting all the active rooms exist
@@ -364,15 +568,21 @@ app.get("/assigned", (req, res) => {
 
 //route for getting all the completed chats
 app.post("/completedChats", async (req, res) => {
-  const {managerID} = req.body;
+  const {
+    managerID
+  } = req.body;
   let foundChats;
-  if(managerID){
-    foundChats = await Chat.find({managerID});
-  }else{
+  if (managerID) {
+    foundChats = await Chat.find({
+      managerID
+    });
+  } else {
     foundChats = await Chat.find({});
   }
 
-  res.status(200).json({chats: foundChats});
+  res.status(200).json({
+    chats: foundChats
+  });
 });
 
 // Template functionalities
@@ -395,11 +605,17 @@ app.get("/noOfPendingTemplates", async (req, res) => {
 
 //route for getting all the templates by a preticular manager
 app.post("/allTemplatesByManager", async (req, res) => {
-  const {managerID} = req.body;
+  const {
+    managerID
+  } = req.body;
 
-  const foundTemplates = await Template.find({requestByUID: managerID});
+  const foundTemplates = await Template.find({
+    requestByUID: managerID
+  });
 
-  res.status(200).json({templates: foundTemplates});
+  res.status(200).json({
+    templates: foundTemplates
+  });
 });
 
 //route for adding a new temoplate request to the database

@@ -8,7 +8,7 @@ import TopCon from "./uiComponent/TopCon";
 function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, userName, userId, noOfRequestedChats}) {
 
     //defining state variables
-    const [templates, setTemplated] = useState([]);
+    const [templates, setTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState({});
 
     const [optedinUsers, setOptedinUsers] = useState([]);
@@ -30,7 +30,7 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
 
       await axios.post(`${baseBulkMessagingURL}/aprovedTemplates`, {userId}, { validateStatus: false, withCredentials: true }).then((response) => {
         //setting the templates with the response from the API
-        setTemplated(response.data.templates);
+        setTemplates(response.data.templates);
         if(response.data.templates.length > 0){
           setSelectedTemplate({...response.data.templates[0], example: JSON.parse(response.data.templates[0].meta).example});
           setMessage(response.data.templates[0].data);
@@ -52,16 +52,24 @@ function Broadcasting({baseBulkMessagingURL, baseUserSystemURL, setIsLogedin, us
       });
 
       //gettig name of the customers from the stored users
-      for(let i = 0; i < optedinUsers.length; i++){
-        const optUserFullPhoneNo = optedinUsers[i].countryCode+optedinUsers[i].phoneCode;
-        for(let j = 0; j < storedUsers.length; j++){
-          if(storedUsers[j].userPhoneNo === optUserFullPhoneNo){
-            toBePopulateUsers.push({phoneNo: optUserFullPhoneNo, userName: storedUsers[j].userName});
-          }else{
-            toBePopulateUsers.push({phoneNo: optUserFullPhoneNo, userName: "{Name}"});
+      for(let optUser of optedinUsers){
+        const optUserFullPhoneNo = optUser.countryCode + optUser.phoneCode;
+
+        let found = false;
+        for(let user of storedUsers){
+          // console.log(user.userName, optUserFullPhoneNo);
+          if(optUserFullPhoneNo === user.userPhoneNo){
+            toBePopulateUsers.push({phoneNo: optUserFullPhoneNo, userName: user.userName});
+            found = true;
+            break;
           }
         }
+        if(!found){
+          toBePopulateUsers.push({phoneNo: optUserFullPhoneNo, userName: "{Name}"});
+        }
       }
+
+
       setOptedinUsers(toBePopulateUsers);
       setSearchedOptedinUsers(toBePopulateUsers);
     }

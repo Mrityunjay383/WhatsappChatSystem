@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import "./App.css";
+// importing drag and drop dependency 
+
 
 //importing axios for https requests
 import axios from "axios";
@@ -23,6 +25,8 @@ import AgentDb from "./components/roleDashboards/AgentDb";
 
 // import ManagerAssignPage from "./components/ManagerAssignPage";
 import Broadcasting from "./components/Broadcasting";
+import Flow from "./components/Flow";
+import AllFlows from "./components/AllFlows";
 
 import NewTemplateRequest from "./components/NewTemplateRequest";
 import TemplateRequests from "./components/TemplateRequests";
@@ -31,10 +35,13 @@ import AlertBox from "./components/uiComponent/AlertBox";
 import ManagerChat from "./components/chatComponents/ManagerChat";
 
 import ManagerProfile from "./components/ManagerProfile";
+import { ReactFlowProvider } from 'react-flow-renderer';
 
 //Importing as lazy so that socket only runs when user is agent or manager
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
 const ManagerAssign = React.lazy(() => import('./components/ManagerAssignPage'));
+
+
 
 //all the URLs of the backend systems
 let baseUserSystemURL = "http://localhost:3002";
@@ -68,9 +75,11 @@ function App() {
   const ChatPageRender = () => {
     return (
       <>
+         
         <React.Suspense fallback={<></>}>
           {(userData.role === "Agent") && <ChatPage socket={socket} baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />}
         </React.Suspense>
+    
       </>
     )
   }
@@ -173,7 +182,7 @@ function App() {
             } />
 
             <Route path="/profile" element={
-              <div>
+              <div> 
                 {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
                 <Profile
                   baseURL={baseUserSystemURL}
@@ -225,6 +234,42 @@ function App() {
             <Route path="/broadcast" element={
               userData.role === "Manager" ? (//Only Managers have Access to Broadcasting page
                 <Broadcasting
+                  baseBulkMessagingURL={baseBulkMessagingURL}
+                  baseUserSystemURL={baseUserSystemURL}
+                  getRole="managers"
+                  setIsLogedin={setIsLogedin}
+                  userId={userData.user_id}
+                  userName={userData.name}
+                  noOfRequestedChats={noOfRequestedChats}
+                />
+              ) : (
+                <h1>Access Denied!!</h1>
+              )
+            } />
+
+            {/* // flow route for manager to start flow  */}
+              <Route path="/flow" element={
+              userData.role === "Manager" ? (//Only Managers have Access to Flow Page
+                <ReactFlowProvider>
+                  <Flow
+                  baseBulkMessagingURL={baseBulkMessagingURL}
+                  baseUserSystemURL={baseUserSystemURL}
+                  getRole="managers"
+                  setIsLogedin={setIsLogedin}
+                  userId={userData.user_id}
+                  userName={userData.name}
+                  noOfRequestedChats={noOfRequestedChats}
+                />
+                </ReactFlowProvider>
+              ) : (
+                <h1>Access Denied!!</h1>
+              )
+            } />
+
+            {/* // flow route for manager to start flow  */}
+              <Route path="/allflows" element={
+              userData.role === "Manager" ? (//Only Managers have Access to Flow Page
+                <AllFlows
                   baseBulkMessagingURL={baseBulkMessagingURL}
                   baseUserSystemURL={baseUserSystemURL}
                   getRole="managers"
