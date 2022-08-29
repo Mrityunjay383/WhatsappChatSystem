@@ -27,6 +27,8 @@ const Customer = require("./model/customer");
 const Template = require("./model/template");
 const Chat = require("./model/chat");
 const Flow = require("./model/flow");
+const Campaign = require("./model/campaign");
+
 
 
 //requiring the hepler methods
@@ -257,24 +259,52 @@ app.post("/hook", async (req, res) => {
     }
   });
 
-  let flow, flowPos;
+  let flow, flowPos, campaign, campaignExist = false;
   //getting the flow from customer collection
   const customer = await Customer.findOne({
     userPhoneNo: payload.destination || payload.source
   });
 
   if(customer){
+
     flowPos = customer.currFlow.currPos;
     flow = await Flow.findOne({_id: customer.currFlow.flowID});
 
     if(flowPos.temp === flow.startNode && flowPos.show === true){
-      console.log("Started");
       flow.data.started = flow.data.started + 1;
 
       flow.markModified('data');
       await flow.save();
     }
 
+    //if current flow is from campaign
+    if(flow && flowPos.temp !== "!end"){
+      if(flow._id === customer.currCampaign.currFlowID){
+        campaign = await Campaign.findOne({_id: customer.currCampaign.campaignID});
+        campaignExist = true;
+      }
+    }
+
+    //if any flow doesn't exist or have ended
+    if(!flow || flowPos.temp === "!end"){
+      if(customer.currCampaign && customer.currCampaign.currFlowID !== "!end"){
+        campaignExist = true;
+
+        campaign = await Campaign.findOne({_id: customer.currCampaign.campaignID});
+        flow = await Flow.findOne({_id: customer.currCampaign.currFlowID});
+
+        customer.currFlow = {
+          flowID: flow._id.toString(),
+          currPos: {
+            temp: flow.startNode,
+            show: true
+          }
+        }
+
+        customer.markModified('currFlow');
+        await customer.save();
+      }
+    }
   }
 
   if(flow && flowPos.temp !== "!end" && flowPos.show && talkToAgentList.indexOf(payload.source) === -1){
@@ -376,20 +406,65 @@ app.post("/hook", async (req, res) => {
           });
         }
       }else{
-        if(!flow){
+        if(!flow || flowPos.temp === "!end" && flowPos.show){
           //storing number in bot chat if alread didn't exist
           if(botChats.indexOf(payload.source) === -1){
             botChats.push(payload.source);
-            await sendMessage(`Hello ${payload.sender.name},\nWelcome to the ChatBot\n\nNOTE:- If you need to talk to an agent anytime in the middle of the chat, just type \"!Agent\",  and we will arrange an agent for you. | [Talk to Agent]`, payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
+            await sendMessage(`Hii you are chating with a bot, type !Agent to talk to an agent`, payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
             return res.status(200).end();
           }
 
         }else{
           if(flowPos.temp !== "!end"){
             let found = false;
+
+            //handling campaign start
+            if(campaignExist){
+              for(let eveObj of campaign.tFlowList[customer.currCampaign.currFlowID].events){
+
+                if(typeof(eventObj.event) === "number"){
+                  const favTime = new Date().getTime() + (eveObj.event*1000);
+                  const favDate = new Date(favTime);
+
+                  flow = await FLow.findOne({_id: eveObj.action});
+                  customer.currCampaign.currFlowID = eveObj.action;
+
+                  schedule.scheduleJob(favDate, () => {
+                    customer.currFlow = {
+                      flowID: eventObj.action,
+                      currPos: {
+                        temp: flow.startNode,
+                        show: true
+                      }
+                    }
+
+                  });
+                }
+
+                if(eveObj.event === `${payload.payload.text.toLowerCase()}`){
+                  const flow = await FLow.findOne({_id: eveObj.action});
+                  customer.currCampaign.currFlowID = eveObj.action;
+
+                  customer.currFlow = {
+                    flowID: eveObj.action,
+                    currPos: {
+                      temp: flow.startNode,
+                      show: true
+                    }
+                  }
+                }
+              }
+            }
+            //handling campaign ends
+
             for(let eventObj of flow.tMessageList[flowPos.temp].events){
 
               if(typeof(eventObj.event) === "number"){
+                customer.currFlow.currPos = {
+                  temp: eventObj.action,
+                  show: false
+                }
+                found = true;
                 const favTime = new Date().getTime() + (eventObj.event*1000);
                 const favDate = new Date(favTime);
 
@@ -399,6 +474,7 @@ app.post("/hook", async (req, res) => {
               }
 
               if(eventObj.event === `${payload.payload.text.toLowerCase()}`){
+
                 customer.currFlow.currPos = {
                   temp: eventObj.action,
                   show: false
@@ -406,30 +482,52 @@ app.post("/hook", async (req, res) => {
                 found = true;
                 await sendMessage(flow.tMessageList[customer.currFlow.currPos.temp].tMessage, payload.destination || payload.source, managerDel.assignedNumber, managerDel.appName, managerDel.apiKey);
                 break;
+
               }else if(eventObj.event === "!end"){
 
                 if(!customer.currFlow.currPos.show){
                   flow.data.ended = flow.data.ended + 1;
-
                   flow.markModified('data');
                   await flow.save();
+
+                  const newFlowIndex = customer.allFLows.indexOf(flow._id) + 1;
+
+                  if(newFlowIndex < customer.allFLows.length){
+                    const newFlow = await Flow.findOne({_id: customer.allFLows[newFlowIndex]});
+
+                    customer.currFlow = {
+                      flowID: customer.allFLows[newFlowIndex],
+                      currPos: {
+                        temp: newFlow.startNode,
+                        show: true
+                      }
+                    }
+                  }
                 }
 
-                customer.currFlow.currPos = {
-                  temp: eventObj.action,
-                  show: true
+                const newFlowIndex = customer.allFLows.indexOf(flow._id) + 1;
+                if(newFlowIndex === -1 || newFlowIndex >= customer.allFLows.length){
+                  customer.currFlow.currPos = {
+                    temp: eventObj.action,
+                    show: true
+                  }
+
                 }
+
                 found = true;
                 break;
+
               }
             }
 
             if(!found){
               customer.currFlow.currPos.show = false;
             }
-
+            customer.markModified('currCampaign');
             customer.markModified('currFlow');
             await customer.save();
+            console.log("Last:", customer.currFlow.currPos);
+
           }
         }
 
@@ -440,9 +538,52 @@ app.post("/hook", async (req, res) => {
   }else{
     if(flow && flowPos.temp !== "!end"){
       let found = false;
+
+      if(campaignExist){
+        for(let eveObj of campaign.tFlowList[customer.currCampaign.currFlowID].events){
+
+          if(typeof(eveObj.event) === "number"){
+            const favTime = new Date().getTime() + (eveObj.event*1000);
+            const favDate = new Date(favTime);
+
+            flow = await FLow.findOne({_id: eveObj.action});
+
+            customer.currCampaign.currFlowID = eveObj.action;
+            schedule.scheduleJob(favDate, () => {
+              customer.currFlow = {
+                flowID: eveObj.action,
+                currPos: {
+                  temp: flow.startNode,
+                  show: true
+                }
+              }
+
+            });
+          }
+
+          if(eveObj.event === `${payload.type}`){
+            const flow = await FLow.findOne({_id: eveObj.action});
+
+            customer.currCampaign.currFlowID = eveObj.action;
+            customer.currFlow = {
+              flowID: eveObj.action,
+              currPos: {
+                temp: flow.startNode,
+                show: true
+              }
+            }
+          }
+        }
+      }
+
       for(let eventObj of flow.tMessageList[flowPos.temp].events){
 
         if(typeof(eventObj.event) === "number"){
+          customer.currFlow.currPos = {
+            temp: eventObj.action,
+            show: false
+          }
+          found = true;
           const favTime = new Date().getTime() + (eventObj.event*1000);
           const favDate = new Date(favTime);
 
@@ -462,16 +603,38 @@ app.post("/hook", async (req, res) => {
           break;
         }else if(eventObj.event === "!end"){
 
+          //If flow ending for the first time
           if(!customer.currFlow.currPos.show){
             flow.data.ended = flow.data.ended + 1;
 
             flow.markModified('data');
             await flow.save();
+
+            //if there exist a next flow in allFLows array
+            const newFlowIndex = customer.allFLows.indexOf(flow._id) + 1;
+            if(newFlowIndex < customer.allFLows.length){
+              const newFlow = await Flow.findOne({_id: customer.allFLows[newFlowIndex]});
+
+              customer.currFlow = {
+                flowID: customer.allFLows[newFlowIndex],
+                currPos: {
+                  temp: newFlow.startNode,
+                  show: true
+                }
+              }
+
+            }
+
           }
 
-          customer.currFlow.currPos = {
-            temp: eventObj.action,
-            show: true
+          //if there is not flow next, setting flow to !end
+          const newFlowIndex = customer.allFLows.indexOf(flow._id) + 1;
+          if(newFlowIndex === -1 || newFlowIndex >= customer.allFLows.length){
+            customer.currFlow.currPos = {
+              temp: eventObj.action,
+              show: true
+            }
+
           }
           found = true;
           break;
@@ -481,12 +644,12 @@ app.post("/hook", async (req, res) => {
       if(!found){
         customer.currFlow.currPos.show = false;
       }
+
+      customer.markModified('currCampaign');
       customer.markModified('currFlow');
       await customer.save();
-
     }
   }
-
   return res.status(200).end();
 });
 

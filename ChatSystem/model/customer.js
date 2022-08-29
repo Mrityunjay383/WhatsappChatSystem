@@ -11,6 +11,13 @@ const customerSchema = new mongoose.Schema({
   },
   currFlow:{
     type: Object
+  },
+  allFLows: {
+    type: Array,
+    default: []
+  },
+  currCampaign: {
+    type: Object
   }
 });
 

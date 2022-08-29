@@ -23,6 +23,8 @@ const {
 const Customer = require("../model/customer");
 const Template = require("../model/template");
 const Flow = require("../model/flow");
+const Campaign = require("../model/campaign");
+
 
 const baseUserSystemURL = "http://localhost:3002";
 const baseChatSystemURL = "http://localhost:3001";
@@ -180,13 +182,15 @@ router.post("/updateTempStatus", async (req, res) => {
 // @description   route  for creating new flow
 // Method  Post
 
-router.post("/createnewflow", async (req, res) => {
+router.post("/create_new_flow", async (req, res) => {
   const {
     title,
     tMessageList,
     contactList,
     cid,
-    startNode
+    startNode,
+    nodes,
+    edges
   } = req.body; // recieving details of messages contact list and triggers also time delay
 
     const flowData = new Flow({
@@ -198,22 +202,32 @@ router.post("/createnewflow", async (req, res) => {
         started: 0,
         ended: 0,
       },
-      startNode
+      startNode,
+      defaultData: {
+        nodes: nodes,
+        edges: edges
+      }
     });
 
 
     await flowData.save();
 
     for(let phNum of contactList){
-      const customer = await Customer.findOneAndUpdate({userPhoneNo: phNum}, {
-        currFlow: {
-          flowID: flowData._id.toString(),
-          currPos: {
-            temp: startNode,
-            show: true
+
+      const customer = await Customer.findOne({userPhoneNo: phNum});
+
+      customer.allFLows = [...customer.allFLows, flowData._id.toString()];
+
+      if(!customer.currFlow || customer.currFlow.currPos.temp === "!end"){
+        customer.currFlow = {
+            flowID: flowData._id.toString(),
+            currPos: {
+              temp: startNode,
+              show: true
+            }
           }
-        },
-      }, {new: true});
+      }
+      await customer.save();
     }
   res.status(200).json({
     data: flowData
@@ -243,6 +257,41 @@ router.post("/getflows", async (req, res) => {
     res.end();
   }
 
+});
+
+router.post("/create_new_campaign", async (req, res) => {
+  const {
+    title,
+    tFlowList,
+    contactList,
+    cid,
+    startFlow
+  } = req.body;
+
+  const campaignData = new Campaign({
+    title,
+    tFlowList,
+    contactList,
+    cid,
+    startFlow
+  });
+
+  await campaignData.save();
+
+  for(let phNum of contactList){
+
+    const customer = await Customer.findOne({userPhoneNo: phNum});
+
+    customer.currCampaign = {
+      campaignID: campaignData._id.toString(),
+      currFlowID: startFlow
+    }
+    await customer.save();
+  }
+
+  res.status(200).json({
+    data: campaignData
+  });
 })
 
 module.exports = router

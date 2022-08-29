@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import "./App.css";
-// importing drag and drop dependency 
+// importing drag and drop dependency
 
 
 //importing axios for https requests
@@ -26,6 +26,7 @@ import AgentDb from "./components/roleDashboards/AgentDb";
 // import ManagerAssignPage from "./components/ManagerAssignPage";
 import Broadcasting from "./components/Broadcasting";
 import Flow from "./components/Flow";
+import Campaign from "./components/Campaign";
 import AllFlows from "./components/AllFlows";
 
 import NewTemplateRequest from "./components/NewTemplateRequest";
@@ -75,11 +76,10 @@ function App() {
   const ChatPageRender = () => {
     return (
       <>
-         
         <React.Suspense fallback={<></>}>
           {(userData.role === "Agent") && <ChatPage socket={socket} baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} userData={userData} setIsLogedin={setIsLogedin} />}
         </React.Suspense>
-    
+
       </>
     )
   }
@@ -182,7 +182,7 @@ function App() {
             } />
 
             <Route path="/profile" element={
-              <div> 
+              <div>
                 {userData.role === "Admin" && showAlert && <AlertBox setShowAlert={setShowAlert} alertData={alertData}/>}
                 <Profile
                   baseURL={baseUserSystemURL}
@@ -252,6 +252,25 @@ function App() {
               userData.role === "Manager" ? (//Only Managers have Access to Flow Page
                 <ReactFlowProvider>
                   <Flow
+                  baseBulkMessagingURL={baseBulkMessagingURL}
+                  baseUserSystemURL={baseUserSystemURL}
+                  getRole="managers"
+                  setIsLogedin={setIsLogedin}
+                  userId={userData.user_id}
+                  userName={userData.name}
+                  noOfRequestedChats={noOfRequestedChats}
+                />
+                </ReactFlowProvider>
+              ) : (
+                <h1>Access Denied!!</h1>
+              )
+            } />
+
+            {/* // flow route for manager to start flow  */}
+              <Route path="/campaign" element={
+              userData.role === "Manager" ? (//Only Managers have Access to Flow Page
+                <ReactFlowProvider>
+                  <Campaign
                   baseBulkMessagingURL={baseBulkMessagingURL}
                   baseUserSystemURL={baseUserSystemURL}
                   getRole="managers"

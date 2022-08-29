@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 // schema for flow and details of triggers contact list time delay etc
-const flowSchema = new mongoose.Schema({
+const campaignSchema = new mongoose.Schema({
   title: String,
-  tMessageList: Object,
+  tFlowList: Object,
   contactList: [String],
   cid: String,
   data: Object,
-  startNode: String,
+  startFlow: String,
   defaultData: Object
 });
 
 
-module.exports = mongoose.model("Flow", flowSchema);
+module.exports = mongoose.model("Campaign", campaignSchema);

@@ -17,17 +17,17 @@ import CustomEdge from "./CustomEdge";
 
 
 
-let id = 0;
-const getId = () => `dndnode_${id++}`;
+let cusid = 0;
 
-function DndFlowMap({nodes,setNodes,edges,setEdges,onEdgesChange,settemplates,setTemplates, SelectedTemplates,setSelectedTemplates,events,setEvents}) {
+
+function DndFlowMap({ flow,nodes,setNodes,edges,setEdges,onEdgesChange,settemplates,setTemplates, SelectedTemplates,setSelectedTemplates,events,setEvents}) {
   const reactFlowWrapper = useRef(null);
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   const onConnect = useCallback(
     (params) =>
-      setEdges((eds) =>
+      setEdges( (eds) =>
         addEdge(
           {
             ...params,
@@ -41,7 +41,15 @@ function DndFlowMap({nodes,setNodes,edges,setEdges,onEdgesChange,settemplates,se
       ),
     [setEdges]
   );
-
+  const getId = (id) => {
+    if(flow){
+      return `dndnode_${cusid++}`
+    }
+    else{
+    return `${id}`;
+    }
+  
+};
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -52,10 +60,11 @@ function DndFlowMap({nodes,setNodes,edges,setEdges,onEdgesChange,settemplates,se
       event.preventDefault();
 
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const type = event.dataTransfer.getData("application/reactflow");
-
+        const dragData=JSON.parse(event.dataTransfer.getData("application/reactflow") ); 
+        const type=dragData.nodeType;
+        const id=dragData.id;
       // check if the dropped element is valid
-      if (typeof type === "undefined" || !type) {
+      if (typeof type === "undefined" || !type||typeof id === "undefined" || !id) {
         return;
       }
 
@@ -64,13 +73,14 @@ function DndFlowMap({nodes,setNodes,edges,setEdges,onEdgesChange,settemplates,se
         y: event.clientY - reactFlowBounds.top,
       });
       const newNode = {
-        id: getId(),
+        id: getId(id),
         type,
         position,
         data: { label: `${type}` },
       };
 
       setNodes((nds) => nds.concat(newNode));
+      console.log(newNode);
       // if dropped on canva then remove from template
       setSelectedTemplates((curr)=>{
         const ind = curr.indexOf(type);
@@ -78,12 +88,13 @@ function DndFlowMap({nodes,setNodes,edges,setEdges,onEdgesChange,settemplates,se
                 curr.splice(ind, 1);
             }
 
-            console.log(curr);
+            
             return [...curr];
       })
     },
     [reactFlowInstance]
   );
+  
   const onEdgeUpdateStart = useCallback(() => {
     edgeUpdateSuccessful.current = false;
   }, []);
