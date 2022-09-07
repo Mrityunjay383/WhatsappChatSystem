@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import "./App.css";
 
-//importing axios for https requests
-import axios from "axios";
+//all the URLs of the backend systems
+import {baseUserSystemURL, baseChatSystemURL, baseBulkMessagingURL, baseUserSystemURLProd ,baseChatSystemURLProd , baseBulkMessagingURLProd } from "./constant";
 
 //importing Router functionality
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
@@ -35,30 +35,21 @@ import ManagerChat from "./components/chatComponents/ManagerChat";
 
 import ManagerProfile from "./components/indiManagerProfile/index";
 import { ReactFlowProvider } from 'react-flow-renderer';
+import { callAssignedChats, callNoPendingChats, calltoken} from './Services/Api';
 
 //Importing as lazy so that socket only runs when user is agent or manager
 const ChatPage = React.lazy(() => import('./components/chatComponents/ChatPage'));
 const ManagerAssign = React.lazy(() => import('./components/ManagerAssignPage'));
 
-
-
-//all the URLs of the backend systems
-let baseUserSystemURL = "http://localhost:3002";
-let baseChatSystemURL = "http://localhost:3001";
-let baseBulkMessagingURL = "http://localhost:3003";
-
-if(process.env.REACT_APP_ENV === "production"){
-  baseUserSystemURL = "http://localhost:5002";
-  baseChatSystemURL = "http://localhost:5001";
-  baseBulkMessagingURL = "http://localhost:5003";
-}else{
-  baseUserSystemURL = "http://localhost:3002";
-  baseChatSystemURL = "http://localhost:3001";
-  baseBulkMessagingURL = "http://localhost:3003";
-}
-
 let userId;//variable for storing the current id of the user
+
 function App() {
+
+  if(process.env.REACT_APP_ENV === "production"){
+    baseUserSystemURL = baseUserSystemURLProd;
+    baseChatSystemURL = baseChatSystemURLProd;
+    baseBulkMessagingURL = baseBulkMessagingURLProd;
+  }
 
   const [isLogedin, setIsLogedin] = useState(false);//login state variable
   const [userData, setUserData] = useState({});
@@ -92,39 +83,36 @@ function App() {
       </>
     )
   }
+//function for checking the JWT from backend API
 
-  //function for checking the JWT from backend API
   const valToken = async () => {
-    await axios.get(baseUserSystemURL, { validateStatus: false, withCredentials: true }).then((response) => {
-      if(response.status === 404 || response.status === 401){
+      const user = await calltoken(baseUserSystemURL);
+      if(!user){
         setIsLogedin(false);
-      }else{
-        setUserData(response.data.user);
-        setIsLogedin(true);
-        getAssignedChats(response.data.user.user_id);
-        userId = response.data.user.user_id
-        // console.log(response.data.user);
       }
-    });
+      else{
+        setUserData(user);
+        setIsLogedin(true);
+        getAssignedChats(user.user_id);
+        userId = user.user_id
+      }
   }
-
   //Getting all assigned rooms to this agent
   const getAssignedChats = async (user_id) => {
-
-    await axios.get(`${baseChatSystemURL}/assigned`, { validateStatus: false, withCredentials: true }).then((response) => {
-      //Filtering assigned rooms for this perticular agent
-      const filteredChats = response.data.assignList.filter((assined) => {
-        return assined.managerID === user_id
-      });
-      setNoOfRequestedChats(filteredChats.length);
+    const assignList= await callAssignedChats(baseChatSystemURL);
+ //Filtering assigned rooms for this perticular agent
+    const filteredChats = assignList.filter((assined) => {
+      return assined.managerID === user_id
     });
-  }
+      setNoOfRequestedChats(filteredChats.length);
+      // console.log(filteredChats);
+    };
 
   //getting the number of pendng templates to show in notification
   const getNoOfPendingTemplates = async () => {
-    await axios.get(`${baseChatSystemURL}/noOfPendingTemplates `, { validateStatus: false, withCredentials: true }).then((response) => {
-      setNoOfPendingTemplates(response.data.noOfPendingTemplates);
-    });
+    const data=await callNoPendingChats(baseChatSystemURL);
+      setNoOfPendingTemplates(data);
+
   }
 
   const changeLoginState = (user) => {//Function for changing the State after successFull Login
@@ -147,14 +135,14 @@ function App() {
   }, [socket]);
 
   useEffect(() => {
-    {/* validating JWT on every time the component mount */}
+    /* validating JWT on every time the component mount */
     valToken();
 
-    {/* getting number of pending template on component mount */}
+    /* getting number of pending template on component mount */
     getNoOfPendingTemplates();
   }, [isLogedin]);
 
-  {/*Rendring dashboard based on the role of the user*/}
+  /*Rendring dashboard based on the role of the user*/
   const Dashboard = ({role}) => {
     if(role === "Admin"){
       return <AdminDb baseUserSystemURL={baseUserSystemURL} baseChatSystemURL={baseChatSystemURL} baseBulkMessagingURL={baseBulkMessagingURL} setIsLogedin={setIsLogedin} userData={userData} noOfPendingTemplates={noOfPendingTemplates}/>

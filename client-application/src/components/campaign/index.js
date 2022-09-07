@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import axios from "axios";
 import "../flow/index.css";
 
 import Sidebar from "../uiComponent/sidebar/index";
@@ -12,6 +11,7 @@ import {
   useEdgesState,
 } from "react-flow-renderer";
 import CampaignFlowCard from "../uiComponent/dnd/CampaignFlowCard";
+import { callcreate_new_campaign, callgetflows, calloptedinUsers, callstoredCustomers } from "../../Services/Api";
 
 const Campaign = ({
   baseBulkMessagingURL,
@@ -44,38 +44,19 @@ const Campaign = ({
 
   //getting all the approved templates
   const getFlows = async () => {
-    await axios.post(`${baseBulkMessagingURL}/getflows`, {
-      managerId: userId
-    }, {
-      validateStatus: false,
-      withCredentials: true
-    }).then((response) => {
+    const flows= await callgetflows(baseBulkMessagingURL,userId); 
       //setting the flows with the response from the API
-      setFlows(response.data.flows);
-    });
+      setFlows(flows);
   };
 
   const getOptedinUsers = async () => {
     let optedinUsers,
       storedUsers,
       toBePopulateUsers = [];
-    await axios.post(`${baseBulkMessagingURL}/optedinUsers`, {
-      userId
-    }, {
-      validateStatus: false,
-      withCredentials: true
-    }).then((response) => {
-      //setting the optedinUsers with the response from the API
-      optedinUsers = response.data.users;
-    });
+      optedinUsers =await calloptedinUsers(baseBulkMessagingURL,userId);
+     
+     storedUsers= await callstoredCustomers(baseBulkMessagingURL);
 
-    await axios.get(`${baseBulkMessagingURL}/storedCustomers`, {
-      validateStatus: false,
-      withCredentials: true
-    }).then((response) => {
-      //getting the stored users from the response from the API
-      storedUsers = response.data.users;
-    });
 
     //gettig name of the customers from the stored users
     for (let optUser of optedinUsers) {
@@ -409,15 +390,14 @@ const Campaign = ({
     };
     console.log(data);
     try {
-      var response = axios.post(`${baseBulkMessagingURL}/create_new_campaign`, data, {
-        validateStatus: false,
-        withCredentials: true
-      });
-    } catch (e) {
+      var response = await callcreate_new_campaign(baseBulkMessagingURL,data);
+    console.log(response.data);
+    }
+    catch(e){
       console.log(e);
     }
-    console.log(response.data);
   };
+
 
   return (<div className="rootCon">
     <Sidebar role="Manager" baseURL={baseUserSystemURL} setIsLogedin={setIsLogedin} page="campaign" noOfRequestedChats={noOfRequestedChats}/>
@@ -432,7 +412,7 @@ const Campaign = ({
           <div className="cards-container">
             {
               flows.map((flow, index) => {
-                return <CampaignFlowCard flow={flow} select={selectFlows}/>;
+                return <CampaignFlowCard key={`flows${index}`} flow={flow} select={selectFlows}/>;
               })
             }
           </div>
@@ -477,7 +457,7 @@ const Campaign = ({
             <div className="flow_timeKey_container events_container">
               {
                 events.map((temp, index) => {
-                  return (<DragCards template={temp} keyy={index} deleteTemplate={deleteTemplate} showDel={false}
+                  return (<DragCards template={`events1${temp}`} key={`events${index}`} deleteTemplate={deleteTemplate} showDel={false}
                     // moveCard={moveCard}
                   />);
                 })
@@ -490,7 +470,7 @@ const Campaign = ({
             <div className="Selected-container ">
               {
                 selectedFlows.map((temp) => {
-                  return (<DragCards template={temp.title} keyy={temp.id} deleteTemplate={deleteTemplate} showDel={true}
+                  return (<DragCards key={temp.id} template={temp.title} deleteTemplate={deleteTemplate} showDel={true}
                     // moveCard={moveCard}
                   />);
                 })
@@ -498,7 +478,7 @@ const Campaign = ({
             </div>
             {/* this is the board where selected flows are droped */}
             <div className="Dnd-flow-canva">
-              <DndFlowMap  flow={false} nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} onEdgesChange={onEdgesChange} templates={flows} setTemplates={setFlows} selectedTemplates={selectedFlows} setSelectedTemplates={setSelectedFlows} events={events} setEvents={setEvents}/>
+              <DndFlowMap key={"flowMap"}  flow={false} nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} onEdgesChange={onEdgesChange} templates={flows} setTemplates={setFlows} selectedTemplates={selectedFlows} setSelectedTemplates={setSelectedFlows} events={events} setEvents={setEvents}/>
             </div>
 
           </div>
@@ -519,7 +499,7 @@ const Campaign = ({
             <div className="numbersList">
               {
                 searchedOptedinUsers.map((user, index) => {
-                  return (<div key={index}>
+                  return (<div key={`optUser${index}`}>
                     <label onClick={listSelectedNos} className="checkboxCon">
                       <input type="checkbox" name={user.phoneNo} value={user.phoneNo}/>
                       <span className="checkmark"></span>
@@ -557,7 +537,7 @@ const Campaign = ({
               {
                 selectedNos.length > 0
                   ? (selectedNos.map((number, index) => {
-                    return (<div key={index}>
+                    return (<div key={`selNos${index}`}>
                       <span>{number}</span>
                       <button className="rmSelectedNoBtn" onClick={() => {
                           rmSelectedNo(number);

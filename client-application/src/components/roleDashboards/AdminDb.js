@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import axios from "axios";
 
 //importing charts
 import BarChart from "../charts/BarChart";
@@ -9,6 +8,7 @@ import AdminLine from "../charts/AdminLine";
 //importing UI Components
 import Sidebar from "../uiComponent/sidebar/index";
 import TopCon from "../uiComponent/TopCon";
+import { callAgents, callcompletedchats, callgetalltemplates, callmanagers } from '../../Services/Api';
 
 const AdminDb = ({
   baseUserSystemURL,
@@ -32,35 +32,27 @@ const AdminDb = ({
 
       //function for getting all the agents from the database
       const getAgents = async () => {
-        await axios.get(`${baseUserSystemURL}/agents`, { validateStatus: false, withCredentials: true }).then((response) => {
-          const allAgents = response.data.agents;
-
-          setTotalNoOfAgents(allAgents.length);
-        });
+       const allagents=await callAgents(baseUserSystemURL);
+      setTotalNoOfAgents(allagents.length);
       }
 
       //function for getting all the managers from the database
       const getManagers = async () => {
-        await axios.get(`${baseUserSystemURL}/managers`, { validateStatus: false, withCredentials: true }).then((response) => {
-          const allManagers = response.data.managers;
-
-          setTotalNoOfManagers(allManagers.length);
-        });
+      const allmanagers=callmanagers(baseUserSystemURL);
+      setTotalNoOfManagers(allmanagers.length);
       }
 
       //function for getting all the templates from the database
       const getTemplates = async() => {
-        await axios.get(`${baseBulkMessagingURL}/get_all_templates`, { validateStatus: false, withCredentials: true }).then((response) => {
-          setTotalNoOfTemplates(response.data.allTemplates.length);
-        });
+        const allTemplates= await callgetalltemplates(baseBulkMessagingURL);
+        setTotalNoOfTemplates(allTemplates.length);
       }
 
       //function for getting all the completed chats from the database
       const getCompletedChats = async () => {
-        await axios.post(`${baseChatSystemURL}/completedChats`, {},{ validateStatus: false, withCredentials: true }).then((response) => {
-          setTotalCompletedChats(response.data.chats);
-          setTotalNoOfCompletedChats(response.data.chats.length);
-        });
+       const chats=await callcompletedchats(baseChatSystemURL);
+       setTotalCompletedChats(chats);
+       setTotalNoOfCompletedChats(chats.length);
       }
 
 
