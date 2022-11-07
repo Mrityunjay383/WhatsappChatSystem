@@ -230,6 +230,7 @@ io.on("connection", (socket) => {
   });
 });
 
+//webhook route of whatsapp
 app.post("/hook", async (req, res) => {
   const {
     type,
@@ -311,7 +312,7 @@ app.post("/hook", async (req, res) => {
     //method for checking if the user is a optin user and if not making it the optin user
     await otpedinUser(payload.sender.phone, managerDel.appName, managerDel.apiKey);
 
-    //Bot Starting
+    //Bot Starting to play
     if (payload.payload.text === "Talk to Agent" || payload.payload.text === "!Agent") {
 
       talkToAgentList.push(payload.source);

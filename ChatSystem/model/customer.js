@@ -37,5 +37,8 @@ customerSchema.statics.getAllCustomers = function (){
 customerSchema.statics.getCustomerByNum = function (num){
   return this.findOne({userPhoneNo: num});
 }
+// customerSchema.statics.getCustomerByNum = function (num){
+//   return this.findOne({userPhoneNo: num});
+// }
 
 module.exports = mongoose.model("Customer", customerSchema);
